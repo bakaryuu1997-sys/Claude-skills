@@ -1,6 +1,6 @@
 ---
 name: x7-presentation-deck
-version: "3.6.0"
+version: "3.7.0"
 description: >-
   Tạo slide thuyết trình chuyên nghiệp (PowerPoint pptx 16:9 + HTML interactive slide Marp):
   thiết kế dạng thẻ (Card-based), bảng màu doanh nghiệp, biểu đồ số liệu trực quan, không
@@ -13,11 +13,11 @@ description: >-
 
 ## Mục tiêu
 
-Tạo bộ slide thuyết trình chất lượng cao, chuẩn mực doanh nghiệp và tương tác hiện đại phục vụ các nhu cầu thuyết trình kỹ thuật và quản trị: **Pitching giải pháp, Họp Kickoff, Trình bày Kiến trúc hệ thống, Sprint Review / Demo sản phẩm, và Báo cáo Ban Lãnh đạo**.
+Tạo bộ slide thuyết trình kỹ thuật và quản trị đẳng cấp cao: **Pitching giải pháp, Họp Kickoff, Trình bày Kiến trúc, Sprint Review / Demo sản phẩm, và Báo cáo Ban Lãnh đạo**.
 
-Kế thừa các tinh hoa từ cộng đồng mã nguồn mở hàng đầu (*Deck-as-Code*, *Action Titles*, *Density Cap*, *Anti-Slop Design System*), bộ kỹ năng này xuất ra song hành 2 định dạng:
-1. **PowerPoint (`.pptx`) 16:9 chuẩn Widescreen**: Định dạng biên tập đầy đủ, sử dụng các shape, card, typography phân cấp và layout chuyên nghiệp qua `python-pptx`.
-2. **HTML Presentation (`.html`) Tự Vận Hành (Self-contained)**: Trình chiếu trực tiếp trên mọi trình duyệt web với Tailwind CSS, hiệu ứng Dark Glassmorphism, điều hướng bàn phím (`←`, `→`, `Space`), thanh tiến trình và responsive toàn diện.
+Kế thừa tinh hoa từ các skill mã nguồn mở hàng đầu (*Deck-as-Code*, *Template-first*, *Action Titles*, *Proportional Spacing*, *Anti-Slop Design*), bộ kỹ năng xuất ra song hành 2 định dạng:
+1. **PowerPoint (`.pptx`) 16:9 Widescreen**: Thiết lập layout thông minh bằng `python-pptx`, typography phân cấp với font hiện đại (`Segoe UI`), cân bằng khoảng trắng, thẻ nổi glassmorphism và icon badges.
+2. **HTML Presentation (`.html`) Tự Vận Hành**: Trình chiếu web chuẩn 16:9 với Tailwind CSS, Dark Glassmorphism, phím tắt (`←`, `→`, `Space`), Fullscreen (`F`) và nhúng ảnh Base64 tự chứa 100%.
 
 ---
 
@@ -27,64 +27,64 @@ Kế thừa các tinh hoa từ cộng đồng mã nguồn mở hàng đầu (*De
 > đọc bằng `load_context.py` + `cget()`; ghi bằng `update_context.py`; gate bằng `check_gate.py`.
 > `NO_CONTEXT` → chạy chế độ hỏi/suy luận thủ công.
 
-Trích xuất thông tin dự án: `project.name`, `client`, `tech_stack`, `team`, `estimates`, `milestones`, `activity_log`, và kiểm tra thư mục hiện vật thực tế (`docs/C2_test-execution/screenshots/`, sơ đồ kiến trúc, v.v.).
+Trích xuất: `project.name`, `client`, `tech_stack`, `team`, `estimates`, `milestones`, `activity_log`, và các hiện vật thực tế (`docs/C2_test-execution/screenshots/`, sơ đồ kiến trúc SVG/HTML).
 
 ---
 
-## 3 Quy Tắc "Vàng" Khi Thiết Kế Slide
+## 4 Quy Tắc Thiết Kế Slide Đỉnh Cao
 
 ### 1. Quy tắc Action Title (Bắt buộc 100%)
-- **CẤM TUYỆT ĐỐI**: Đặt tiêu đề bằng danh từ chung chung, rời rạc (Ví dụ: ❌ *"Kiến trúc hệ thống"*, ❌ *"Kết quả kiểm thử"*, ❌ *"Tiến độ Sprint"*).
-- **BẮT BUỘC**: Mọi tiêu đề slide phải là **Action Title** — câu khẳng định ngắn gọn chứa kết luận hoặc thông điệp cốt lõi (*Key Takeaway*) mà người nghe cần ghi nhớ ngay trong 3 giây đầu tiên.
-  - *Ví dụ chuẩn*: ✅ *"Kiến Trúc 4 Tầng Tối Ưu: Phân Lập Gateway, Business Logic & Database ACID"*
-  - *Ví dụ chuẩn*: ✅ *"108/108 Test Specs Vượt Qua Tuyệt Đối — Sẵn Sàng 95% Cho Mốc Go-Live"*
-  - *Ví dụ chuẩn*: ✅ *"WebSocket Đồng Bộ Đa Thiết Bị Đạt Độ Trễ Dưới 50ms"*
+- **CẤM**: Đặt tiêu đề là danh từ chung chung, rời rạc (Ví dụ: ❌ *"Kiến trúc hệ thống"*, ❌ *"Kết quả kiểm thử"*).
+- **BẮT BUỘC**: Tiêu đề là **Action Title** — câu khẳng định ngắn gọn chứa kết luận/thông điệp cốt lõi (*Key Takeaway*) giúp người nghe nắm bắt ngay trong 3 giây.
+  - *Ví dụ*: ✅ *"Kiến Trúc 4 Tầng Tối Ưu: Express Gateway → Prisma ORM → PostgreSQL 16"*
+  - *Ví dụ*: ✅ *"108/108 Test Specs Vượt Qua Tuyệt Đối — Sẵn Sàng 95% Cho Mốc Go-Live"*
 
 ### 2. Khống chế Mật Độ Chữ (Density Cap)
-- **Giới hạn độ dài**: Tối đa **40–50 từ** trên một slide nội dung.
-- **CẤM TUYỆT ĐỐI**: Các đoạn văn xuôi dài dòng (No walls of text).
-- **BẮT BUỘC**: Trình bày theo dạng **Khối thẻ (Card Grid)**, **Chỉ số đo lường lớn (Big KPI Numbers)**, và các gạch đầu dòng súc tích (tối đa **6–8 từ/ý**).
+- Giới hạn: **40–50 từ** trên một slide nội dung.
+- **CẤM**: Đoạn văn xuôi dài dòng (No walls of text).
+- **BẮT BUỘC**: Dùng **Khối thẻ (Card Grid)**, **Chỉ số đo lường lớn (Big KPI Numbers)**, và các gạch đầu dòng súc tích (**6–8 từ/ý**).
 
-### 3. Quy trình 2 Bước (Outline & Layout Selection → Render Code & QA)
-- **Bước 1 (Outline & Takeaways)**: Lên dàn bài outline chi tiết. Với từng slide, xác định rõ:
-  - Thông điệp takeaway (Action Title).
-  - Loại bố cục phù hợp: Hero Title, 3-Card Grid, Split-Pane (ảnh chụp + phân tích), KPI Matrix, Timeline Sprint.
-  - Các số liệu đo lường hoặc hiện vật giao diện đính kèm.
-- **Bước 2 (Deck-as-Code Render)**: Tạo script sinh tự động (`scratch/generate_deck.py`), thực thi xuất ra cả 2 file `.pptx` và `.html`, kiểm tra tràn chữ và lưu giữ script để tái lập trình.
+### 3. Cân Bằng Khoảng Trắng & Bố Cục Tỷ Lệ (Negative Space & Proportional Layout)
+- **Triệt tiêu khoảng trống thừa (Anti-Void Rule)**: Tránh dồn toàn bộ nội dung lên nửa trên rồi để nửa dưới là các hộp rỗng.
+- **Bố cục Cover Slide dạng Asymmetric Hero (60/40)**:
+  - Cột trái (60%): Badge trạng thái, Tiêu đề dự án lớn (44pt+ bold), Action Subtitle, đoạn giá trị cốt lõi, Thông tin người thuyết trình.
+  - Cột phải (40%): Khung kính nổi bật (*Executive Highlight Card*) tổng hợp các chỉ số trọng tâm (Sprint, Specs, Mốc Go-Live, Tech Stack) tạo sự cân đối thị giác hoàn hảo.
+- **Tính toán chiều cao Card linh hoạt**: Cỡ chữ tiêu đề thẻ 14–16pt, chữ nội dung 12–13pt kèm padding hợp lý, không để thẻ to đùng nhưng chữ lọt thỏm.
 
----
-
-## Tiêu Chuẩn Thị Giác Chống "AI Slop" (Anti-Slop Design System)
-
-1. **100% Theme Uniformity (Đồng Nhất Nền Tuyệt Đối)**:
-   - Toàn bộ bộ slide phải duy trì **duy nhất một phong cách nền đồng nhất** từ trang đầu đến trang cuối.
-   - *Executive Dark Slate Theme*: Nền tối sang trọng `#0B132B` / `#0F172A`, thẻ card `#1C2541` viền `#334155`.
-   - *Enterprise Clean Light Theme*: Nền sáng thanh lịch `#F8FAFC`, thẻ card `#FFFFFF` viền `#E2E8F0`.
-   - **CẤM TUYỆT ĐỐI**: Pha trộn slide nền đen xen kẽ slide nền trắng gây chói mắt và mất đồng bộ nhận diện.
-
-2. **Hoa văn & Họa tiết trang trí (Visual Accents & Motifs)**:
-   - **Top Accent Stripe**: Dải màu gradient thương hiệu ở mép trên cùng của mỗi slide (Widescreen bar: `#0288D1` → `#10B981` hoặc `#6366F1` → `#EC4899`).
-   - **Status Pill Badges**: Thẻ trạng thái bo tròn dạng viên thuốc ở đầu slide (ví dụ: `[SPRINT 2 ACTIVE]`, `[CORE COMPLETE]`, `[PASS 100%]`).
-   - **Elevated Card Containers**: Mỗi khối nội dung được đặt trong khung thẻ bo góc tinh tế, có viền mảnh tương phản nhẹ để tạo chiều sâu thị giác (Visual Depth).
-   - **Footer Breadcrumbs**: Chân trang đồng bộ trên 100% slide chứa: Tên dự án | Tên chuyên đề | `Trang X / N` | Ngày báo cáo.
-
-3. **Nhúng Hiện Vật & Ảnh Chụp Thực Tế (Real Artifacts & Screenshots)**:
-   - Khi dự án có ảnh chụp giao diện thật (trong `docs/C2_test-execution/screenshots/` hoặc `docs/A2_prototype-ui/`), BẮT BUỘC nhúng ảnh thật vào các slide tính năng / demo.
-   - Sử dụng bố cục **Split-Pane (50/50 hoặc 60/40)**: một bên là khung ảnh chụp màn hình viền sáng, một bên là 3 thẻ card tóm tắt giá trị kỹ thuật.
+### 4. Hệ Thống Nhận Diện Trực Quan Cao Cấp (Anti-Slop Design System)
+- **100% Theme Uniformity**: Giữ nguyên một hệ màu nền duy nhất từ slide 1 đến slide cuối (Executive Dark Slate `#0B132B` hoặc Enterprise Clean Light `#F8FAFC`). CẤM TUYỆT ĐỐI pha trộn slide đen trắng lộn xộn.
+- **Typography Hiện Đại**: Sử dụng `Segoe UI` (trên Windows/Office) tạo cảm giác thanh thoát, sắc nét và chuyên nghiệp hơn font Arial mặc định.
+- **Hoa văn & Họa tiết**:
+  - Dải màu thương hiệu ở mép đỉnh slide (Top gradient accent bar: `#00C9FF` → `#10B981`).
+  - Status Pill Badges bo góc ở đầu trang (`[SPRINT 2 ACTIVE]`, `[CORE COMPLETE]`).
+  - Elevated Cards bo góc viền mảnh tương phản (`#3A506B`) và đổ bóng nhẹ.
+  - Icon Badges trực quan (`⚡`, `🚀`, `🛡️`, `🎯`, `💾`, `🐳`, `🔐`, `✓`).
+  - Footer Breadcrumbs đồng bộ trên 100% slide: Tên dự án | Chuyên đề | `Trang X / N` | Ngày tháng.
+- **Nhúng Hiện Vật Thực Tế**: Bắt buộc nhúng ảnh chụp màn hình UI thật từ bộ test (`screenshots/`) theo bố cục Split-Pane 60/40.
 
 ---
 
-## Cấu Trúc Khung Bộ Slide 10–12 Trang Mẫu
+## 2 Chế Độ Triển Khai (Execution Modes)
 
-- **Slide 1 — Cover Slide**: Action Title dự án, Pill Badge phiên bản/trạng thái, ngày tháng và người trình bày.
-- **Slide 2 — Executive Summary & Vision**: 3 Trụ cột giá trị cốt lõi (Tốc độ, Tiện ích, Chủ quyền dữ liệu).
-- **Slide 3 — Key Metrics & Performance KPIs**: 4 Khối số liệu lớn nổi bật (Uptime, Pass Rate, Latency, Defect count).
-- **Slide 4 — Layered Technical Architecture**: 4 Tầng kiến trúc (Presentation, Gateway/Real-time, Business Logic, Persistence DB).
-- **Slide 5–6 — Feature & UI Showcase**: Bố cục Split-Pane nhúng ảnh chụp giao diện thực tế kèm phân tích UX/kỹ thuật.
-- **Slide 7 — Sprint Delivery & Roadmap**: Lộ trình 3 Sprints (Đã hoàn thành vs Đang triển khai vs Sắp tới).
-- **Slide 8 — Security & Compliance**: Phòng thủ 3 lớp (Auth Master Key, Rate Limiter, Cloudflare Zero Trust).
-- **Slide 9 — DevOps & Deployment Runbook**: Docker Compose, Health Check probes, quy trình tự động sao lưu.
-- **Slide 10 — Next Steps & Call to Action**: Kế hoạch nghiệm thu UAT, mốc Go-Live và mở thảo luận Q&A.
+1. **Mode A — Template-First (Khi có sẵn mẫu `.potx` / `.pptx`)**:
+   - Nếu có template PowerPoint chuẩn nhận diện thương hiệu của công ty hoặc khách hàng, nạp template và đổ dữ liệu vào các layout placeholder sẵn có.
+2. **Mode B — Deck-as-Code Engine (Tự động sinh toàn diện)**:
+   - Dựng script Python (`python-pptx`) hoặc PptxGenJS áp dụng đầy đủ quy tắc tính toán tọa độ, typography `Segoe UI`, bảng màu và icon badges.
+   - Song hành xuất file HTML tương tác chạy trực tiếp trên trình duyệt.
+
+---
+
+## Cấu Trúc Khung Bộ Slide 10 Trang Chuẩn Mực
+
+- **Slide 1 — Cover Asymmetric Hero**: Action Title, Pill Badge, Cột trái giới thiệu, Cột phải thẻ Executive Highlights.
+- **Slide 2 — Tầm Nhìn & 3 Trụ Cột**: 3 Thẻ giải pháp song song kèm số thứ tự nổi bật (01, 02, 03).
+- **Slide 3 — Chỉ Số Hoạt Động (KPI Matrix)**: 4 Khối số lớn (36-44pt) kèm Callout đánh giá chất lượng.
+- **Slide 4 — Kiến Trúc Hệ Thống**: 4 Tầng phân lập (Presentation, Gateway, Security, Persistence) có viền màu nhận diện.
+- **Slide 5–6 — Feature Showcase (Split-Pane)**: Ảnh chụp màn hình thật viền dạ quang + 3 thẻ phân tích giá trị kỹ thuật.
+- **Slide 7 — Tiến Độ & Lộ Trình Scrum**: 3 Cột Sprint (Sprint 1 Hoàn thành, Sprint 2 Đang làm, Sprint 3 Go-Live).
+- **Slide 8 — Bảo Mật Đa Lớp**: 3 Trụ cột an toàn (Master Auth, API Defense, Network Isolation).
+- **Slide 9 — Vận Hành DevOps**: Docker Compose 1-lệnh, Health Probes giám sát, Tự động sao lưu dự phòng.
+- **Slide 10 — Nghiệm Thu & Q&A**: Checklist UAT 5 mục hoàn thành + Định hướng mở rộng & thảo luận.
 
 ---
 
