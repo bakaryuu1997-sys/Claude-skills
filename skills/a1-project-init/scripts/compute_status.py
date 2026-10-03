@@ -17,6 +17,14 @@ if hasattr(sys.stderr, "reconfigure"):
 
 # Hợp đồng phụ thuộc input→output — rút từ pipeline.md (đổi pipeline → sửa Ở ĐÂY, một chỗ)
 DEPS = {
+    "a5-db-design": ["a4-api-design"],
+    "a6-estimate": ["a4-api-design", "a5-db-design", "a3-prototype-ui", "a2-requirement-analysis"],
+    "a7-estimate-template-fill": ["a6-estimate"],
+    "a8-test-plan": ["a4-api-design", "a5-db-design", "a2-requirement-analysis"],
+    "a9-project-timeline": ["a6-estimate", "a8-test-plan"],
+    "b1-project-kickoff": ["a2-requirement-analysis", "a6-estimate", "a9-project-timeline"],
+    "b2-basic-design": ["a2-requirement-analysis", "a3-prototype-ui", "a4-api-design"],
+    "b3-detail-design": ["b2-basic-design", "a4-api-design", "a5-db-design"],
     "db-design": ["api-design"],
     "estimate": ["api-design", "db-design", "prototype-ui", "requirement-analysis"],
     "estimate-template-fill": ["estimate"],
@@ -31,7 +39,9 @@ DEPS = {
 def main() -> int:
     ws = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
     skills_dir = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(__file__).resolve().parents[2]
-    manifest_p = skills_dir / "project-init" / "assets" / "skills-manifest.json"
+    manifest_p = skills_dir / "a1-project-init" / "assets" / "skills-manifest.json"
+    if not manifest_p.exists():
+        manifest_p = skills_dir / "project-init" / "assets" / "skills-manifest.json"
     manifest = []
     if manifest_p.exists():
         try:

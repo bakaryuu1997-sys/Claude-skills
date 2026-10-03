@@ -158,7 +158,11 @@ def t3():
     r = run([str(SKILLS / "a1-project-init/scripts/compute_status.py"), str(ws), str(SKILLS)])
     assert r.returncode == 0, r.stderr
     d = json.loads(r.stdout)
-    st = {x["skill"]: x["status"] for x in d["documents"]}
+    import re
+    st = {}
+    for x in d["documents"]:
+        st[x["skill"]] = x["status"]
+        st[re.sub(r'^[a-z]\d+-', '', x["skill"])] = x["status"]
     assert st.get("estimate") == "stale", f"estimate phải stale, được: {st.get('estimate')}"
     assert st.get("api-design") == "present", st.get("api-design")
     shutil.rmtree(ws)
@@ -179,6 +183,8 @@ def t4():
 @t("T5 gen_postman + gen_openapi: golden spec → cấu trúc đúng")
 def t5():
     spec = SKILLS / "evals/golden/a4-api-design/api_spec.json"
+    if not spec.exists():
+        spec = SKILLS / "evals/golden/api-design/api_spec.json"
     tmp = Path(tempfile.mkdtemp(prefix="eval_gen_"))
     r = run([str(SKILLS / "a4-api-design/scripts/gen_postman.py"), str(spec), str(tmp / "c.json")])
     assert r.returncode == 0, r.stdout + r.stderr
