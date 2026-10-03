@@ -37,10 +37,10 @@ sorted_skills = sorted(manifest.get("skills", []), key=step_key)
 
 phase_names = {
     "A": "📦 GIAI ĐOẠN A — CHUẨN BỊ & THIẾT KẾ (A1 → A9)",
-    "B": "🚀 GIAI ĐOẠN B — KHỞI ĐỘNG & ĐẶC TẢ CHI TIẾT (B1 → B3)",
-    "C": "🔄 GIAI ĐOẠN C — VẬN HÀNH, PHÁT TRIỂN & KIỂM THỬ (C1 → C7)",
-    "D": "🏁 GIAI ĐOẠN D — KẾT THÚC & BÀN GIAO (D1)",
-    "X": "🛠️ GIAI ĐOẠN X — CROSS-CUTTING & KIẾN TRÚC (X1 → X6)",
+    "B": "🚀 GIAI ĐOẠN B — KHỞI ĐỘNG & ĐẶC TẢ CHI TIẾT (B0 → B3)",
+    "C": "🔄 GIAI ĐOẠN C — VẬN HÀNH, PHÁT TRIỂN & KIỂM THỬ (C1 → C8)",
+    "D": "🏁 GIAI ĐOẠN D — KẾT THÚC & BÀN GIAO (D1 → D3)",
+    "X": "🛠️ GIAI ĐOẠN X — CROSS-CUTTING & KIẾN TRÚC (X1 → X7)",
     "-": "🧭 META — ĐIỀU HƯỚNG & KIỂM ĐỊNH (menu, x6-skill-doctor)",
 }
 

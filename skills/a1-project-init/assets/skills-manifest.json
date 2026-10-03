@@ -504,6 +504,111 @@
         "quy tắc git pr",
         "engineering standards"
       ]
+    },
+    {
+      "name": "b0-proposal-sow",
+      "version": "3.6.0",
+      "step": "B0",
+      "phase": "launch",
+      "summary": "Biên soạn Proposal kỹ thuật & SOW (Statement of Work) chốt hợp đồng",
+      "outputs": [
+        "*_Technical_Proposal.docx",
+        "*_Statement_Of_Work.docx",
+        "*_SOW_Scope_Matrix.xlsx"
+      ],
+      "intents": [
+        "proposal",
+        "sow",
+        "statement of work",
+        "đề xuất kỹ thuật",
+        "soạn proposal",
+        "chốt hợp đồng",
+        "hợp đồng kỹ thuật"
+      ]
+    },
+    {
+      "name": "c8-release-deployment",
+      "version": "3.6.0",
+      "step": "C8",
+      "phase": "run",
+      "recurring": "per release",
+      "summary": "Kế hoạch phát hành & deploy production, checklist, smoke test & rollback",
+      "outputs": [
+        "Release_Plan_v[N].docx",
+        "Deployment_Checklist.xlsx",
+        "Smoke_Test_Runbook.md"
+      ],
+      "intents": [
+        "release",
+        "deployment",
+        "deploy production",
+        "kế hoạch phát hành",
+        "checklist deploy",
+        "smoke test",
+        "rollback plan"
+      ]
+    },
+    {
+      "name": "d2-uat-acceptance",
+      "version": "3.6.0",
+      "step": "D2",
+      "phase": "close",
+      "summary": "Nghiệm thu UAT với khách hàng, biên bản bàn giao tính năng ký duyệt (Sign-Off)",
+      "outputs": [
+        "*_UAT_Acceptance_Certificate.docx",
+        "*_UAT_SignOff_Workbook.xlsx"
+      ],
+      "intents": [
+        "nghiệm thu",
+        "uat acceptance",
+        "biên bản nghiệm thu",
+        "khách nghiệm thu",
+        "sign-off",
+        "acceptance criteria",
+        "bàn giao thanh toán"
+      ]
+    },
+    {
+      "name": "d3-user-guide-manual",
+      "version": "3.6.0",
+      "step": "D3",
+      "phase": "close",
+      "summary": "Sổ tay hướng dẫn sử dụng (User Manual) và Admin Guide chuyên nghiệp kèm FAQ",
+      "outputs": [
+        "*_User_Manual_EndUser.docx",
+        "*_Admin_Guide.docx",
+        "*_Quick_Start_Guide.md"
+      ],
+      "intents": [
+        "hướng dẫn sử dụng",
+        "user manual",
+        "user guide",
+        "tài liệu hdsd",
+        "sổ tay người dùng",
+        "admin guide",
+        "hướng dẫn thao tác"
+      ]
+    },
+    {
+      "name": "x7-presentation-deck",
+      "version": "3.6.0",
+      "step": "X7",
+      "phase": "cross",
+      "summary": "Tạo slide thuyết trình chuyên nghiệp (PowerPoint pptx + HTML interactive slide)",
+      "outputs": [
+        "*_Presentation_Deck.pptx",
+        "*_Slide_Deck.html"
+      ],
+      "intents": [
+        "slide thuyết trình",
+        "tạo slide",
+        "presentation",
+        "powerpoint",
+        "pptx",
+        "pitch deck",
+        "slide báo cáo",
+        "thuyết trình dự án"
+      ]
     }
   ]
 }

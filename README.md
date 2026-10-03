@@ -6,10 +6,10 @@ Kho kỹ năng (Skills) và công cụ mở rộng (MCP Servers) toàn diện ch
 
 ## 📑 Mục Lục Nhanh
 1. [📦 Giai Đoạn A — Chuẩn Bị & Thiết Kế (A1 → A9)](#-giai-đoạn-a--chuẩn-bị--thiết-kế-a1--a9)
-2. [🚀 Giai Đoạn B — Khởi Động & Đặc Tả Chi Tiết (B1 → B3)](#-giai-đoạn-b--khởi-động--đặc-tả-chi-tiết-b1--b3)
-3. [🔄 Giai Đoạn C — Vận Hành, Phát Triển & Kiểm Thử (C1 → C7)](#-giai-đoạn-c--vận-hành-phát-triển--kiểm-thử-c1--c7)
-4. [🏁 Giai Đoạn D — Kết Thúc & Bàn Giao Dự Án (D1)](#-giai-đoạn-d--kết-thúc--bàn-giao-dự-án-d1)
-5. [🛠️ Giai Đoạn X — Cross-Cutting & Tiêu Chuẩn Kỹ Thuật (X1 → X6)](#️-giai-đoạn-x--cross-cutting--tiêu-chuẩn-kỹ-thuật-x1--x6)
+2. [🚀 Giai Đoạn B — Khởi Động & Đặc Tả Chi Tiết (B0 → B3)](#-giai-đoạn-b--khởi-động--đặc-tả-chi-tiết-b0--b3)
+3. [🔄 Giai Đoạn C — Vận Hành, Phát Triển & Kiểm Thử (C1 → C8)](#-giai-đoạn-c--vận-hành-phát-triển--kiểm-thử-c1--c8)
+4. [🏁 Giai Đoạn D — Kết Thúc & Bàn Giao Dự Án (D1 → D3)](#-giai-đoạn-d--kết-thúc--bàn-giao-dự-án-d1--d3)
+5. [🛠️ Giai Đoạn X — Cross-Cutting & Tiêu Chuẩn Kỹ Thuật (X1 → X7)](#️-giai-đoạn-x--cross-cutting--tiêu-chuẩn-kỹ-thuật-x1--x7)
 6. [🧭 Meta — Điều Hướng Hệ Thống (/menu)](#-meta--điều-hướng-hệ-thống)
 7. [🧠 Kỹ Năng Bộ Nhớ AI & Khảo Sát Codebase (Claude-Mem Skills)](#-kỹ-năng-bộ-nhớ-ai--khảo-sát-codebase)
 8. [🎨 Kỹ Năng Thiết Kế Giao Diện Đẳng Cấp (UI/UX Pro Max)](#-kỹ-năng-thiết-kế-giao-diện-đẳng-cấp-uiux-pro-max)
@@ -36,18 +36,19 @@ Kho kỹ năng (Skills) và công cụ mở rộng (MCP Servers) toàn diện ch
 
 ---
 
-## 🚀 GIAI ĐOẠN B — KHỞI ĐỘNG & ĐẶC TẢ CHI TIẾT (B1 → B3)
+## 🚀 GIAI ĐOẠN B — KHỞI ĐỘNG & ĐẶC TẢ CHI TIẾT (B0 → B3)
 *Thực hiện sau khi ký hợp đồng và chốt phạm vi dự án.*
 
 | Bước | Lệnh Skill | Tác dụng & Thời điểm dùng | Đầu ra chính |
 |:---:|---|---|---|
+| **B0** | `/b0-proposal-sow` | **Biên soạn Proposal & SOW**: Đề xuất giải pháp kỹ thuật, phạm vi In/Out scope, cam kết SLA, mốc nghiệm thu và điều khoản thanh toán để khách hàng ký chốt hợp đồng. | `*_Technical_Proposal.docx`<br>`*_Statement_Of_Work.docx`<br>`*_SOW_Scope_Matrix.xlsx` |
 | **B1** | `/b1-project-kickoff` | **Họp khởi động**: Chuẩn bị kickoff deck (pptx), Project Charter (docx), ma trận RACI, kế hoạch truyền thông, tiêu chuẩn DoR/DoD. | `*_Kickoff_Deck.pptx`<br>`*_Project_Charter.docx`<br>`*_Kickoff_Workbook.xlsx` |
 | **B2** | `/b2-basic-design` | **Thiết kế cơ bản (基本設計)**: Screen list, sơ đồ chuyển màn hình (screen flow), đặc tả I/O UI để khách hàng ký duyệt. | `*_Basic_Design.docx`<br>`*_BasicDesign_Workbook.xlsx` |
 | **B3** | `/b3-detail-design` | **Thiết kế chi tiết (詳細設計)**: Sequence diagrams, class/module design, CRUD matrix, logic xử lý nội bộ cho dev code. | `*_Detail_Design.docx`<br>`*_DetailDesign_Workbook.xlsx` |
 
 ---
 
-## 🔄 GIAI ĐOẠN C — VẬN HÀNH, PHÁT TRIỂN & KIỂM THỬ (C1 → C7)
+## 🔄 GIAI ĐOẠN C — VẬN HÀNH, PHÁT TRIỂN & KIỂM THỬ (C1 → C8)
 *Vòng lặp phát triển lặp lại liên tục trong mỗi Sprint.*
 
 | Bước | Lệnh Skill | Tác dụng & Thời điểm dùng | Đầu ra chính |
@@ -59,19 +60,22 @@ Kho kỹ năng (Skills) và công cụ mở rộng (MCP Servers) toàn diện ch
 | **C5** | `/c5-test-execution` | **Quản lý thực thi kiểm thử**: Theo dõi kết quả UT/IT/ST/UAT, danh sách defect, tính tỷ lệ pass/fail theo viewpoint, xuất báo cáo nghiệm thu. | `docs/C2_test-execution/*_Execution.xlsx`<br>`*_Report.docx` |
 | **C6** | `/c6-sprint-review` | **Tổng kết Sprint & Retrospective**: Đối chiếu Planned vs Actual, đo đạc velocity trend, phân tích bug health, retro 4L và ghi Sprint Log tích lũy. | `docs/C3_sprint-review/*_Review.xlsx`<br>`*_Sprint_Log.xlsx` |
 | **C7** | `/c7-change-request` | **Quản lý yêu cầu thay đổi (CR)**: Phân tích phạm vi ảnh hưởng (Impact Analysis), tính toán lại công số man-day khi scope thay đổi sau khi chốt. | `*_CR[N]_Change_Request.xlsx`<br>`*_Impact_Summary.md` |
+| **C8** | `/c8-release-deployment` | **Kế hoạch phát hành & Deploy Production**: Checklist pre/post deploy đa tầng, quản lý migration DB an toàn, kịch bản smoke test và phương án rollback dự phòng ≤ 15 phút. | `Release_Plan_v[N].docx`<br>`Deployment_Checklist.xlsx`<br>`Smoke_Test_Runbook.md` |
 
 ---
 
-## 🏁 GIAI ĐOẠN D — KẾT THÚC & BÀN GIAO DỰ ÁN (D1)
+## 🏁 GIAI ĐOẠN D — KẾT THÚC & BÀN GIAO DỰ ÁN (D1 → D3)
 *Thực hiện khi dự án hoàn thành nghiệm thu UAT và chuẩn bị bàn giao vận hành.*
 
 | Bước | Lệnh Skill | Tác dụng & Thời điểm dùng | Đầu ra chính |
 |:---:|---|---|---|
 | **D1** | `/d1-handover-doc` | **Tài liệu bàn giao toàn diện**: Biên soạn Handover 12 mục Docx + Workbook Excel 7 sheet (Tech stack, Envs, DB, APIs, Runbook, Known issues) + Runbook.md. | `*_Handover.docx`<br>`*_Handover_Workbook.xlsx`<br>`*_Runbook.md` |
+| **D2** | `/d2-uat-acceptance` | **Quản lý nghiệm thu UAT**: Kiểm tra tiêu chuẩn chấp nhận (Acceptance Criteria), biên bản bàn giao ký duyệt (Acceptance Certificate) để khách hàng giải ngân thanh toán, punch list bảo hành. | `*_UAT_Acceptance_Certificate.docx`<br>`*_UAT_SignOff_Workbook.xlsx` |
+| **D3** | `/d3-user-guide-manual` | **Sổ tay hướng dẫn sử dụng (User Manual) & Admin Guide**: Hướng dẫn thao tác từng bước cho người dùng cuối và quản trị viên kèm ảnh chụp màn hình UI và FAQ xử lý sự cố. | `*_User_Manual_EndUser.docx`<br>`*_Admin_Guide.docx`<br>`*_Quick_Start_Guide.md` |
 
 ---
 
-## 🛠️ GIAI ĐOẠN X — CROSS-CUTTING & TIÊU CHUẨN KỸ THUẬT (X1 → X6)
+## 🛠️ GIAI ĐOẠN X — CROSS-CUTTING & TIÊU CHUẨN KỸ THUẬT (X1 → X7)
 *Bộ công cụ dùng bất kỳ thời điểm nào trong dự án.*
 
 | Bước | Lệnh Skill | Tác dụng & Thời điểm dùng | Đầu ra chính |
@@ -82,6 +86,7 @@ Kho kỹ năng (Skills) và công cụ mở rộng (MCP Servers) toàn diện ch
 | **X4** | `/x4-meeting-minutes` | **Biên bản cuộc họp**: Chuyển transcript/notes họp thành biên bản Docx ký duyệt + Excel 4 sheet; tự động đẩy câu hỏi mở vào QA Tracker. | `*_Minutes_[date].docx`<br>`*_Minutes_[date].xlsx` |
 | **X5** | `/x5-coding-standards` | **Hiến pháp kỹ thuật nội bộ**: Ép chuẩn Strict TypeScript, Prisma Transactions, Git Conventional Commits, checklist PR 7 mục & Self-Improvement Loop. | `docs/X5_coding-standards/ENGINEERING_STANDARDS.md` |
 | **X6** | `/x6-skill-doctor` | **Linter kiểm định chính bộ skill**: Quét 12 quy tắc chống regression, kiểm tra frontmatter, độ dài mô tả, anti-pattern công thức Excel và tính đồng bộ manifest. | *(Trực tiếp trong chat)* |
+| **X7** | `/x7-presentation-deck` | **Tạo slide thuyết trình chuyên nghiệp**: Xuất slide PowerPoint (`.pptx`) 16:9 thiết kế dạng thẻ hiện đại + file HTML interactive slide tự chạy trên trình duyệt web cho pitch, demo, kickoff, sprint review. | `*_Presentation_Deck.pptx`<br>`*_Slide_Deck.html` |
 
 ---
 

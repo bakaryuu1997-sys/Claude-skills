@@ -27,15 +27,26 @@ if manifest_path.exists():
 folders = sorted(p.name for p in skills_dir.iterdir()
                  if p.is_dir() and (p / "SKILL.md").exists())
 
-missing = [s for s in folders if s not in manifest_skills]
+missing = []
+helpers = []
+for s in folders:
+    if s not in manifest_skills:
+        txt = (skills_dir / s / "SKILL.md").read_text(encoding="utf-8", errors="ignore")
+        if "pipeline.md" in txt or "## 🔗 Workflow Integration" in txt:
+            missing.append(s)
+        else:
+            helpers.append(s)
+
 orphan = [s for s in sorted(manifest_skills) if s not in set(folders)]
 
-print(f"📁 {len(folders)} skill folder | manifest có {len(manifest_skills)} skill")
+print(f"📁 {len(folders)} skill folder ({len(folders)-len(helpers)} lifecycle, {len(helpers)} helper) | manifest có {len(manifest_skills)} skill")
 if missing:
-    print("❌ SKILL CÓ FOLDER NHƯNG THIẾU TRONG MANIFEST:")
+    print("❌ SKILL LIFECYCLE CÓ FOLDER NHƯNG THIẾU TRONG MANIFEST:")
     for s in missing: print("   -", s)
 else:
-    print("✅ Mọi skill folder đều có trong manifest")
+    print("✅ Mọi skill lifecycle đều có trong manifest")
+if helpers:
+    print(f"ℹ️ {len(helpers)} helper/external skill ngoài manifest (bỏ qua): {', '.join(helpers)}")
 if orphan:
     print("⚠️ SKILL TRONG MANIFEST NHƯNG THIẾU FOLDER:")
     for s in orphan: print("   -", s)

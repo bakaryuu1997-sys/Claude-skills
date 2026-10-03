@@ -1,15 +1,16 @@
 # CHANGELOG — Bộ skill quản trị dự án
 
 ## 3.6.0 — 2026-10-04
-Chuẩn hóa tiền tố liên tiếp (Consecutive Numbering) & Tài liệu hóa toàn diện hệ sinh thái:
-- **Chuẩn hóa số thứ tự liên tiếp**: Xóa bỏ hoàn toàn các hậu tố chữ cái (`A4b`, `C0b`, `C1b`), đổi sang số nguyên liên tiếp theo từng giai đoạn:
-  - Giai đoạn A: `A1` → `A9` (`a1-project-init` đến `a9-project-timeline`)
-  - Giai đoạn B: `B1` → `B3` (`b1-project-kickoff` đến `b3-detail-design`)
-  - Giai đoạn C: `C1` → `C7` (`c1-dev-implement` đến `c7-change-request`)
-  - Giai đoạn D: `D1` (`d1-handover-doc`)
-  - Giai đoạn X: `X1` → `X6` (`x1-acquire-codebase-knowledge` đến `x6-skill-doctor`)
-- **Tài liệu hóa toàn diện README.md**: Ghi đầy đủ 45 skills (Lifecycle, Claude-Mem, UI/UX Pro Max, Superpowers) và 3 MCP Servers (Serena AST, Playwright E2E, Claude-Mem Memory).
-- **Cập nhật Linter `x6-skill-doctor`**: Bảo đảm 100% 27 skills đạt chuẩn (0 FAIL | 0 WARN).
+Chuẩn hóa tiền tố liên tiếp (Consecutive Numbering), bổ sung 5 kỹ năng mới & Tài liệu hóa toàn diện hệ sinh thái:
+- **Chuẩn hóa số thứ tự liên tiếp**: Xóa bỏ hoàn toàn các hậu tố chữ cái (`A4b`, `C0b`, `C1b`), đổi sang số nguyên liên tiếp theo từng giai đoạn.
+- **Bổ sung 5 kỹ năng chuyên nghiệp mới**:
+  - `B0` — `b0-proposal-sow`: Biên soạn Đề xuất kỹ thuật & SOW (Statement of Work) chốt hợp đồng.
+  - `C8` — `c8-release-deployment`: Kế hoạch phát hành, deploy production, checklist, smoke test & rollback.
+  - `D2` — `d2-uat-acceptance`: Quản lý nghiệm thu UAT với khách hàng, ký biên bản bàn giao giải ngân.
+  - `D3` — `d3-user-guide-manual`: Sổ tay hướng dẫn sử dụng (User Manual) cho người dùng cuối và Admin Guide kèm FAQ.
+  - `X7` — `x7-presentation-deck`: Tạo slide thuyết trình chuyên nghiệp (PowerPoint pptx + HTML interactive slide Marp).
+- **Tài liệu hóa toàn diện README.md**: Ghi đầy đủ 50 skills (32 Lifecycle, Claude-Mem, UI/UX Pro Max, Superpowers) và 3 MCP Servers (Serena AST, Playwright E2E, Claude-Mem Memory).
+- **Cập nhật Linter `x6-skill-doctor`**: Bảo đảm 100% 32 skills đạt chuẩn (0 FAIL | 0 WARN).
 
 ## 3.5.0 — 2026-07-09
 Nhóm Nice-to-have (N1/N2/N3/N5) — kết thúc toàn bộ roadmap audit.

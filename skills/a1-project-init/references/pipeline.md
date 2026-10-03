@@ -19,6 +19,7 @@ GIAI ĐOẠN A — CHUẨN BỊ / PRE-SALE (chạy một lần)
   A9  /a9-project-timeline
 
 GIAI ĐOẠN B — KHỞI ĐỘNG (sau khi khách chốt báo giá / ký hợp đồng)
+  B0  /b0-proposal-sow            ← Proposal kỹ thuật & SOW ký kết hợp đồng chốt phạm vi
   B1  /b1-project-kickoff         ← GATE: >3 câu P1 mở → hoãn kickoff
   B2  /b2-basic-design            ← khách ký duyệt TRƯỚC khi vào B3
   B3  /b3-detail-design           ← BẮT BUỘC có api-design + db-design (cập nhật) trước
@@ -31,9 +32,12 @@ GIAI ĐOẠN C — VẬN HÀNH (lặp lại trong suốt dự án)
   C5  /c5-test-execution          ← mỗi phase test (UT/IT/ST/UAT)
   C6  /c6-sprint-review           ← cuối mỗi sprint
   C7  /c7-change-request          ← bất kỳ lúc nào scope thay đổi
+  C8  /c8-release-deployment      ← kế hoạch phát hành, deploy production, smoke test & rollback
 
-GIAI ĐOẠN D — KẾT THÚC
-  D1  /d1-handover-doc            ← sau go-live / ĐẠT UAT
+GIAI ĐOẠN D — KẾT THÚC & BÀN GIAO
+  D1  /d1-handover-doc            ← tài liệu kỹ thuật & runbook sau go-live
+  D2  /d2-uat-acceptance          ← nghiệm thu UAT với khách hàng, ký Certificate giải ngân
+  D3  /d3-user-guide-manual       ← tài liệu HDSD cho end-user và admin guide vận hành
 
 GIAI ĐOẠN X — CROSS-CUTTING (chạy bất kỳ lúc nào, không thuộc chuỗi tuần tự)
   X1  /x1-acquire-codebase-knowledge ← khảo sát kiến trúc repo 4 tầng bằng Serena LSP trước khi code
@@ -42,6 +46,7 @@ GIAI ĐOẠN X — CROSS-CUTTING (chạy bất kỳ lúc nào, không thuộc ch
   X4  /x4-meeting-minutes         ← biên bản họp + đổ ngược: câu hỏi mở → QA_Tracker, scope đổi → /c7-change-request
   X5  /x5-coding-standards        ← quy chuẩn kỹ thuật nội bộ, conventional commits, PR & self-improvement
   X6  /x6-skill-doctor            ← meta: lint chính bộ skill (cho người bảo trì, không thuộc pipeline dự án)
+  X7  /x7-presentation-deck       ← tạo slide thuyết trình chuyên nghiệp (PowerPoint pptx / HTML Marp)
 ```
 
 Ánh xạ số cũ (tài liệu cũ có thể còn dùng): `[0]`=A0, `[1]`=A1, `[1.5]`=A2, `[2]`=A3(api), `[3]`=A3(db), `[4]`=A4, `[4.5]`=A4b, `[5]`=A5, `[6]`=A6, `[K]`=B1, `[BD]`=B2, `[DD]`=B3, `[7]`=C1, `[TE]`=C2, `[8]`=C3, `[9]`=C4, `[10]`=D1.
