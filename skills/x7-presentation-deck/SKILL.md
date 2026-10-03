@@ -13,75 +13,78 @@ description: >-
 
 ## Mục tiêu
 
-Tạo bộ slide thuyết trình chất lượng cao, hiện đại và chuẩn mực phục vụ đa dạng mục đích trong vòng đời dự án: **Pitching giải pháp, Họp Kickoff, Trình bày Kiến trúc kỹ thuật, Sprint Review / Demo tính năng cho khách, và Báo cáo tiến độ cho Ban Lãnh đạo**.
+Tạo bộ slide thuyết trình chất lượng cao, chuẩn mực doanh nghiệp và tương tác hiện đại phục vụ các nhu cầu thuyết trình kỹ thuật và quản trị: **Pitching giải pháp, Họp Kickoff, Trình bày Kiến trúc hệ thống, Sprint Review / Demo sản phẩm, và Báo cáo Ban Lãnh đạo**.
 
-Xuất ra 2 định dạng song hành:
-1. File **PowerPoint (`.pptx`) 16:9** chuẩn mực doanh nghiệp, dễ dàng trình chiếu và biên tập trên Microsoft Office / Google Slides.
-2. File **HTML Presentation (`.html`) tự vận hành (Self-contained)** chạy trực tiếp trên bất kỳ trình duyệt web nào (hỗ trợ phím mũi tên `←` `→`, phím cách, Fullscreen `F`, responsive trên mọi màn hình).
-
-Nguyên tắc thiết kế chuyên nghiệp:
-- **Card-based & Modular:** Nội dung tổ chức thành các khối thẻ trực quan (Cards/Tiles), phân cấp thị giác rõ ràng (Visual Hierarchy). Tuyệt đối tránh các trang slide chỉ toàn chữ bullet points đơn điệu.
-- **Dữ liệu & Số liệu lớn (Big Numbers / Key Metrics):** Làm nổi bật các số liệu then chốt (Ví dụ: `99.9% Uptime`, `12 Sprints`, `45 Endpoints`, `0 Critical Bugs`) với cỡ chữ lớn và màu nhấn tương phản.
-- **Bảng màu doanh nghiệp đồng nhất (Corporate Color Palette):** Sử dụng các bảng màu chuyên nghiệp (Primary: Navy `#1F3864`, Secondary: Tech Blue `#0288D1`, Accent: Emerald `#10B981`, Surface: Light Slate `#F8FAFC`).
-- **Không bao giờ dùng nội dung giữ chỗ (No TBD / Placeholder):** Mọi slide phải chứa số liệu, bối cảnh và lập luận thực tế từ dữ liệu dự án.
+Kế thừa các tinh hoa từ cộng đồng mã nguồn mở hàng đầu (*Deck-as-Code*, *Action Titles*, *Density Cap*, *Anti-Slop Design System*), bộ kỹ năng này xuất ra song hành 2 định dạng:
+1. **PowerPoint (`.pptx`) 16:9 chuẩn Widescreen**: Định dạng biên tập đầy đủ, sử dụng các shape, card, typography phân cấp và layout chuyên nghiệp qua `python-pptx`.
+2. **HTML Presentation (`.html`) Tự Vận Hành (Self-contained)**: Trình chiếu trực tiếp trên mọi trình duyệt web với Tailwind CSS, hiệu ứng Dark Glassmorphism, điều hướng bàn phím (`←`, `→`, `Space`), thanh tiến trình và responsive toàn diện.
 
 ---
 
 ## Bước -1 — Đọc Project Context (nếu có)
 
-> **Giao thức chuẩn — chi tiết: `a1-project-init/references/context-protocol.md`** (KHÔNG chép lại vào skill):
+> **Giao thức chuẩn — chi tiết: `a1-project-init/references/pipeline.md`** (KHÔNG chép lại vào skill):
 > đọc bằng `load_context.py` + `cget()`; ghi bằng `update_context.py`; gate bằng `check_gate.py`.
 > `NO_CONTEXT` → chạy chế độ hỏi/suy luận thủ công.
 
-**Nếu có context** → tự động trích xuất:
-- `project.name`, `client`, `tech_stack`, `team`, `estimates`, `milestones`.
-- Bảng màu nhận diện thương hiệu nếu có khai báo trong `settings`.
+Trích xuất thông tin dự án: `project.name`, `client`, `tech_stack`, `team`, `estimates`, `milestones`, `activity_log`, và kiểm tra thư mục hiện vật thực tế (`docs/C2_test-execution/screenshots/`, sơ đồ kiến trúc, v.v.).
 
 ---
 
-## Bước 0 — Thu thập thông tin đầu vào
+## 3 Quy Tắc "Vàng" Khi Thiết Kế Slide
 
-Xác định **Chủ đề & Mục tiêu thuyết trình**:
-1. **Pitching / Đề xuất giải pháp (Pre-sales):** Đọc từ /a2-requirement-analysis, /a4-api-design, /a6-estimate, /b0-proposal-sow.
-2. **Khởi động dự án (Project Kickoff):** Đọc từ /b1-project-kickoff (Charter, RACI, Milestones, Sprints).
-3. **Kiến trúc hệ thống (Technical Architecture):** Đọc từ /x1-acquire-codebase-knowledge, /x2-project-architecture.
-4. **Tổng kết Sprint & Demo tính năng:** Đọc từ /c6-sprint-review, /c1-dev-implement, kết quả test /c5-test-execution.
-5. **Báo cáo tiến độ / Ban Lãnh đạo:** Đọc từ /x3-project-status, /a9-project-timeline.
+### 1. Quy tắc Action Title (Bắt buộc 100%)
+- **CẤM TUYỆT ĐỐI**: Đặt tiêu đề bằng danh từ chung chung, rời rạc (Ví dụ: ❌ *"Kiến trúc hệ thống"*, ❌ *"Kết quả kiểm thử"*, ❌ *"Tiến độ Sprint"*).
+- **BẮT BUỘC**: Mọi tiêu đề slide phải là **Action Title** — câu khẳng định ngắn gọn chứa kết luận hoặc thông điệp cốt lõi (*Key Takeaway*) mà người nghe cần ghi nhớ ngay trong 3 giây đầu tiên.
+  - *Ví dụ chuẩn*: ✅ *"Kiến Trúc 4 Tầng Tối Ưu: Phân Lập Gateway, Business Logic & Database ACID"*
+  - *Ví dụ chuẩn*: ✅ *"108/108 Test Specs Vượt Qua Tuyệt Đối — Sẵn Sàng 95% Cho Mốc Go-Live"*
+  - *Ví dụ chuẩn*: ✅ *"WebSocket Đồng Bộ Đa Thiết Bị Đạt Độ Trễ Dưới 50ms"*
 
-Nếu người dùng đưa nội dung tự do → Phân tích cấu trúc thành dàn bài 10–15 slide chuẩn.
+### 2. Khống chế Mật Độ Chữ (Density Cap)
+- **Giới hạn độ dài**: Tối đa **40–50 từ** trên một slide nội dung.
+- **CẤM TUYỆT ĐỐI**: Các đoạn văn xuôi dài dòng (No walls of text).
+- **BẮT BUỘC**: Trình bày theo dạng **Khối thẻ (Card Grid)**, **Chỉ số đo lường lớn (Big KPI Numbers)**, và các gạch đầu dòng súc tích (tối đa **6–8 từ/ý**).
 
----
-
-## Tiêu chí Cấu trúc Slide Chuẩn Mực
-
-Một bộ slide chuyên nghiệp thông thường gồm **12–16 slides** theo luồng tư duy mạch lạc:
-
-1. **Slide 1 — Tiêu đề (Title Slide):** Tên dự án, chủ đề buổi họp, khách hàng, ngày trình bày, người trình bày.
-2. **Slide 2 — Tóm tắt điều hành (Executive Summary):** 3 thông điệp cốt lõi người nghe cần nắm trong 30 giây.
-3. **Slide 3 — Bối cảnh & Thách thức (Problem Statement / Business Context):** Khách hàng đang gặp vấn đề gì, cơ hội là gì.
-4. **Slide 4 — Mục tiêu & Tiêu chí thành công (Objectives & KPIs):** Định lượng bằng con số đo đếm được.
-5. **Slide 5 — Giải pháp đề xuất (Proposed Solution Overview):** Bức tranh toàn cảnh 3 trụ cột giải pháp.
-6. **Slide 6 — Kiến trúc kỹ thuật / Công nghệ (Technical Stack & Architecture):** Sơ đồ khối tầng công nghệ (FE, BE, DB, Cloud).
-7. **Slide 7–9 — Tính năng & Demo cốt lõi (Core Features / Sprint Highlights):** Các khối module chính, luồng người dùng nổi bật.
-8. **Slide 10 — Đảm bảo chất lượng & An toàn (QA & Security):** Tỷ lệ test coverage, kết quả audit bảo mật, cam kết SLA.
-9. **Slide 11 — Lộ trình & Các mốc quan trọng (Roadmap & Milestones):** Dòng thời gian trực quan theo Sprint/Tháng.
-10. **Slide 12 — Đội ngũ & Phối hợp (Team & Governance):** Vai trò hai bên, kênh liên lạc và đầu mối hỗ trợ.
-11. **Slide 13 — Rủi ro & Giải pháp phòng ngừa (Risks & Mitigation):** Bảng rủi ro kèm hành động đối phó cụ thể.
-12. **Slide 14 — Bước kế tiếp (Next Steps / Call to Action):** Các đầu việc cần chốt ngay sau buổi họp.
-13. **Slide 15 — Hỏi đáp & Cảm ơn (Q&A & Thank You):** Thông tin liên hệ và mở thảo luận.
+### 3. Quy trình 2 Bước (Outline & Layout Selection → Render Code & QA)
+- **Bước 1 (Outline & Takeaways)**: Lên dàn bài outline chi tiết. Với từng slide, xác định rõ:
+  - Thông điệp takeaway (Action Title).
+  - Loại bố cục phù hợp: Hero Title, 3-Card Grid, Split-Pane (ảnh chụp + phân tích), KPI Matrix, Timeline Sprint.
+  - Các số liệu đo lường hoặc hiện vật giao diện đính kèm.
+- **Bước 2 (Deck-as-Code Render)**: Tạo script sinh tự động (`scratch/generate_deck.py`), thực thi xuất ra cả 2 file `.pptx` và `.html`, kiểm tra tràn chữ và lưu giữ script để tái lập trình.
 
 ---
 
-## Tiêu chí Kỹ Thuật Khi Tạo File PPTX & HTML
+## Tiêu Chuẩn Thị Giác Chống "AI Slop" (Anti-Slop Design System)
 
-- **Tạo file PPTX:**
-  - Kích thước chuẩn **16:9** (W: 13.333 inches, H: 7.5 inches).
-  - Tối thiểu 3 mẫu layout slide: Hero title, 2/3-column card grid, KPI metrics highlights.
-  - Mỗi thẻ nội dung (Card) có viền bo tròn nhẹ, màu nền tương phản nhẹ so với nền slide chính.
-- **Tạo file HTML Interactive Slide:**
-  - 1 file HTML duy nhất (Self-contained, không phụ thuộc internet ngoài CDN Tailwind/CSS cơ bản).
-  - Hỗ trợ chuyển trang mượt mà bằng bàn phím (`ArrowRight`, `ArrowLeft`, `Space`), nút điều hướng nổi ở góc dưới.
-  - Hiển thị số trang hiện tại (`3 / 14`) và thanh tiến trình (Progress bar) ở mép trên cùng.
+1. **100% Theme Uniformity (Đồng Nhất Nền Tuyệt Đối)**:
+   - Toàn bộ bộ slide phải duy trì **duy nhất một phong cách nền đồng nhất** từ trang đầu đến trang cuối.
+   - *Executive Dark Slate Theme*: Nền tối sang trọng `#0B132B` / `#0F172A`, thẻ card `#1C2541` viền `#334155`.
+   - *Enterprise Clean Light Theme*: Nền sáng thanh lịch `#F8FAFC`, thẻ card `#FFFFFF` viền `#E2E8F0`.
+   - **CẤM TUYỆT ĐỐI**: Pha trộn slide nền đen xen kẽ slide nền trắng gây chói mắt và mất đồng bộ nhận diện.
+
+2. **Hoa văn & Họa tiết trang trí (Visual Accents & Motifs)**:
+   - **Top Accent Stripe**: Dải màu gradient thương hiệu ở mép trên cùng của mỗi slide (Widescreen bar: `#0288D1` → `#10B981` hoặc `#6366F1` → `#EC4899`).
+   - **Status Pill Badges**: Thẻ trạng thái bo tròn dạng viên thuốc ở đầu slide (ví dụ: `[SPRINT 2 ACTIVE]`, `[CORE COMPLETE]`, `[PASS 100%]`).
+   - **Elevated Card Containers**: Mỗi khối nội dung được đặt trong khung thẻ bo góc tinh tế, có viền mảnh tương phản nhẹ để tạo chiều sâu thị giác (Visual Depth).
+   - **Footer Breadcrumbs**: Chân trang đồng bộ trên 100% slide chứa: Tên dự án | Tên chuyên đề | `Trang X / N` | Ngày báo cáo.
+
+3. **Nhúng Hiện Vật & Ảnh Chụp Thực Tế (Real Artifacts & Screenshots)**:
+   - Khi dự án có ảnh chụp giao diện thật (trong `docs/C2_test-execution/screenshots/` hoặc `docs/A2_prototype-ui/`), BẮT BUỘC nhúng ảnh thật vào các slide tính năng / demo.
+   - Sử dụng bố cục **Split-Pane (50/50 hoặc 60/40)**: một bên là khung ảnh chụp màn hình viền sáng, một bên là 3 thẻ card tóm tắt giá trị kỹ thuật.
+
+---
+
+## Cấu Trúc Khung Bộ Slide 10–12 Trang Mẫu
+
+- **Slide 1 — Cover Slide**: Action Title dự án, Pill Badge phiên bản/trạng thái, ngày tháng và người trình bày.
+- **Slide 2 — Executive Summary & Vision**: 3 Trụ cột giá trị cốt lõi (Tốc độ, Tiện ích, Chủ quyền dữ liệu).
+- **Slide 3 — Key Metrics & Performance KPIs**: 4 Khối số liệu lớn nổi bật (Uptime, Pass Rate, Latency, Defect count).
+- **Slide 4 — Layered Technical Architecture**: 4 Tầng kiến trúc (Presentation, Gateway/Real-time, Business Logic, Persistence DB).
+- **Slide 5–6 — Feature & UI Showcase**: Bố cục Split-Pane nhúng ảnh chụp giao diện thực tế kèm phân tích UX/kỹ thuật.
+- **Slide 7 — Sprint Delivery & Roadmap**: Lộ trình 3 Sprints (Đã hoàn thành vs Đang triển khai vs Sắp tới).
+- **Slide 8 — Security & Compliance**: Phòng thủ 3 lớp (Auth Master Key, Rate Limiter, Cloudflare Zero Trust).
+- **Slide 9 — DevOps & Deployment Runbook**: Docker Compose, Health Check probes, quy trình tự động sao lưu.
+- **Slide 10 — Next Steps & Call to Action**: Kế hoạch nghiệm thu UAT, mốc Go-Live và mở thảo luận Q&A.
 
 ---
 
