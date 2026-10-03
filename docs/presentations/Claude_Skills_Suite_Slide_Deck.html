@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Skills & Antigravity Suite — Presentation Deck</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .slide { display: none; }
+    .slide.active { display: flex; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between select-none">
+
+  <!-- Top Progress Bar -->
+  <div class="w-full bg-slate-800 h-1.5 fixed top-0 left-0 z-50">
+    <div id="progressBar" class="bg-sky-500 h-full transition-all duration-300" style="width: 14.28%;"></div>
+  </div>
+
+  <!-- Header Info -->
+  <header class="w-full px-8 py-4 flex justify-between items-center text-xs tracking-wider text-slate-400 border-b border-slate-800/80">
+    <span class="font-bold text-sky-400">CLAUDE SKILLS & ANTIGRAVITY SUITE v3.6.0</span>
+    <span id="slideCounter" class="bg-slate-800 px-3 py-1 rounded-full text-slate-300 font-semibold">1 / 7</span>
+  </header>
+
+  <!-- Slide Container -->
+  <main class="flex-1 flex items-center justify-center p-8 max-w-7xl mx-auto w-full">
+
+    <!-- SLIDE 1: Hero Title -->
+    <div class="slide active flex-col justify-center items-start space-y-6 w-full">
+      <div class="inline-block px-3 py-1 bg-sky-500/10 border border-sky-500/30 rounded-full text-sky-400 text-xs font-semibold tracking-wider">
+        ENTERPRISE SOFTWARE DEVELOPMENT PLATFORM
+      </div>
+      <h1 class="text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight">
+        Claude Skills &<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400">Antigravity Suite</span>
+      </h1>
+      <p class="text-lg lg:text-xl text-slate-300 max-w-3xl leading-relaxed">
+        Bộ kỹ năng chuẩn hóa toàn diện 6 giai đoạn vòng đời dự án (<strong class="text-white">32 Lifecycle Skills</strong>) kết hợp hệ sinh thái siêu công cụ MCP: <strong class="text-sky-300">Serena AST</strong>, <strong class="text-emerald-300">Playwright E2E</strong> & <strong class="text-indigo-300">Claude-Mem</strong>.
+      </p>
+      <div class="pt-4 flex flex-wrap gap-4 text-xs text-slate-400 font-mono">
+        <span class="bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-md">✅ 100% Linter PASS</span>
+        <span class="bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-md">🚀 GitHub Auto-Update</span>
+        <span class="bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-md">🏢 Enterprise Grade</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Executive Summary -->
+    <div class="slide flex-col justify-center space-y-6 w-full">
+      <div>
+        <p class="text-xs font-bold text-sky-400 uppercase tracking-widest">TỔNG QUAN GIẢI PHÁP</p>
+        <h2 class="text-3xl lg:text-4xl font-bold text-white">3 Trụ Cột Đột Phá Năng Suất Kỹ Nghệ</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-4 hover:border-sky-500/50 transition">
+          <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center font-bold text-lg">1</div>
+          <h3 class="text-xl font-bold text-white">Chuẩn Hóa Khép Kín</h3>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            32 kỹ năng đánh số tuần tự A1..A9, B0..B3, C1..C8, D1..D3, X1..X7. Một nguồn sự thật chung (Single Source of Truth) qua <code class="text-sky-300">project-context.json</code>.
+          </p>
+        </div>
+        <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-4 hover:border-emerald-500/50 transition">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-lg">2</div>
+          <h3 class="text-xl font-bold text-white">Kiểm Định Bằng Máy</h3>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Linter tự động <code class="text-emerald-300">x6-skill-doctor</code> (12 rules). Gate A6/B1 chặn phình scope nếu còn &gt;3 câu hỏi P1 chưa chốt. Triệt tiêu 100% lỗi cú pháp và placeholder TBD.
+          </p>
+        </div>
+        <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl space-y-4 hover:border-indigo-500/50 transition">
+          <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold text-lg">3</div>
+          <h3 class="text-xl font-bold text-white">Sức Mạnh Mở Rộng MCP</h3>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Serena LSP (AST semantic search & replace tiết kiệm 80% token), Playwright (Web E2E automation & screenshots), và Claude-Mem (bộ nhớ dài hạn xuyên session).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: Key Metrics -->
+    <div class="slide flex-col justify-center space-y-6 w-full">
+      <div>
+        <p class="text-xs font-bold text-sky-400 uppercase tracking-widest">SỐ LIỆU ĐO ĐẾM</p>
+        <h2 class="text-3xl lg:text-4xl font-bold text-white">Quy Mô & Tiêu Chuẩn Kỹ Thuật</h2>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center">
+          <div class="text-4xl font-extrabold text-sky-400 mb-1">32</div>
+          <div class="text-sm font-semibold text-white">Lifecycle Skills</div>
+          <div class="text-xs text-slate-400 mt-1">Từ Pre-sale đến Bàn giao</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center">
+          <div class="text-4xl font-extrabold text-emerald-400 mb-1">6</div>
+          <div class="text-sm font-semibold text-white">Giai Đoạn Chuẩn</div>
+          <div class="text-xs text-slate-400 mt-1">A, B, C, D, X & Meta</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center">
+          <div class="text-4xl font-extrabold text-indigo-400 mb-1">3</div>
+          <div class="text-sm font-semibold text-white">Máy Chủ MCP</div>
+          <div class="text-xs text-slate-400 mt-1">Serena, Playwright, Mem</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center">
+          <div class="text-4xl font-extrabold text-amber-400 mb-1">0 FAIL</div>
+          <div class="text-sm font-semibold text-white">Skill Doctor Audit</div>
+          <div class="text-xs text-slate-400 mt-1">100% Rules Passing</div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+        <div class="bg-slate-900/60 border border-slate-800/80 p-5 rounded-2xl space-y-2">
+          <h4 class="font-bold text-sky-300 text-sm">📦 Đầu Ra Đo Đếm Được</h4>
+          <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+            <li>Excel Workbooks (bảo toàn công thức, chuẩn phong cách doanh nghiệp).</li>
+            <li>Tài liệu kỹ thuật Word/Markdown (SRS, SOW, Charter, Runbook 12 mục).</li>
+            <li>Source code thực thi (API specs, Postman, Jest test suite, DB migrations).</li>
+          </ul>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800/80 p-5 rounded-2xl space-y-2">
+          <h4 class="font-bold text-emerald-300 text-sm">🌐 Đa Nền Tảng & Đồng Bộ Tức Thì</h4>
+          <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+            <li>Đóng gói Marketplace Plugin cài đặt trên Claude Code, Codex, Cursor.</li>
+            <li>Hỗ trợ script auto-commit-push đồng bộ tức thì cho toàn đội ngũ.</li>
+            <li>Tương thích môi trường Windows, Linux và macOS.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Phase A & B -->
+    <div class="slide flex-col justify-center space-y-6 w-full">
+      <div>
+        <p class="text-xs font-bold text-sky-400 uppercase tracking-widest">GIAI ĐOẠN KHỞI TẠO DỰ ÁN</p>
+        <h2 class="text-3xl lg:text-4xl font-bold text-white">Giai Đoạn A (Chuẩn Bị) & B (Hợp Đồng / Khởi Động)</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3">
+          <h3 class="text-lg font-bold text-sky-400">📦 Giai Đoạn A — Chuẩn Bị & Thiết Kế (A1 → A9)</h3>
+          <ul class="text-xs text-slate-300 space-y-2">
+            <li><strong class="text-white">A1 (/a1-project-init):</strong> Khởi tạo nguồn sự thật <code>project-context.json</code>.</li>
+            <li><strong class="text-white">A2 (/a2-requirement-analysis):</strong> Bóc tách scope, bảng Q&A P1-P3.</li>
+            <li><strong class="text-white">A3 (/a3-prototype-ui):</strong> Dựng prototype HTML demo khách duyệt.</li>
+            <li><strong class="text-white">A4 & A5 (/a4-api-design & /a5-db-design):</strong> Đặc tả API spec + DB ERD.</li>
+            <li><strong class="text-white">A6 & A7 (/a6-estimate & /a7-estimate-template-fill):</strong> Báo giá WBS + điền 見積書.</li>
+            <li><strong class="text-white">A8 & A9 (/a8-test-plan & /a9-project-timeline):</strong> Test Plan & lịch Gantt .ics.</li>
+          </ul>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3">
+          <h3 class="text-lg font-bold text-emerald-400">🚀 Giai Đoạn B — Hợp Đồng & Khởi Động (B0 → B3)</h3>
+          <ul class="text-xs text-slate-300 space-y-2">
+            <li><strong class="text-white">B0 (/b0-proposal-sow):</strong> Biên soạn Technical Proposal & Statement of Work (SOW) chốt hợp đồng.</li>
+            <li><strong class="text-white">B1 (/b1-project-kickoff):</strong> Họp khởi động: Kickoff deck, Project Charter, RACI, DoR/DoD.</li>
+            <li><strong class="text-white">B2 (/b2-basic-design):</strong> 基本設計 — Thiết kế cơ bản: Screen list, flow, I/O spec khách ký duyệt.</li>
+            <li><strong class="text-white">B3 (/b3-detail-design):</strong> 詳細設計 — Thiết kế chi tiết cho dev: Sequence, Class, CRUD logic.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Phase C, D & X -->
+    <div class="slide flex-col justify-center space-y-6 w-full">
+      <div>
+        <p class="text-xs font-bold text-sky-400 uppercase tracking-widest">GIAI ĐOẠN THỰC THI & HOÀN THIỆN</p>
+        <h2 class="text-3xl lg:text-4xl font-bold text-white">Giai Đoạn C (Vận Hành), D (Bàn Giao) & X (Công Cụ)</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-2">
+          <h3 class="text-base font-bold text-sky-400">🔄 Giai Đoạn C: Vận Hành</h3>
+          <ul class="text-xs text-slate-300 space-y-1.5">
+            <li><strong class="text-white">C1:</strong> Dev viết code (scaffold/feature/fix).</li>
+            <li><strong class="text-white">C2:</strong> Sinh test suite API tự động.</li>
+            <li><strong class="text-white">C3:</strong> Code review checklist 5 sheet.</li>
+            <li><strong class="text-white">C4:</strong> Kiểm toán bảo mật OWASP Top 10.</li>
+            <li><strong class="text-white">C5:</strong> Quản lý thực thi test UT/IT/UAT.</li>
+            <li><strong class="text-white">C6:</strong> Sprint review retro 4L.</li>
+            <li><strong class="text-white">C7:</strong> Change request impact analysis.</li>
+            <li><strong class="text-white">C8:</strong> Release plan & deploy production.</li>
+          </ul>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-2">
+          <h3 class="text-base font-bold text-emerald-400">🏁 Giai Đoạn D: Bàn Giao</h3>
+          <ul class="text-xs text-slate-300 space-y-1.5">
+            <li><strong class="text-white">D1:</strong> Tài liệu bàn giao 12 mục Docx + Workbook 7 sheet + Runbook.</li>
+            <li><strong class="text-white">D2:</strong> Nghiệm thu UAT với khách, ký Certificate giải ngân thanh toán.</li>
+            <li><strong class="text-white">D3:</strong> Sổ tay hướng dẫn người dùng cuối (User Manual) và Admin Guide.</li>
+          </ul>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-2">
+          <h3 class="text-base font-bold text-indigo-400">🛠️ Giai Đoạn X: Cross-Cutting</h3>
+          <ul class="text-xs text-slate-300 space-y-1.5">
+            <li><strong class="text-white">X1:</strong> Khảo sát repo 4 tầng qua Serena.</li>
+            <li><strong class="text-white">X2:</strong> Trực quan hóa kiến trúc HTML.</li>
+            <li><strong class="text-white">X3:</strong> Dashboard dự án trong chat.</li>
+            <li><strong class="text-white">X4:</strong> Biên bản họp Docx + Excel.</li>
+            <li><strong class="text-white">X5:</strong> Hiến pháp kỹ thuật nội bộ.</li>
+            <li><strong class="text-white">X6:</strong> Linter audit chính bộ skill.</li>
+            <li><strong class="text-white">X7:</strong> Tạo slide thuyết trình PPTX/HTML.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: MCP Integration -->
+    <div class="slide flex-col justify-center space-y-6 w-full">
+      <div>
+        <p class="text-xs font-bold text-sky-400 uppercase tracking-widest">HỆ THỐNG MỞ RỘNG</p>
+        <h2 class="text-3xl lg:text-4xl font-bold text-white">Bộ 3 Siêu Năng Lực MCP Servers</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3">
+          <div class="text-sky-400 text-sm font-mono font-bold">MCP 01</div>
+          <h3 class="text-xl font-bold text-white">Serena MCP</h3>
+          <p class="text-xs font-semibold text-sky-300">AST & Semantic Code Intelligence</p>
+          <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+            <li>Duyệt cây AST: tìm symbol, function, class siêu tốc.</li>
+            <li>Tìm tham chiếu (references) toàn dự án.</li>
+            <li>Chỉnh sửa thân hàm cấp AST, không lệch format.</li>
+            <li>Bắt lỗi LSP diagnostics thời gian thực.</li>
+          </ul>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3">
+          <div class="text-emerald-400 text-sm font-mono font-bold">MCP 02</div>
+          <h3 class="text-xl font-bold text-white">Playwright MCP</h3>
+          <p class="text-xs font-semibold text-emerald-300">Browser Automation & E2E Testing</p>
+          <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+            <li>Điều khiển trình duyệt: click, nhập liệu, submit form.</li>
+            <li>Chụp ảnh screenshot kiểm tra layout thực tế.</li>
+            <li>Giám sát network requests & mã phản hồi HTTP.</li>
+            <li>Kiểm thử luồng người dùng E2E chân thực.</li>
+          </ul>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3">
+          <div class="text-indigo-400 text-sm font-mono font-bold">MCP 03</div>
+          <h3 class="text-xl font-bold text-white">Claude-Mem MCP</h3>
+          <p class="text-xs font-semibold text-indigo-300">Persistent Memory Engine</p>
+          <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+            <li>Ghi nhớ tri thức và quyết định qua nhiều phiên.</li>
+            <li>Lưu trữ timeline tiến độ dự án liên tục.</li>
+            <li>Tìm kiếm mã nguồn Tree-sitter không tốn context.</li>
+            <li>Truy vấn corpus kiến thức dự án tức thì.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Conclusion -->
+    <div class="slide flex-col justify-center items-start space-y-6 w-full">
+      <div class="inline-block px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full text-emerald-400 text-xs font-semibold tracking-wider">
+        READY FOR DEPLOYMENT & OPERATION
+      </div>
+      <h2 class="text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+        Sẵn Sàng Triển Khai<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-sky-400">Nâng Tầm Năng Suất Đội Ngũ</span>
+      </h2>
+      <p class="text-base lg:text-lg text-slate-300 max-w-2xl leading-relaxed">
+        Kho kỹ năng đã được đồng bộ hoàn tất trên GitHub. Cài đặt marketplace 1 lần, bật Auto-Update và toàn bộ thành viên đều sở hữu quy trình phát triển chuẩn quốc tế.
+      </p>
+      <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl text-xs font-mono text-slate-300 flex items-center space-x-3">
+        <span class="text-sky-400">🔗 GitHub:</span>
+        <a href="https://github.com/bakaryuu1997-sys/Claude-skills" target="_blank" class="hover:underline text-white font-semibold">https://github.com/bakaryuu1997-sys/Claude-skills</a>
+      </div>
+      <p class="text-sm text-emerald-400 font-semibold pt-2">
+        Cảm ơn bạn! Sẵn sàng cho phần Hỏi & Đáp (Q&A).
+      </p>
+    </div>
+
+  </main>
+
+  <!-- Bottom Navigation -->
+  <footer class="w-full px-8 py-4 flex justify-between items-center text-xs text-slate-400 border-t border-slate-800/80">
+    <div class="hidden sm:block">
+      Dùng phím <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-300">←</kbd> <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-300">→</kbd> hoặc <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-300">Space</kbd> để chuyển slide
+    </div>
+    <div class="flex space-x-3 ml-auto">
+      <button id="prevBtn" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 rounded-lg text-white font-semibold transition">
+        ← Trước
+      </button>
+      <button id="nextBtn" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 active:bg-sky-700 rounded-lg text-white font-semibold transition">
+        Tiếp →
+      </button>
+    </div>
+  </footer>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const counter = document.getElementById('slideCounter');
+    const progressBar = document.getElementById('progressBar');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let currentIndex = 0;
+
+    function showSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= slides.length) index = slides.length - 1;
+      currentIndex = index;
+
+      slides.forEach((s, idx) => {
+        if (idx === currentIndex) {
+          s.classList.add('active');
+        } else {
+          s.classList.remove('active');
+        }
+      });
+
+      counter.textContent = `${currentIndex + 1} / ${slides.length}`;
+      progressBar.style.width = `${((currentIndex + 1) / slides.length) * 100}%`;
+    }
+
+    prevBtn.addEventListener('click', () => showSlide(currentIndex - 1));
+    nextBtn.addEventListener('click', () => showSlide(currentIndex + 1));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        showSlide(currentIndex + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        showSlide(currentIndex - 1);
+      } else if (e.key === 'f' || e.key === 'F') {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+        } else {
+          document.exitFullscreen();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
