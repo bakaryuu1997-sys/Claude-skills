@@ -1,0 +1,6 @@
+{
+  "required_sheets_contains": ["Strategy", "Coverage", "Traceability", "Dashboard"],
+  "min_columns": { "Auth": 12 },
+  "min_data_rows": { "Auth": 7, "Rooms": 10 },
+  "forbid_strings": ["Actual Result", "Bug Ticket", "fpt-canteen", "F-Pay", "Lorem"]
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://anthropic.com/schemas/claude-marketplace.json",
+  "name": "bakaryuu-skills-marketplace",
+  "description": "Enterprise Development Lifecycle Skills, Security & Architecture Kit for Claude Code, Codex, and Antigravity",
+  "owner": "bakaryuu1997-sys",
+  "plugins": [
+    {
+      "name": "dev-lifecycle-skills",
+      "version": "3.5.0",
+      "description": "27+ Production-grade lifecycle skills: Requirements, API design, DB design, Testing, Code Review, Security Audit, Coding Standards",
+      "source": "./",
+      "category": "Software Engineering",
+      "tags": [
+        "backend",
+        "api",
+        "testing",
+        "security",
+        "dev-lifecycle",
+        "architecture"
+      ]
+    }
+  ]
+}

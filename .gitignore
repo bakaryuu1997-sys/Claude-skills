@@ -1,0 +1,20 @@
+# OS & Editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Dependencies & Build
+node_modules/
+dist/
+__pycache__/
+*.pyc
+
+# External sub-repositories (manage separately)
+claude-mem/
+ui-ux-pro-max/
+
+# Temporary / Scratch
+scratch/
+*.log

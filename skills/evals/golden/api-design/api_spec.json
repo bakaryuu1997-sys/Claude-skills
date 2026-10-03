@@ -1,0 +1,24 @@
+{
+  "project": "Demo Booking",
+  "version": "1.0.0",
+  "base_url": "http://localhost:3000/api/v1",
+  "auth": { "login_path": "/auth/login", "token_field": "accessToken",
+            "login_body_example": { "email": "test@example.com", "password": "test123" } },
+  "modules": [
+    { "name": "Auth", "endpoints": [
+      { "method": "POST", "path": "/auth/login", "summary": "Đăng nhập", "auth_required": false,
+        "body_example": { "email": "test@example.com", "password": "test123" },
+        "success_status": 200, "response_example": { "accessToken": "eyJ...", "user": { "id": 1 } },
+        "errors": [ { "status": 401, "code": "INVALID_CREDENTIALS", "message": "Sai tài khoản" } ] } ] },
+    { "name": "Rooms", "endpoints": [
+      { "method": "GET", "path": "/rooms", "summary": "Danh sách phòng", "auth_required": true,
+        "query": [ { "name": "page", "type": "integer", "example": 1 } ],
+        "success_status": 200, "response_example": { "data": [], "meta": { "page": 1 } },
+        "errors": [ { "status": 401, "code": "UNAUTHORIZED", "message": "Chưa đăng nhập" } ] },
+      { "method": "POST", "path": "/rooms/{roomId}/bookings", "summary": "Đặt phòng", "auth_required": true,
+        "body_example": { "start": "2026-07-09T09:00", "end": "2026-07-09T10:00" },
+        "success_status": 201, "response_example": { "bookingId": 55, "status": "confirmed" },
+        "errors": [ { "status": 409, "code": "SLOT_TAKEN", "message": "Trùng lịch" },
+                    { "status": 404, "code": "ROOM_NOT_FOUND", "message": "Không có phòng" } ] } ] }
+  ]
+}

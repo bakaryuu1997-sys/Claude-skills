@@ -1,0 +1,6 @@
+{
+  "required_sheets_contains": ["Overview", "Flow", "Changelog", "Conventions", "Auth", "Rooms"],
+  "min_columns": { "Auth": 14 },
+  "min_data_rows": { "Rooms": 2 },
+  "forbid_strings": ["fpt-canteen", "F-Pay", "Lorem"]
+}

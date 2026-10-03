@@ -1,0 +1,45 @@
+{
+  "name": "dev-lifecycle-skills",
+  "version": "3.5.0",
+  "description": "Production-grade software engineering & lifecycle skills suite: Requirements, Architecture, Design, Estimate, Testing, Code Review, Security Audit, Coding Standards",
+  "author": {
+    "name": "bakaryuu",
+    "email": "C250363@ccg.ac.jp",
+    "url": "https://github.com/bakaryuu1997-sys"
+  },
+  "homepage": "https://github.com/bakaryuu1997-sys/Claude-skills",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bakaryuu1997-sys/Claude-skills.git"
+  },
+  "license": "MIT",
+  "keywords": [
+    "claude-skills",
+    "antigravity",
+    "codex",
+    "dev-lifecycle",
+    "api-design",
+    "testing",
+    "security-audit",
+    "architecture"
+  ],
+  "skills": "./skills",
+  "mcpServers": {
+    "serena": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server"
+      ]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest"
+      ]
+    }
+  }
+}
