@@ -1,6 +1,6 @@
-# Golden case /test-plan — input chuẩn
+# Golden case /a8-test-plan — input chuẩn
 
-Prompt: "Tạo test plan cho app đặt phòng họp (spec: dùng api_spec.json trong evals/golden/api-design/).
+Prompt: "Tạo test plan cho app đặt phòng họp (spec: dùng api_spec.json trong evals/golden/a4-api-design/).
 Module: Auth, Rooms. KHÔNG có project-context.json."
 
 Kỳ vọng hành vi:
@@ -9,4 +9,4 @@ Kỳ vọng hành vi:
 3. Traceability Matrix tự sinh, requirement 0 test → đỏ.
 
 Checker:
-    python3 <skills_dir>/evals/checkers/check_xlsx.py <file_Test_Plan.xlsx> <skills_dir>/evals/golden/test-plan/expected_structure.json
+    python3 <skills_dir>/evals/checkers/check_xlsx.py <file_Test_Plan.xlsx> <skills_dir>/evals/golden/a8-test-plan/expected_structure.json

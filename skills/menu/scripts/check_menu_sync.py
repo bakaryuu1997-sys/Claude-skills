@@ -12,7 +12,9 @@ if hasattr(sys.stderr, "reconfigure"):
 
 skills_dir = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[2]
 import json
-manifest_path = skills_dir / "project-init" / "assets" / "skills-manifest.json"
+manifest_path = skills_dir / "a1-project-init" / "assets" / "skills-manifest.json"
+if not manifest_path.exists():
+    manifest_path = skills_dir / "project-init" / "assets" / "skills-manifest.json"
 manifest_skills = set()
 if manifest_path.exists():
     try:

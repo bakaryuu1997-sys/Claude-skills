@@ -7,7 +7,7 @@ echo ========================================================
 cd /d "%~dp0\.."
 
 echo [1/3] Running Skill Doctor Linter...
-python skills\skill-doctor\scripts\skill_doctor.py skills
+python skills\x6-skill-doctor\scripts\skill_doctor.py skills
 if %errorlevel% neq 0 (
     echo [ERROR] Skill Doctor failed! Please fix issues before pushing.
     pause

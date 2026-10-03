@@ -11,7 +11,9 @@ if hasattr(sys.stderr, "reconfigure"):
 root = (
     Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[2]
 )
-manifest_path = root / "project-init" / "assets" / "skills-manifest.json"
+manifest_path = root / "a1-project-init" / "assets" / "skills-manifest.json"
+if not manifest_path.exists():
+  manifest_path = root / "project-init" / "assets" / "skills-manifest.json"
 
 if not manifest_path.exists():
   print(f"❌ Không tìm thấy manifest tại: {manifest_path}")
@@ -34,12 +36,12 @@ def step_key(entry):
 sorted_skills = sorted(manifest.get("skills", []), key=step_key)
 
 phase_names = {
-    "A": "📦 GIAI ĐOẠN A — CHUẨN BỊ & THIẾT KẾ (A0 → A6)",
+    "A": "📦 GIAI ĐOẠN A — CHUẨN BỊ & THIẾT KẾ (A1 → A9)",
     "B": "🚀 GIAI ĐOẠN B — KHỞI ĐỘNG & ĐẶC TẢ CHI TIẾT (B1 → B3)",
-    "C": "🔄 GIAI ĐOẠN C — VẬN HÀNH, PHÁT TRIỂN & KIỂM THỬ (C0 → C4)",
+    "C": "🔄 GIAI ĐOẠN C — VẬN HÀNH, PHÁT TRIỂN & KIỂM THỬ (C1 → C7)",
     "D": "🏁 GIAI ĐOẠN D — KẾT THÚC & BÀN GIAO (D1)",
-    "X": "🛠️ GIAI ĐOẠN X — CROSS-CUTTING & KIẾN TRÚC (X0 → X5)",
-    "-": "🧭 META — ĐIỀU HƯỚNG & KIỂM ĐỊNH (menu, skill-doctor)",
+    "X": "🛠️ GIAI ĐOẠN X — CROSS-CUTTING & KIẾN TRÚC (X1 → X6)",
+    "-": "🧭 META — ĐIỀU HƯỚNG & KIỂM ĐỊNH (menu, x6-skill-doctor)",
 }
 
 current_prefix = None

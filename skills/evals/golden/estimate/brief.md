@@ -1,4 +1,4 @@
-# Golden case /estimate — input chuẩn (chạy y nguyên, không thêm thông tin)
+# Golden case /a6-estimate — input chuẩn (chạy y nguyên, không thêm thông tin)
 
 Prompt: "Estimate dự án sau: App web đặt phòng họp nội bộ cho công ty ~500 nhân viên.
 Chức năng: (1) đăng nhập SSO Google Workspace, (2) xem danh sách phòng + lịch trống theo ngày,
@@ -11,4 +11,4 @@ Kỳ vọng hành vi (kiểm tay 3 điểm + chạy checker):
 3. Điểm trong khoảng tỷ lệ chọn theo quy tắc tất định (CRUD → cận dưới, email/SSO → cận trên, ghi Assumption).
 
 Sau khi skill sinh file:
-    python3 <skills_dir>/evals/checkers/check_xlsx.py <file_Estimate.xlsx> <skills_dir>/evals/golden/estimate/expected_structure.json
+    python3 <skills_dir>/evals/checkers/check_xlsx.py <file_Estimate.xlsx> <skills_dir>/evals/golden/a6-estimate/expected_structure.json

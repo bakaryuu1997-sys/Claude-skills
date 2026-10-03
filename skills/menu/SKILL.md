@@ -23,9 +23,9 @@ python3 <skills_dir>/menu/scripts/gen_menu_table.py <skills_dir>
 python3 <skills_dir>/menu/scripts/check_menu_sync.py <skills_dir>
 ```
 
-Đọc thêm `<skills_dir>/project-init/assets/skills-manifest.json` để lấy bước pipeline (A0–D1), phase, gate của từng skill.
+Đọc thêm `<skills_dir>/a1-project-init/assets/skills-manifest.json` để lấy bước pipeline (A0–D1), phase, gate của từng skill.
 
-### 2. Trình bày theo các giai đoạn vòng đời (thứ tự từ `project-init/references/pipeline.md`)
+### 2. Trình bày theo các giai đoạn vòng đời (thứ tự từ `a1-project-init/references/pipeline.md`)
 
 ```
 📦 GIAI ĐOẠN A — CHUẨN BỊ & THIẾT KẾ     (A0 → A6, chạy một lần)
@@ -33,7 +33,7 @@ python3 <skills_dir>/menu/scripts/check_menu_sync.py <skills_dir>
 🔄 GIAI ĐOẠN C — VẬN HÀNH & PHÁT TRIỂN   (C0 → C4, lặp lại mỗi task/PR/sprint)
 🏁 GIAI ĐOẠN D — KẾT THÚC & BÀN GIAO     (D1, sau go-live)
 🛠️ GIAI ĐOẠN X — CROSS-CUTTING          (X0 → X5, chạy bất kỳ lúc nào)
-🧭 META — ĐIỀU HƯỚNG & KIỂM ĐỊNH         (/menu, /skill-doctor)
+🧭 META — ĐIỀU HƯỚNG & KIỂM ĐỊNH         (/menu, /x6-skill-doctor)
 ```
 
 Mỗi skill hiển thị 3 dòng: `Bước + /tên-lệnh` · "Dùng khi" (1 câu, lấy từ description) · 1 ví dụ gõ được ngay (tự sinh ví dụ ngắn phù hợp description — KHÔNG bịa tham số phức tạp).
@@ -51,15 +51,15 @@ python3 <skills_dir>/menu/scripts/match_intent.py <skills_dir> "<mô tả task c
 # In top 3 skill khớp (điểm + bước + lý do). Không khớp → script nói rõ, KHÔNG đoán bừa.
 ```
 
-Trả lời người dùng: skill đứng đầu + tại sao + 1 ví dụ lệnh gõ được ngay. Điểm top 1 và top 2 sát nhau (chênh < 2) → nêu cả hai kèm điểm khác biệt (vd /test-plan sinh case ≠ /test-execution chạy & báo cáo).
+Trả lời người dùng: skill đứng đầu + tại sao + 1 ví dụ lệnh gõ được ngay. Điểm top 1 và top 2 sát nhau (chênh < 2) → nêu cả hai kèm điểm khác biệt (vd /a8-test-plan sinh case ≠ /c5-test-execution chạy & báo cáo).
 
 ## Quy tắc thực thi
 
 - **Không tạo file** — in trực tiếp trong chat.
 - **Không hardcode** — mọi tên skill/mô tả lấy từ script + manifest lúc chạy. Không sao chép output cũ từ lần chạy trước.
-- Thêm/xóa skill → chỉ cần cập nhật `skills-manifest.json` + `pipeline.md` (trong /project-init); menu tự phản ánh, KHÔNG sửa file này.
+- Thêm/xóa skill → chỉ cần cập nhật `skills-manifest.json` + `pipeline.md` (trong /a1-project-init); menu tự phản ánh, KHÔNG sửa file này.
 - Người dùng hỏi sâu về 1 skill → đọc SKILL.md của skill đó và tóm tắt (mục tiêu, input, output, ví dụ).
-- Kết thúc menu bằng 1 dòng: `💡 Gõ /menu bất cứ lúc nào · Pipeline đầy đủ: project-init/references/pipeline.md`.
+- Kết thúc menu bằng 1 dòng: `💡 Gõ /menu bất cứ lúc nào · Pipeline đầy đủ: a1-project-init/references/pipeline.md`.
 
 ---
 

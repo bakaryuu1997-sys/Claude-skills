@@ -1,0 +1,509 @@
+{
+  "manifest_version": "3.5.0",
+  "updated_at": "2026-07-09",
+  "pipeline_source": "a1-project-init/references/pipeline.md",
+  "shared": {
+    "context_loader": "a1-project-init/scripts/load_context.py",
+    "context_schema": "a1-project-init/assets/context-schema.json",
+    "excel_style": "a1-project-init/references/excel-style.md",
+    "input_safety": "a1-project-init/references/input-safety.md"
+  },
+  "skills": [
+    {
+      "name": "a1-project-init",
+      "version": "3.5.0",
+      "step": "A1",
+      "phase": "prepare",
+      "summary": "Tạo project-context.json — nguồn sự thật chung",
+      "outputs": [
+        "project-context.json"
+      ],
+      "intents": [
+        "bắt đầu dự án mới",
+        "khởi tạo dự án",
+        "setup project",
+        "tạo project context"
+      ]
+    },
+    {
+      "name": "a2-requirement-analysis",
+      "version": "3.3.0",
+      "step": "A2",
+      "phase": "prepare",
+      "summary": "Phân tích yêu cầu mơ hồ: scope, Q&A P1-P3, assumptions, risks",
+      "outputs": [
+        "*_Requirement_Specification.xlsx",
+        "*_Requirement_Analysis.docx",
+        "*_QA_Tracker.xlsx"
+      ],
+      "intents": [
+        "phân tích yêu cầu",
+        "làm rõ scope",
+        "yêu cầu mơ hồ",
+        "chuẩn bị câu hỏi cho khách",
+        "tổng hợp q&a"
+      ]
+    },
+    {
+      "name": "a3-prototype-ui",
+      "version": "3.3.0",
+      "step": "A3",
+      "phase": "prepare",
+      "optional": true,
+      "summary": "Prototype HTML click được để demo/validate requirement",
+      "outputs": [
+        "*_Prototype_v[N].html"
+      ],
+      "intents": [
+        "prototype",
+        "mockup",
+        "demo ui",
+        "wireframe",
+        "khách muốn xem giao diện"
+      ]
+    },
+    {
+      "name": "a4-api-design",
+      "version": "3.5.0",
+      "step": "A4",
+      "phase": "prepare",
+      "parallel_with": "db-design",
+      "summary": "Thiết kế API: Excel + Postman + OpenAPI",
+      "outputs": [
+        "*_api_spec.json",
+        "*_API_Design.xlsx",
+        "*_Postman_Collection.json",
+        "*_openapi.yaml"
+      ],
+      "intents": [
+        "thiết kế api",
+        "danh sách endpoint",
+        "api spec",
+        "postman",
+        "openapi"
+      ]
+    },
+    {
+      "name": "a5-db-design",
+      "version": "3.4.0",
+      "step": "A5",
+      "phase": "prepare",
+      "parallel_with": "api-design",
+      "summary": "Thiết kế DB: Excel + Health Check + migration SQL + Mermaid ERD",
+      "outputs": [
+        "*_DB_Design.xlsx",
+        "*_migration.sql",
+        "*_ERD.md"
+      ],
+      "intents": [
+        "thiết kế database",
+        "schema",
+        "erd",
+        "migration",
+        "data model",
+        "thiết kế bảng"
+      ]
+    },
+    {
+      "name": "a6-estimate",
+      "version": "3.3.0",
+      "step": "A6",
+      "phase": "prepare",
+      "gate": ">3 câu P1 mở → dừng",
+      "summary": "Báo giá/WBS man-day (6 sheet)",
+      "outputs": [
+        "*_Estimate.xlsx"
+      ],
+      "intents": [
+        "báo giá",
+        "estimate",
+        "wbs",
+        "tính công số",
+        "breakdown effort"
+      ]
+    },
+    {
+      "name": "a7-estimate-template-fill",
+      "version": "3.3.0",
+      "step": "A7",
+      "phase": "prepare",
+      "optional": true,
+      "summary": "Điền công số vào template 見積書 có sẵn",
+      "outputs": [
+        "<template-filled>.xlsx"
+      ],
+      "intents": [
+        "điền template báo giá",
+        "điền 見積書",
+        "fill estimate template",
+        "điền block 開発"
+      ]
+    },
+    {
+      "name": "a8-test-plan",
+      "version": "3.4.0",
+      "step": "A8",
+      "phase": "prepare",
+      "summary": "Sinh test cases 17 cột + Traceability + UAT checklist + k6 plan",
+      "outputs": [
+        "*_Test_Plan.xlsx"
+      ],
+      "intents": [
+        "viết test case",
+        "test plan",
+        "kế hoạch test",
+        "uat checklist",
+        "qa plan"
+      ]
+    },
+    {
+      "name": "a9-project-timeline",
+      "version": "3.4.0",
+      "step": "A9",
+      "phase": "prepare",
+      "summary": "Sprint plan, Gantt, milestones, critical path + .ics",
+      "outputs": [
+        "*_Project_Timeline.xlsx",
+        "*_Milestones.ics"
+      ],
+      "intents": [
+        "timeline",
+        "sprint plan",
+        "gantt",
+        "milestone",
+        "bao giờ xong",
+        "kế hoạch dự án"
+      ]
+    },
+    {
+      "name": "b1-project-kickoff",
+      "version": "3.4.0",
+      "step": "B1",
+      "phase": "kickoff",
+      "gate": ">3 câu P1 mở → hoãn kickoff",
+      "summary": "Kickoff deck, charter, RACI, communication plan, DoR/DoD",
+      "outputs": [
+        "*_Kickoff_Deck.pptx",
+        "*_Project_Charter.docx",
+        "*_Kickoff_Workbook.xlsx",
+        "*_Meeting_Minutes_Template.docx"
+      ],
+      "intents": [
+        "kickoff",
+        "họp khởi động",
+        "project charter",
+        "raci",
+        "communication plan"
+      ]
+    },
+    {
+      "name": "b2-basic-design",
+      "version": "3.4.0",
+      "step": "B2",
+      "phase": "kickoff",
+      "summary": "基本設計 — thiết kế external khách duyệt: screen list/spec/flow",
+      "outputs": [
+        "*_Basic_Design.docx",
+        "*_BasicDesign_Workbook.xlsx",
+        "*_BasicDesign_Diagrams.md"
+      ],
+      "intents": [
+        "basic design",
+        "thiết kế cơ bản",
+        "screen list",
+        "màn hình khách duyệt",
+        "screen flow"
+      ]
+    },
+    {
+      "name": "b3-detail-design",
+      "version": "3.4.0",
+      "step": "B3",
+      "phase": "kickoff",
+      "requires": [
+        "api-design",
+        "db-design"
+      ],
+      "summary": "詳細設計 — thiết kế internal cho dev: class, sequence, logic, CRUD, validation",
+      "outputs": [
+        "*_Detail_Design.docx",
+        "*_DetailDesign_Workbook.xlsx",
+        "*_DetailDesign_Diagrams.md"
+      ],
+      "intents": [
+        "detail design",
+        "thiết kế chi tiết",
+        "class design",
+        "sequence diagram",
+        "crud matrix"
+      ]
+    },
+    {
+      "name": "c3-code-review",
+      "version": "3.5.0",
+      "step": "C3",
+      "phase": "run",
+      "recurring": "per PR",
+      "summary": "Review code theo chuẩn dự án nội bộ, đối chiếu spec, xuất Excel + MD",
+      "outputs": [
+        "*_Code_Review_Report.xlsx",
+        "*_Code_Review_Report.md",
+        "report trong chat"
+      ],
+      "intents": [
+        "review code",
+        "review pr",
+        "review diff",
+        "kiểm tra code"
+      ]
+    },
+    {
+      "name": "c5-test-execution",
+      "version": "3.4.0",
+      "step": "C5",
+      "phase": "run",
+      "recurring": "per test phase",
+      "summary": "Tracker + report thực thi UT/IT/ST/UAT, defects, exit criteria",
+      "outputs": [
+        "docs/C2_test-execution/*_Test_Execution.xlsx",
+        "docs/C2_test-execution/*_Test_Report_*.docx"
+      ],
+      "intents": [
+        "kết quả test",
+        "chạy test",
+        "bug report",
+        "defect",
+        "test report",
+        "exit criteria"
+      ]
+    },
+    {
+      "name": "c6-sprint-review",
+      "version": "3.4.0",
+      "step": "C6",
+      "phase": "run",
+      "recurring": "per sprint",
+      "summary": "Planned vs actual, velocity, retro 4L, Sprint_Log tích lũy",
+      "outputs": [
+        "docs/C3_sprint-review/*_Sprint*_Review.xlsx",
+        "docs/C3_sprint-review/*_Sprint_Log.xlsx"
+      ],
+      "intents": [
+        "sprint review",
+        "retro",
+        "tổng kết sprint",
+        "velocity"
+      ]
+    },
+    {
+      "name": "c7-change-request",
+      "version": "3.3.0",
+      "step": "C7",
+      "phase": "run",
+      "recurring": "khi scope đổi",
+      "summary": "Impact analysis + re-estimate + tài liệu CR ký duyệt",
+      "outputs": [
+        "*_CR[N]_Change_Request.xlsx",
+        "*_CR[N]_Impact_Summary.md"
+      ],
+      "intents": [
+        "change request",
+        "đổi scope",
+        "khách muốn thêm tính năng",
+        "impact analysis",
+        "estimate lại"
+      ]
+    },
+    {
+      "name": "d1-handover-doc",
+      "version": "3.4.0",
+      "step": "D1",
+      "phase": "close",
+      "summary": "Tài liệu bàn giao 12 mục Docx + Workbook Excel 7 sheet + Runbook",
+      "outputs": [
+        "*_Handover.docx",
+        "*_Handover_Workbook.xlsx",
+        "*_Runbook.md"
+      ],
+      "intents": [
+        "bàn giao",
+        "handover",
+        "runbook",
+        "tài liệu vận hành"
+      ]
+    },
+    {
+      "name": "menu",
+      "version": "3.5.0",
+      "step": "-",
+      "phase": "meta",
+      "summary": "Menu điều hướng — sinh ĐỘNG từ manifest + frontmatter",
+      "outputs": [],
+      "intents": [
+        "menu",
+        "danh sách skill",
+        "dùng skill gì",
+        "help",
+        "có những skill gì"
+      ]
+    },
+    {
+      "name": "x2-project-architecture",
+      "version": "3.4.0",
+      "step": "X2",
+      "phase": "cross",
+      "summary": "HTML self-contained trực quan hóa kiến trúc + module/API/DB + trạng thái tài liệu",
+      "outputs": [
+        "*_Architecture_v[N].html"
+      ],
+      "intents": [
+        "kiến trúc dự án",
+        "sơ đồ kiến trúc",
+        "architecture overview",
+        "xem cấu trúc dự án"
+      ]
+    },
+    {
+      "name": "x3-project-status",
+      "version": "3.3.0",
+      "step": "X3",
+      "phase": "cross",
+      "summary": "Dashboard hiện trạng dự án trong chat (đọc-only)",
+      "outputs": [],
+      "intents": [
+        "tình hình dự án",
+        "đang ở bước nào",
+        "tiến độ",
+        "còn thiếu gì",
+        "trạng thái dự án"
+      ]
+    },
+    {
+      "name": "x6-skill-doctor",
+      "version": "3.5.0",
+      "step": "X6",
+      "phase": "meta",
+      "summary": "Linter cho chính bộ skill — 10 rule chống regression",
+      "outputs": [],
+      "intents": [
+        "kiểm tra skill",
+        "audit skill",
+        "lint skill",
+        "skill nào lỗi thời"
+      ]
+    },
+    {
+      "name": "c1-dev-implement",
+      "version": "3.5.0",
+      "step": "C1",
+      "phase": "run",
+      "recurring": "per task",
+      "summary": "Dev viết code theo thiết kế: scaffold/feature/bugfix + UT + PR description",
+      "outputs": [
+        "docs/C0_dev-implement/PR_*.md",
+        "code + unit test"
+      ],
+      "intents": [
+        "viết code",
+        "implement",
+        "code task",
+        "scaffold repo",
+        "fix bug",
+        "làm task theo thiết kế"
+      ]
+    },
+    {
+      "name": "x4-meeting-minutes",
+      "version": "3.4.0",
+      "step": "X4",
+      "phase": "cross",
+      "summary": "Biên bản họp Docx + Workbook Excel 4 sheet + md, đổ ngược Q&A/scope vào pipeline",
+      "outputs": [
+        "*_Minutes_[date].docx",
+        "*_Minutes_[date].xlsx",
+        "*_Minutes_[date].md"
+      ],
+      "intents": [
+        "biên bản họp",
+        "meeting minutes",
+        "tổng kết cuộc họp",
+        "notes họp",
+        "議事録"
+      ]
+    },
+    {
+      "name": "x1-acquire-codebase-knowledge",
+      "version": "3.5.0",
+      "step": "X1",
+      "phase": "cross",
+      "summary": "Khảo sát kiến trúc repo 4 tầng (Router/Middleware/Service/ORM) bằng Serena LSP",
+      "outputs": [
+        "docs/X0_codebase-knowledge/Architecture_Survey.md"
+      ],
+      "intents": [
+        "khảo sát kiến trúc",
+        "hiểu cấu trúc repo",
+        "codebase knowledge",
+        "survey repo",
+        "đọc kiến trúc dự án",
+        "layered architecture"
+      ]
+    },
+    {
+      "name": "c2-api-test-suite-generator",
+      "version": "3.5.0",
+      "step": "C2",
+      "phase": "run",
+      "recurring": "per task",
+      "summary": "Tự động sinh test suite API (Jest/Supertest): 8 mã HTTP + mock DB/Auth fixtures",
+      "outputs": [
+        "tests/api/*_api.test.ts",
+        "tests/fixtures/*_fixture.ts"
+      ],
+      "intents": [
+        "api test suite",
+        "sinh test api",
+        "viết integration test",
+        "mock api test",
+        "generate api tests",
+        "supertest"
+      ]
+    },
+    {
+      "name": "c4-trailofbits-security-skills",
+      "version": "3.5.0",
+      "step": "C4",
+      "phase": "run",
+      "recurring": "per PR",
+      "summary": "Kiểm toán bảo mật backend (Trail of Bits + OWASP API Top 10): IDOR, JWT, log leak, injection",
+      "outputs": [
+        "docs/C1_security-audit/Security_Audit_Report.md"
+      ],
+      "intents": [
+        "kiểm tra bảo mật",
+        "security audit",
+        "trail of bits",
+        "quét lỗ hổng api",
+        "idor check",
+        "jwt security review"
+      ]
+    },
+    {
+      "name": "x5-coding-standards",
+      "version": "3.5.0",
+      "step": "X5",
+      "phase": "cross",
+      "summary": "Hiến pháp kỹ thuật nội bộ: strict TS, Git Conventional Commits, PR 7 mục & Self-Improvement Loop",
+      "outputs": [
+        "docs/X5_coding-standards/ENGINEERING_STANDARDS.md"
+      ],
+      "intents": [
+        "chuẩn coding",
+        "quy chuẩn dự án",
+        "coding standards",
+        "quy tắc git pr",
+        "engineering standards"
+      ]
+    }
+  ]
+}

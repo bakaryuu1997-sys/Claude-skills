@@ -68,9 +68,9 @@ def make_qa_tracker(ws: Path, n_open_p1: int):
 @t("T1 update_context: set + append + atomic + validate")
 def t1():
     ws = make_ws()
-    r = run([str(SKILLS / "project-init/scripts/update_context.py"), str(ws), "set", "estimates.total_md", "329"])
+    r = run([str(SKILLS / "a1-project-init/scripts/update_context.py"), str(ws), "set", "estimates.total_md", "329"])
     assert r.returncode == 0, r.stdout + r.stderr
-    r = run([str(SKILLS / "project-init/scripts/update_context.py"), str(ws), "append", "activity_log",
+    r = run([str(SKILLS / "a1-project-init/scripts/update_context.py"), str(ws), "append", "activity_log",
              '{"skill":"estimate","date":"2026-07-09","outputs":["a.xlsx"]}'])
     assert r.returncode == 0, r.stdout + r.stderr
     ctx = json.loads((ws / "project-context.json").read_text(encoding="utf-8"))
@@ -87,7 +87,7 @@ def t1b():
     ctx = json.loads((ws / "project-context.json").read_text(encoding="utf-8"))
     ctx["activity_log"] = [{"skill": f"s{i}", "date": "2026-07-09"} for i in range(205)]
     (ws / "project-context.json").write_text(json.dumps(ctx), encoding="utf-8")
-    r = run([str(SKILLS / "project-init/scripts/update_context.py"), str(ws), "append", "activity_log",
+    r = run([str(SKILLS / "a1-project-init/scripts/update_context.py"), str(ws), "append", "activity_log",
              '{"skill":"last","date":"2026-07-09"}'])
     assert r.returncode == 0 and "rotate" in r.stdout, r.stdout
     ctx = json.loads((ws / "project-context.json").read_text(encoding="utf-8"))
@@ -101,10 +101,10 @@ def t1b():
 @t("T1c snapshot + restore: ghi nhầm → khôi phục được")
 def t1c():
     ws = make_ws()
-    r = run([str(SKILLS / "project-init/scripts/update_context.py"), str(ws), "set", "project.name", "SAI"])
+    r = run([str(SKILLS / "a1-project-init/scripts/update_context.py"), str(ws), "set", "project.name", "SAI"])
     assert r.returncode == 0, r.stdout
     assert list((ws / ".context-history").glob("context-*.json")), "không có snapshot"
-    r = run([str(SKILLS / "project-init/scripts/update_context.py"), str(ws), "restore"])
+    r = run([str(SKILLS / "a1-project-init/scripts/update_context.py"), str(ws), "restore"])
     assert r.returncode == 0, r.stdout + r.stderr
     ctx = json.loads((ws / "project-context.json").read_text(encoding="utf-8"))
     assert ctx["project"]["name"] == "Eval Demo", f"restore sai: {ctx['project']['name']}"
@@ -114,7 +114,7 @@ def t1c():
 @t("T8 match_intent: map task → skill đúng + không đoán bừa")
 def t8():
     r = run([str(SKILLS / "menu/scripts/match_intent.py"), str(SKILLS), "khách muốn đổi scope giữa sprint"])
-    assert r.returncode == 0 and "/change-request" in r.stdout.splitlines()[1], r.stdout
+    assert r.returncode == 0 and "/c7-change-request" in r.stdout.splitlines()[1], r.stdout
     r = run([str(SKILLS / "menu/scripts/match_intent.py"), str(SKILLS), "nấu phở bò"])
     assert r.returncode == 1 and "Không skill nào khớp" in r.stdout, "phải từ chối task ngoài phạm vi"
 
@@ -123,7 +123,7 @@ def t8():
 def t2a():
     ws = make_ws()
     make_qa_tracker(ws, 5)
-    r = run([str(SKILLS / "project-init/scripts/check_gate.py"), str(ws)])
+    r = run([str(SKILLS / "a1-project-init/scripts/check_gate.py"), str(ws)])
     assert r.returncode == 1, f"exit={r.returncode}, phải 1\n{r.stdout}"
     assert "GATE P1" in r.stdout and "5" in r.stdout, r.stdout
     shutil.rmtree(ws)
@@ -133,7 +133,7 @@ def t2a():
 def t2b():
     ws = make_ws()
     make_qa_tracker(ws, 2)
-    r = run([str(SKILLS / "project-init/scripts/check_gate.py"), str(ws)])
+    r = run([str(SKILLS / "a1-project-init/scripts/check_gate.py"), str(ws)])
     assert r.returncode == 0, f"exit={r.returncode}\n{r.stdout}"
     shutil.rmtree(ws)
 
@@ -141,7 +141,7 @@ def t2b():
 @t("T2c check_gate: bug Critical mở → CHẶN go-live")
 def t2c():
     ws = make_ws(known_issue=True)
-    r = run([str(SKILLS / "project-init/scripts/check_gate.py"), str(ws)])
+    r = run([str(SKILLS / "a1-project-init/scripts/check_gate.py"), str(ws)])
     assert r.returncode == 1 and "GATE BUG" in r.stdout, r.stdout
     shutil.rmtree(ws)
 
@@ -155,7 +155,7 @@ def t3():
         f = ws / fname
         f.touch()
         os.utime(f, (now - age, now - age))
-    r = run([str(SKILLS / "project-init/scripts/compute_status.py"), str(ws), str(SKILLS)])
+    r = run([str(SKILLS / "a1-project-init/scripts/compute_status.py"), str(ws), str(SKILLS)])
     assert r.returncode == 0, r.stderr
     d = json.loads(r.stdout)
     st = {x["skill"]: x["status"] for x in d["documents"]}
@@ -168,26 +168,26 @@ def t3():
 def t4():
     p = Path(tempfile.mktemp(suffix=".json"))
     p.write_text('{"orders":["users"],"users":["orders"]}', encoding="utf-8")
-    r = run([str(SKILLS / "db-design/scripts/check_circular_fk.py"), str(p)])
+    r = run([str(SKILLS / "a5-db-design/scripts/check_circular_fk.py"), str(p)])
     assert r.returncode == 1 and "CIRCULAR" in r.stdout, r.stdout
     p.write_text('{"orders":["users"],"users":[]}', encoding="utf-8")
-    r = run([str(SKILLS / "db-design/scripts/check_circular_fk.py"), str(p)])
+    r = run([str(SKILLS / "a5-db-design/scripts/check_circular_fk.py"), str(p)])
     assert r.returncode == 0, r.stdout
     p.unlink()
 
 
 @t("T5 gen_postman + gen_openapi: golden spec → cấu trúc đúng")
 def t5():
-    spec = SKILLS / "evals/golden/api-design/api_spec.json"
+    spec = SKILLS / "evals/golden/a4-api-design/api_spec.json"
     tmp = Path(tempfile.mkdtemp(prefix="eval_gen_"))
-    r = run([str(SKILLS / "api-design/scripts/gen_postman.py"), str(spec), str(tmp / "c.json")])
+    r = run([str(SKILLS / "a4-api-design/scripts/gen_postman.py"), str(spec), str(tmp / "c.json")])
     assert r.returncode == 0, r.stdout + r.stderr
     coll = json.loads((tmp / "c.json").read_text(encoding="utf-8"))
     folders = [f["name"] for f in coll["item"]]
     assert "⚙️ Setup & Auth" in folders and "Rooms" in folders, folders
     rooms_get = coll["item"][folders.index("Rooms")]["item"][0]["request"]
     assert any(h["key"] == "Authorization" for h in rooms_get["header"]), "thiếu Bearer header cho auth_required"
-    r = run([str(SKILLS / "api-design/scripts/gen_openapi.py"), str(spec), str(tmp / "o.yaml")])
+    r = run([str(SKILLS / "a4-api-design/scripts/gen_openapi.py"), str(spec), str(tmp / "o.yaml")])
     assert r.returncode == 0, r.stdout + r.stderr
     try:
         import yaml
@@ -201,7 +201,7 @@ def t5():
 
 @t("T6 skill_doctor: bộ skill hiện tại phải 0 FAIL")
 def t6():
-    r = run([str(SKILLS / "skill-doctor/scripts/skill_doctor.py"), str(SKILLS)])
+    r = run([str(SKILLS / "x6-skill-doctor/scripts/skill_doctor.py"), str(SKILLS)])
     assert r.returncode == 0, "skill_doctor có FAIL:\n" + r.stdout
 
 

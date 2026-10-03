@@ -39,7 +39,10 @@ def main() -> int:
         print(__doc__)
         return 2
     skills_dir, query = Path(sys.argv[1]), sys.argv[2]
-    mf = json.loads((skills_dir / "project-init/assets/skills-manifest.json").read_text(encoding="utf-8"))
+    mp = skills_dir / "a1-project-init/assets/skills-manifest.json"
+    if not mp.exists():
+        mp = skills_dir / "project-init/assets/skills-manifest.json"
+    mf = json.loads(mp.read_text(encoding="utf-8"))
     ranked = []
     for e in mf.get("skills", []):
         sc, phrase = score(query, e)

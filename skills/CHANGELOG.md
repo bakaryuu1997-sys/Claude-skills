@@ -1,5 +1,16 @@
 # CHANGELOG — Bộ skill quản trị dự án
 
+## 3.6.0 — 2026-10-04
+Chuẩn hóa tiền tố liên tiếp (Consecutive Numbering) & Tài liệu hóa toàn diện hệ sinh thái:
+- **Chuẩn hóa số thứ tự liên tiếp**: Xóa bỏ hoàn toàn các hậu tố chữ cái (`A4b`, `C0b`, `C1b`), đổi sang số nguyên liên tiếp theo từng giai đoạn:
+  - Giai đoạn A: `A1` → `A9` (`a1-project-init` đến `a9-project-timeline`)
+  - Giai đoạn B: `B1` → `B3` (`b1-project-kickoff` đến `b3-detail-design`)
+  - Giai đoạn C: `C1` → `C7` (`c1-dev-implement` đến `c7-change-request`)
+  - Giai đoạn D: `D1` (`d1-handover-doc`)
+  - Giai đoạn X: `X1` → `X6` (`x1-acquire-codebase-knowledge` đến `x6-skill-doctor`)
+- **Tài liệu hóa toàn diện README.md**: Ghi đầy đủ 45 skills (Lifecycle, Claude-Mem, UI/UX Pro Max, Superpowers) và 3 MCP Servers (Serena AST, Playwright E2E, Claude-Mem Memory).
+- **Cập nhật Linter `x6-skill-doctor`**: Bảo đảm 100% 27 skills đạt chuẩn (0 FAIL | 0 WARN).
+
 ## 3.5.0 — 2026-07-09
 Nhóm Nice-to-have (N1/N2/N3/N5) — kết thúc toàn bộ roadmap audit.
 
@@ -25,7 +36,7 @@ Nhóm Nice-to-have (N1/N2/N3/N5) — kết thúc toàn bộ roadmap audit.
 Hoàn thành 2 hạng mục cuối của roadmap audit: H5 (eval harness) + M2 (script hóa Postman/OpenAPI).
 
 ### Added — M2
-- `api-design/scripts/gen_postman.py` + `gen_openapi.py` — Postman/OpenAPI giờ là DẪN XUẤT TẤT ĐỊNH từ `*_api_spec.json` (nguồn trung gian mới, format: `api-design/references/api-spec-format.md`); cả 2 script tự verify (parse lại + đếm). CẤM viết 2 file này bằng tay.
+- `a4-api-design/scripts/gen_postman.py` + `gen_openapi.py` — Postman/OpenAPI giờ là DẪN XUẤT TẤT ĐỊNH từ `*_api_spec.json` (nguồn trung gian mới, format: `a4-api-design/references/api-spec-format.md`); cả 2 script tự verify (parse lại + đếm). CẤM viết 2 file này bằng tay.
 - api-design/SKILL.md giảm 428 → 287 dòng (bỏ ~140 dòng template JSON/YAML tay).
 
 ### Added — H5
@@ -41,21 +52,21 @@ Bản phát hành đồng bộ sau audit toàn hệ thống (chi tiết: `SKILLS
 - **skill-doctor**: chỉ lint skill có trong manifest — hết 44 false-FAIL trên skill hệ thống (docx/pdf/pptx…); thêm rule **D11** (header "(N sheets)" phải khớp số `### Sheet` liệt kê); folder ngoài manifest trỏ pipeline.md → FAIL D08 (quên đăng ký).
 - **pipeline.md**: hoàn thiện bảng Quality gates bị cụt file; bỏ hằng số "17 skill" lỗi thời; định nghĩa chính thức `<skills_dir>` / `<workspace_folder>`; thêm registry scripts dùng chung + quy ước kết thúc response (một nguồn).
 - **db-design**: header "(5 sheets)" → 6. **project-timeline**: "(7 sheets)" → 8. **test-plan**: "(6 sheets)" → N + 6.
-- **test-plan**: 17 cột → **14 cột** — bỏ Actual Result/Status/Bug Ticket ID; kết quả thực thi CHỈ sống ở tracker của /test-execution (xóa tình trạng 2 nguồn sự thật).
-- **estimate**: khi không có context BẮT BUỘC hỏi `md_per_person_month` qua AskUserQuestion (hết nguy cơ lệch 22 vs 20 với /estimate-template-fill).
+- **test-plan**: 17 cột → **14 cột** — bỏ Actual Result/Status/Bug Ticket ID; kết quả thực thi CHỈ sống ở tracker của /c5-test-execution (xóa tình trạng 2 nguồn sự thật).
+- **estimate**: khi không có context BẮT BUỘC hỏi `md_per_person_month` qua AskUserQuestion (hết nguy cơ lệch 22 vs 20 với /a7-estimate-template-fill).
 - **menu**: sửa tuyên bố "không hardcode" — decision-tree là fallback tĩnh, phải đối chiếu manifest lúc chạy; `check_menu_sync.py` bỏ phần tử trùng lặp.
 - **project-init**: sửa "MỌI skill append activity_log" → chỉ skill tạo/sửa file (skill đọc-only không ghi).
 
 ### Added
-- `project-init/scripts/update_context.py` — GHI context: atomic + lock + validate (thay snippet văn xuôi; mọi skill dùng script, không tự viết code ghi).
-- `project-init/scripts/check_gate.py` — gate P1 / bug Critical / CR pending thi hành bằng code, exit ≠ 0 khi chặn.
-- `project-init/scripts/compute_status.py` — quét tài liệu + staleness + gates, JSON; /project-status và /project-architecture dùng CHUNG (hết 2 bản cài đặt).
-- `db-design/scripts/check_circular_fk.py` — thay code DFS nhúng trong prompt.
-- `project-init/references/context-protocol.md` — giao thức "Bước -1" một nguồn duy nhất.
+- `a1-project-init/scripts/update_context.py` — GHI context: atomic + lock + validate (thay snippet văn xuôi; mọi skill dùng script, không tự viết code ghi).
+- `a1-project-init/scripts/check_gate.py` — gate P1 / bug Critical / CR pending thi hành bằng code, exit ≠ 0 khi chặn.
+- `a1-project-init/scripts/compute_status.py` — quét tài liệu + staleness + gates, JSON; /x3-project-status và /x2-project-architecture dùng CHUNG (hết 2 bản cài đặt).
+- `a5-db-design/scripts/check_circular_fk.py` — thay code DFS nhúng trong prompt.
+- `a1-project-init/references/context-protocol.md` — giao thức "Bước -1" một nguồn duy nhất.
 - **api-design**: thuật toán re-run merge CỐ ĐỊNH (khóa = METHOD + URL chuẩn hóa; diff NEW/CHANGED/nghi-xóa in ra TRƯỚC khi ghi; không tự deprecated).
 - **basic-design / detail-design**: chế độ re-run versioning docx (`_v[N+1]`, Change History — không ghi đè bản có chỉnh sửa/chữ ký khách).
 - **estimate**: quy tắc TẤT ĐỊNH chọn điểm trong khoảng tỷ lệ (CRUD → cận dưới; integration/unknown → cận trên; còn lại trung điểm, làm tròn 0.5 MD).
-- Ngưỡng tự quyết thống nhất cho api-design/db-design/estimate: tác động < 3 MD và không đổi kiến trúc → tự quyết + ghi Assumption; ngược lại BẮT BUỘC hỏi.
+- Ngưỡng tự quyết thống nhất cho api-design/a5-db-design/a6-estimate: tác động < 3 MD và không đổi kiến trúc → tự quyết + ghi Assumption; ngược lại BẮT BUỘC hỏi.
 
 ### Changed
 - Khối "Bước -1" trong mọi skill rút còn pointer 3 dòng → `context-protocol.md`; footer response rút gọn trỏ pipeline.md (giảm ~15% token nạp mỗi lần kích hoạt).
