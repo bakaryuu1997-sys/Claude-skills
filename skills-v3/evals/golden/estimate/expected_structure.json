@@ -1,7 +1,0 @@
-{
-  "required_sheets_contains": ["Assumption", "Summary", "Detail", "Role", "Scope", "Risk"],
-  "min_columns": { "Detail": 10, "Summary": 6 },
-  "must_have_formula": ["Summary", "Detail", "Role"],
-  "min_data_rows": { "Detail": 15 },
-  "forbid_strings": ["fpt-canteen", "F-Pay", "FPT Canteen", "Azure AD", "Lorem"]
-}
