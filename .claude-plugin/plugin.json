@@ -1,6 +1,6 @@
 {
   "name": "dev-lifecycle-skills",
-  "version": "3.5.0",
+  "version": "3.8.0",
   "description": "Production-grade software engineering & lifecycle skills suite: Requirements, Architecture, Design, Estimate, Testing, Code Review, Security Audit, Coding Standards",
   "author": {
     "name": "bakaryuu",
@@ -39,6 +39,12 @@
       "args": [
         "-y",
         "@playwright/mcp@latest"
+      ]
+    },
+    "claude-mem": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/claude-mem/plugin/scripts/mcp-server.cjs"
       ]
     }
   }

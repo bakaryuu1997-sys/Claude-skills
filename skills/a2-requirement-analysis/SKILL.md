@@ -149,9 +149,9 @@ Dùng bảng cho mục 3, 8, 9, 10.
 
 **Nguồn sự thật pipeline: `<skills_dir>/a1-project-init/references/pipeline.md`** — KHÔNG vẽ lại pipeline trong response; nếu nơi khác mô tả thứ tự lệch, pipeline.md thắng.
 
-- **Bước hiện tại:** A1 — Requirement Analysis
+- **Bước hiện tại:** A2 — Requirement Analysis
 - **Input từ:** tài liệu trong folder Cowork (xlsx/docx/pdf/ảnh) hoặc nội dung paste
-- **Output cho:** Q&A P1 → GATE cho /a6-estimate (A4) và /b1-project-kickoff (B1) · Functional Scope → /a3-prototype-ui + /a4-api-design · Requirement Ref → Traceability của /a8-test-plan
+- **Output cho:** Q&A P1 → GATE cho /a6-estimate (A6) và /b1-project-kickoff (B1) · Functional Scope → /a3-prototype-ui + /a4-api-design · Requirement Ref → Traceability của /a8-test-plan
 - **Bước kế tiếp:** /a3-prototype-ui (song song với việc hỏi khách các câu P1)
 
 **Kết thúc response:** theo quy ước chung trong `pipeline.md` (≤ 6 dòng ✅→▶; skill tạo/sửa file append `activity_log[]` bằng `update_context.py`).

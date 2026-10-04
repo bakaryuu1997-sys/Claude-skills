@@ -129,7 +129,7 @@ Code merged-ready khi: contract khớp spec · UT pass (coverage ≥ `settings.q
 
 **Nguồn sự thật pipeline: `<skills_dir>/a1-project-init/references/pipeline.md`.**
 
-- **Bước hiện tại:** C0 — Dev Implement (mỗi task trong sprint, TRƯỚC review)
+- **Bước hiện tại:** C1 — Dev Implement (mỗi task trong sprint, TRƯỚC review)
 - **Input từ:** /b3-detail-design (logic) · /a4-api-design (contract) · /a5-db-design (schema) · /c5-test-execution (bug entry, chế độ BUGFIX)
 - **Output cho:** PR + code → /c3-code-review (BẮT BUỘC trước merge) · UT results → /c5-test-execution · task done → /c6-sprint-review
 - **Bước kế tiếp:** /c3-code-review với diff vừa viết

@@ -57,6 +57,8 @@ for name in manifest:
 
 for name, p in skills.items():
     t = (p / "SKILL.md").read_text(encoding="utf-8")
+    if t.startswith("\ufeff"):
+        t = t[1:]
     lines = t.splitlines()
 
     # D01 frontmatter

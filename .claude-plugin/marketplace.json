@@ -1,0 +1,11 @@
+{
+  "name": "dev-lifecycle-skills",
+  "description": "Custom skills and plugins for development lifecycle",
+  "plugins": [
+    {
+      "name": "dev-lifecycle-skills",
+      "description": "My custom dev lifecycle skills",
+      "path": "./"
+    }
+  ]
+}

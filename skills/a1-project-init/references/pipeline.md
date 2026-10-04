@@ -1,4 +1,4 @@
-# PIPELINE DỰ ÁN — NGUỒN SỰ THẬT DUY NHẤT (v3.0.0)
+﻿# PIPELINE DỰ ÁN — NGUỒN SỰ THẬT DUY NHẤT (v3.0.0)
 
 > File này là nơi DUY NHẤT định nghĩa thứ tự pipeline, hằng số chung và hợp đồng I/O giữa các skill.
 > Mọi skill chỉ ghi "bước hiện tại + bước kế tiếp" và trỏ về đây. Nếu bất kỳ tài liệu/skill nào mô tả
@@ -49,38 +49,43 @@ GIAI ĐOẠN X — CROSS-CUTTING (chạy bất kỳ lúc nào, không thuộc ch
   X7  /x7-presentation-deck       ← tạo slide thuyết trình chuyên nghiệp (PowerPoint pptx / HTML Marp)
 ```
 
-Ánh xạ số cũ (tài liệu cũ có thể còn dùng): `[0]`=A0, `[1]`=A1, `[1.5]`=A2, `[2]`=A3(api), `[3]`=A3(db), `[4]`=A4, `[4.5]`=A4b, `[5]`=A5, `[6]`=A6, `[K]`=B1, `[BD]`=B2, `[DD]`=B3, `[7]`=C1, `[TE]`=C2, `[8]`=C3, `[9]`=C4, `[10]`=D1.
+Ánh xạ số cũ sang chuẩn mới: A0→A1, A1→A2, A2→A3, A3(api)→A4, A3(db)→A5, A4→A6, A4b→A7, A5→A8, A6→A9, C0→C1, C0b→C2, C1→C3, C1b→C4, C2→C5, C3→C6, C4→C7, X0→X1, X1→X2, X2→X3, X3→X6.
 
 ## Hợp đồng I/O giữa các skill
 
 | Skill | Input chính (từ đâu) | Output chính (cho ai) |
 |---|---|---|
-| project-init | người dùng | `project-context.json` → MỌI skill |
-| requirement-analysis | tài liệu khách / folder | `*_Requirement_Analysis.docx`, `*_QA_Tracker.xlsx` → A2, A3, gate A4/B1 |
-| prototype-ui | Functional Scope (mục 3 của A1) | `*_Prototype_v[N].html` → B2, A3, A4 |
-| api-design | scope + roles (A1), screens (A2) | `*_API_Design.xlsx` (cột DB Tables Affected → db-design; Test Cases/Errors → test-plan), Postman, OpenAPI → B3 THAM CHIẾU |
-| db-design | DB Tables Affected (api-design) | `*_DB_Design.xlsx`, `*_migration.sql`, `*_ERD.md` → B3, A5 |
-| estimate | A3 outputs + A2 screens | `*_Estimate.xlsx` (Role Breakdown → A6); ghi `estimates.*` vào context |
+| project-init | người dùng | project-context.json → MỌI skill |
+| requirement-analysis | tài liệu khách / folder | *_Requirement_Analysis.docx, *_QA_Tracker.xlsx → A3, A4, gate A6/B1 |
+| prototype-ui | Functional Scope (mục 3 của A2) | *_Prototype_v[N].html → B2, A4, A6 |
+| api-design | scope + roles (A2), screens (A3) | *_API_Design.xlsx (cột DB Tables Affected → db-design; Test Cases/Errors → test-plan), Postman, OpenAPI → B3 THAM CHIẾU |
+| db-design | DB Tables Affected (api-design) | *_DB_Design.xlsx, *_migration.sql, *_ERD.md → B3, A8 |
+| estimate | A4 outputs + A5 outputs + A3 screens | *_Estimate.xlsx (Role Breakdown → A9); ghi estimates.* vào context |
 | estimate-template-fill | cột Dev của estimate | file 見積書 đã điền → gửi khách |
-| test-plan | api-design (Test Cases/Errors), db-design (schema), A1 (Q&A ref) | `*_Test_Plan.xlsx` → C2, A6 |
-| project-timeline | estimate (BẮT BUỘC), test-plan | `*_Project_Timeline.xlsx`, `.ics` → B1, C3; ghi `current_sprint`, capacity vào context |
-| project-kickoff | A1 + A4 + A6 outputs | Deck.pptx, Charter.docx, Workbook.xlsx, Minutes → B2 |
-| basic-design | A1, A2, api-design | Basic_Design.docx + Workbook.xlsx + Diagrams.md → B3 |
-| detail-design | B2 + api-design + db-design | Detail_Design.docx + Workbook + Diagrams → coding, C1 đối chiếu, A5 bổ sung |
-| code-review | diff/PR + spec (api/db design) | Code_Review_Report.xlsx + Report.md (kèm chat) → merge/fix |
-| test-execution | test-plan + kết quả chạy | Test_Execution.xlsx + Test_Report.docx; ghi `known_issues[]` → D1 |
-| sprint-review | sprint plan (A6) + actual | Sprint[N]_Review.xlsx + Sprint_Log.xlsx (append); `current_sprint`++ |
-| change-request | mô tả CR + estimate gốc + sprint hiện tại | CR xlsx + summary md; append `change_requests[]`; APPROVED → cập nhật A6/A3/A5 |
-| handover-doc | toàn bộ pipeline + `known_issues[]` | Handover.docx + Handover_Workbook.xlsx + Runbook.md; ghi `links.production_url/staging_url` |
-| project-architecture | context + output MỌI skill đã chạy | `*_Architecture_v[N].html` (view tổng hợp chỉ-đọc); ghi `links.architecture_file` |
-| project-status | manifest patterns + activity_log + files | dashboard trong chat (đọc-only, không tạo file, không ghi context) |
-| skill-doctor | thư mục skills + manifest | báo cáo lint PASS/WARN/FAIL trong chat |
+| test-plan | api-design (Test Cases/Errors), db-design (schema), A2 (Q&A ref) | *_Test_Plan.xlsx → C5, A9 |
+| project-timeline | estimate (BẮT BUỘC), test-plan | *_Project_Timeline.xlsx, .ics → B1, C6; ghi current_sprint, capacity vào context |
+| proposal-sow | A2 + A4 + A5 + A6 + A9 outputs | Proposal.docx, SOW.docx → ký kết hợp đồng chốt phạm vi (tiền đề B1) |
+| project-kickoff | A2 + A6 + A9 outputs | Deck.pptx, Charter.docx, Workbook.xlsx, Minutes → B2 |
+| basic-design | A2, A3, api-design | Basic_Design.docx + Workbook.xlsx + Diagrams.md → B3 |
+| detail-design | B2 + api-design + db-design | Detail_Design.docx + Workbook + Diagrams → coding, C3 đối chiếu, A8 bổ sung |
 | dev-implement | detail-design + api-design + db-design (FEATURE) · bug entry test-execution (BUGFIX) · tech_stack (SCAFFOLD) | code + unit test + PR description → /c3-code-review (bắt buộc trước merge) |
 | api-test-suite-generator | api-design + detail-design + routes | tests/api/*_api.test.ts + fixtures → /c3-code-review, /c5-test-execution |
+| code-review | diff/PR + spec (api/db design) | Code_Review_Report.xlsx + Report.md (kèm chat) → merge/fix |
 | trailofbits-security-skills | code PR / routes / middlewares | Security_Audit_Report.md → /c1-dev-implement (sửa bug), /c3-code-review |
+| test-execution | test-plan + kết quả chạy | Test_Execution.xlsx + Test_Report.docx; ghi known_issues[] → D1 |
+| sprint-review | sprint plan (A9) + actual | Sprint[N]_Review.xlsx + Sprint_Log.xlsx (append); current_sprint++ |
+| change-request | mô tả CR + estimate gốc + sprint hiện tại | CR xlsx + summary md; append change_requests[]; APPROVED → cập nhật A9/A4/A5 |
+| release-deployment | C1 + C3 + C4 + C5 outputs | Deployment_Checklist.xlsx, Release_Runbook.md → Production release |
+| handover-doc | toàn bộ pipeline + known_issues[] | Handover.docx + Handover_Workbook.xlsx + Runbook.md; ghi links.production_url/staging_url |
+| uat-acceptance | D1 hồ sơ + A8 UAT cases + C5 test results | Acceptance_Certificate.docx, UAT_Signoff.xlsx, Punch_List.xlsx → khách hàng ký |
+| user-guide-manual | B2 screens + A3 flows + D2 kết quả | User_Manual.docx, Admin_Guide.docx → bàn giao người dùng cuối & admin |
 | acquire-codebase-knowledge | mã nguồn repo + Serena LSP | Architecture_Survey.md → /c1-dev-implement, /x2-project-architecture |
-| coding-standards | project-context.json (tech_stack) | ENGINEERING_STANDARDS.md → mọi skill thực thi |
+| project-architecture | context + output MỌI skill đã chạy | *_Architecture_v[N].html (view tổng hợp chỉ-đọc); ghi links.architecture_file |
+| project-status | manifest patterns + activity_log + files | dashboard trong chat (đọc-only, không tạo file, không ghi context) |
 | meeting-minutes | notes/transcript họp | biên bản Minutes.docx + Minutes.xlsx + md; câu hỏi mở → QA_Tracker; scope change → cảnh báo /c7-change-request |
+| coding-standards | project-context.json (tech_stack) | ENGINEERING_STANDARDS.md → mọi skill thực thi |
+| skill-doctor | thư mục skills + manifest | báo cáo lint PASS/WARN/FAIL trong chat |
+| presentation-deck | bất kỳ tài liệu nào cần trình chiếu | Deck.pptx (16:9) + Marp HTML slide → khách hàng, BOD, team |
 
 ## Hằng số chung — NGUỒN DUY NHẤT là `project-context.json → settings`
 

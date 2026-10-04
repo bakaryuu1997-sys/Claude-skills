@@ -317,7 +317,7 @@ Cuối cùng, phần PRAISE:
 
 **Nguồn sự thật pipeline: `<skills_dir>/a1-project-init/references/pipeline.md`** — KHÔNG vẽ lại pipeline trong response; nếu nơi khác mô tả thứ tự lệch, pipeline.md thắng.
 
-- **Bước hiện tại:** C1 — Code Review (mỗi PR)
+- **Bước hiện tại:** C3 — Code Review (mỗi PR)
 - **Input từ:** diff/PR + spec đối chiếu từ `*_API_Design.xlsx` / `*_DB_Design.xlsx` (nếu có — review chính xác hơn nhiều)
 - **Output cho:** Code_Review_Report.xlsx + Report.md (kèm report trong chat); verdict APPROVE/REQUEST CHANGES → merge hoặc fix; issue MAJOR → ticket backlog
 - **Bước kế tiếp:** sau merge → /c5-test-execution · cuối sprint → /c6-sprint-review

@@ -241,7 +241,7 @@ Lưu file vào folder Cowork của người dùng. Present file. Kết thúc b�
 
 **Nguồn sự thật pipeline: `<skills_dir>/a1-project-init/references/pipeline.md`** — KHÔNG vẽ lại pipeline trong response; nếu nơi khác mô tả thứ tự lệch, pipeline.md thắng.
 
-- **Bước hiện tại:** A4 — Estimate (GATE: >3 câu P1 mở → dừng)
+- **Bước hiện tại:** A6 — Estimate (GATE: >3 câu P1 mở → dừng)
 - **Input từ:** /a4-api-design (modules, endpoints) · /a5-db-design (số bảng) · /a3-prototype-ui (screens)
 - **Output cho:** sheet Role Breakdown → /a9-project-timeline · ghi `estimates.total_md`, `estimates.total_sprints` vào context · cột Dev → /a7-estimate-template-fill (nếu khách có template)
 - **Bước kế tiếp:** /a8-test-plan → /a9-project-timeline; hoặc /a7-estimate-template-fill nếu cần điền template khách

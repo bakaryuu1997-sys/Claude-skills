@@ -23,16 +23,16 @@ python3 <skills_dir>/menu/scripts/gen_menu_table.py <skills_dir>
 python3 <skills_dir>/menu/scripts/check_menu_sync.py <skills_dir>
 ```
 
-Đọc thêm `<skills_dir>/a1-project-init/assets/skills-manifest.json` để lấy bước pipeline (A0–D1), phase, gate của từng skill.
+Đọc thêm `<skills_dir>/a1-project-init/assets/skills-manifest.json` để lấy bước pipeline (A1–D3), phase, gate của từng skill.
 
 ### 2. Trình bày theo các giai đoạn vòng đời (thứ tự từ `a1-project-init/references/pipeline.md`)
 
 ```
-📦 GIAI ĐOẠN A — CHUẨN BỊ & THIẾT KẾ     (A0 → A6, chạy một lần)
-🚀 GIAI ĐOẠN B — KHỞI ĐỘNG & ĐẶC TẢ      (B1 → B3, sau khi ký hợp đồng)
-🔄 GIAI ĐOẠN C — VẬN HÀNH & PHÁT TRIỂN   (C0 → C4, lặp lại mỗi task/PR/sprint)
-🏁 GIAI ĐOẠN D — KẾT THÚC & BÀN GIAO     (D1, sau go-live)
-🛠️ GIAI ĐOẠN X — CROSS-CUTTING          (X0 → X5, chạy bất kỳ lúc nào)
+📦 GIAI ĐOẠN A — CHUẨN BỊ & THIẾT KẾ     (A1 → A9, chạy một lần)
+🚀 GIAI ĐOẠN B — KHỞI ĐỘNG & ĐẶC TẢ      (B0 → B3, sau khi ký hợp đồng)
+🔄 GIAI ĐOẠN C — VẬN HÀNH & PHÁT TRIỂN   (C1 → C8, lặp lại mỗi task/PR/sprint)
+🏁 GIAI ĐOẠN D — KẾT THÚC & BÀN GIAO     (D1 → D3, sau go-live)
+🛠️ GIAI ĐOẠN X — CROSS-CUTTING          (X1 → X7, chạy bất kỳ lúc nào)
 🧭 META — ĐIỀU HƯỚNG & KIỂM ĐỊNH         (/menu, /x6-skill-doctor)
 ```
 
