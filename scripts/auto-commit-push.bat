@@ -40,7 +40,7 @@ if %errorlevel% neq 0 (
     echo Neu gap loi 'Repository not found' hoac 'Permission denied':
     echo 1. Chuyen repo 'Claude-skills' tren GitHub sang PUBLIC (Khuyen nghi)
     echo    hoac:
-    echo 2. Vao GitHub repo Settings -^> Collaborators -^> Add 'long-tintern1204'
+    echo 2. Vao GitHub repo Settings -^> Collaborators -^> Add 'bakaryuu1997-sys'
     echo ========================================================
 ) else (
     echo ========================================================

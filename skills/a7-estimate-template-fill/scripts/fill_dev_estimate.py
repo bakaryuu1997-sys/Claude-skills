@@ -26,16 +26,26 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 def parse_args(argv):
+    if "--help" in argv or "-h" in argv:
+        print(__doc__)
+        sys.exit(0)
     pos = [a for a in argv[1:] if not a.startswith("--")]
     opt = {}
     i = 1
     while i < len(argv):
         if argv[i].startswith("--"):
-            opt[argv[i][2:]] = argv[i+1]; i += 2
+            key = argv[i][2:]
+            if i + 1 < len(argv) and not argv[i+1].startswith("--"):
+                opt[key] = argv[i+1]
+                i += 2
+            else:
+                opt[key] = "true"
+                i += 1
         else:
             i += 1
     if len(pos) < 2:
-        print(__doc__); sys.exit(1)
+        print(__doc__)
+        sys.exit(1)
     here = os.path.dirname(os.path.abspath(__file__))
     default_tmpl = os.path.normpath(os.path.join(here, "..", "assets",
                                     "MPL-H12 App_IOS_見積書_template.xlsx"))

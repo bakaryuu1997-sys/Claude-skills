@@ -115,16 +115,16 @@ Format chuẩn:
 
 ```bash
 # 1. MD (mặc định, 1人月 = 20 MD)
-python scripts/fill_dev_estimate.py tasks.json output.xlsx
+python <skills_dir>/a7-estimate-template-fill/scripts/fill_dev_estimate.py tasks.json output.xlsx
 
 # 2. MH
-python scripts/fill_dev_estimate.py tasks.json output.xlsx --unit mh
+python <skills_dir>/a7-estimate-template-fill/scripts/fill_dev_estimate.py tasks.json output.xlsx --unit mh
 
 # 3. MD với tỷ lệ 人月 khác (vd: 21 MD/month)
-python scripts/fill_dev_estimate.py tasks.json output.xlsx --unit md --md-per-pm 21
+python <skills_dir>/a7-estimate-template-fill/scripts/fill_dev_estimate.py tasks.json output.xlsx --unit md --md-per-pm 21
 
 # 4. Dùng template khác (nếu khách hàng cung cấp template riêng)
-python scripts/fill_dev_estimate.py tasks.json output.xlsx --template custom_template.xlsx
+python <skills_dir>/a7-estimate-template-fill/scripts/fill_dev_estimate.py tasks.json output.xlsx --template custom_template.xlsx
 ```
 
 **LUÔN truyền `--md-per-pm` tường minh** (giá trị từ context hoặc từ câu trả lời AskUserQuestion) — KHÔNG dựa vào default nội bộ của script.

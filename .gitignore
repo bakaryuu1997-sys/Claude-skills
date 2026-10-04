@@ -12,8 +12,8 @@ __pycache__/
 *.pyc
 
 # External sub-repositories (manage separately)
-claude-mem/
-ui-ux-pro-max/
+/claude-mem/
+/ui-ux-pro-max/
 
 # Temporary / Scratch
 scratch/

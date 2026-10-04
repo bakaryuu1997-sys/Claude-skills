@@ -271,7 +271,7 @@ Kèm theo skill này có **schema chuẩn** và **validator** để đảm bảo
 **Luôn validate ngay sau khi tạo/sửa context:**
 
 ```bash
-python3 scripts/validate_context.py <đường-dẫn>/project-context.json
+python3 <skills_dir>/a1-project-init/scripts/validate_context.py <đường-dẫn>/project-context.json
 # ✅ context hợp lệ: <Tên dự án>   — hoặc liệt kê lỗi cần sửa
 ```
 
