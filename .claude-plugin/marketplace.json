@@ -1,11 +1,19 @@
 {
-  "name": "dev-lifecycle-skills",
-  "description": "Custom skills and plugins for development lifecycle",
+  "name": "Claude-skills",
+  "owner": {
+    "name": "bakaryuu1997-sys",
+    "email": "C250363@ccg.ac.jp"
+  },
+  "metadata": {
+    "description": "Enterprise Development Lifecycle Skills, Security & Architecture Kit for Claude Code, Codex, and Antigravity",
+    "version": "3.8.0"
+  },
   "plugins": [
     {
       "name": "dev-lifecycle-skills",
-      "description": "My custom dev lifecycle skills",
-      "path": "./"
+      "version": "3.8.0",
+      "source": "./",
+      "description": "Production-grade software engineering & lifecycle skills suite: Requirements, Architecture, Design, Estimate, Testing, Code Review, Security Audit, Coding Standards"
     }
   ]
 }
