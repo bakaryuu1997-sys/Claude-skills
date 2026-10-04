@@ -31,7 +31,7 @@ Kho kỹ năng (Skills) và công cụ mở rộng (MCP Servers) toàn diện ch
 | **A5** | `/a5-db-design` | **Thiết kế Database**: Data dictionary, kiểm tra 10 quy tắc DB Health Check, sinh migration SQL và sơ đồ Mermaid ERD. | `*_DB_Design.xlsx`<br>`*_migration.sql`<br>`*_ERD.md` |
 | **A6** | `/a6-estimate` | **Báo giá & WBS man-day**: Bóc tách công số chi tiết theo role (Excel 6 sheet). Có Gate chặn: >3 câu P1 chưa trả lời → cảnh báo dừng. | `*_Estimate.xlsx` |
 | **A7** | `/a7-estimate-template-fill` | **Điền báo giá vào mẫu có sẵn**: Điền task và công số dev trực tiếp vào file template 見積書 có sẵn của khách hàng Nhật. | `<template-filled>.xlsx` |
-| **A8** | `/a8-test-plan` | **Lập kế hoạch kiểm thử**: Sinh danh sách test cases chi tiết (17 cột, bao phủ 6 viewpoints), ma trận truy xuất Traceability Matrix. | `*_Test_Plan.xlsx` |
+| **A8** | `/a8-test-plan` | **Lập kế hoạch kiểm thử**: Sinh danh sách test cases chi tiết (14 cột, bao phủ 6 viewpoints), ma trận truy xuất Traceability Matrix. | `*_Test_Plan.xlsx` |
 | **A9** | `/a9-project-timeline` | **Lập lịch tiến độ dự án**: Sprint plan, biểu đồ Gantt, đường găng Critical Path từ estimate; xuất file lịch `.ics`. | `*_Project_Timeline.xlsx`<br>`*_Milestones.ics` |
 
 ---
@@ -53,12 +53,12 @@ Kho kỹ năng (Skills) và công cụ mở rộng (MCP Servers) toàn diện ch
 
 | Bước | Lệnh Skill | Tác dụng & Thời điểm dùng | Đầu ra chính |
 |:---:|---|---|---|
-| **C1** | `/c1-dev-implement` | **Lập trình viên viết code**: 3 chế độ (SCAFFOLD khởi tạo repo/Docker/CI, FEATURE code tính năng theo spec, BUGFIX sửa lỗi). | Code `src/`, `tests/`<br>`docs/C0_dev-implement/PR_*.md` |
+| **C1** | `/c1-dev-implement` | **Lập trình viên viết code**: 3 chế độ (SCAFFOLD khởi tạo repo/Docker/CI, FEATURE code tính năng theo spec, BUGFIX sửa lỗi). | Code `src/`, `tests/`<br>`docs/C1_dev-implement/PR_*.md` |
 | **C2** | `/c2-api-test-suite-generator` | **Tự động sinh test suite API**: Sinh mã integration test thực thi được (Jest/Supertest/Pytest) bao phủ 8 mã HTTP + mock DB fixtures. | `tests/api/*_api.test.ts`<br>`tests/fixtures/*_fixture.ts` |
 | **C3** | `/c3-code-review` | **Review code & PR**: Đối chiếu spec api/db design, kiểm tra chuẩn kỹ thuật, xuất báo cáo checklist Excel 5 sheet và Markdown. | `*_Code_Review_Report.xlsx`<br>`*_Code_Review_Report.md` |
-| **C4** | `/c4-trailofbits-security-skills` | **Kiểm toán bảo mật (Security Audit)**: Rà soát 7 vector lỗ hổng nghiêm trọng (IDOR, JWT flaws, bypass schema, rò rỉ credential/log, SQLi, ReDoS). | `docs/C1_security-audit/Security_Audit_Report.md` |
-| **C5** | `/c5-test-execution` | **Quản lý thực thi kiểm thử**: Theo dõi kết quả UT/IT/ST/UAT, danh sách defect, tính tỷ lệ pass/fail theo viewpoint, xuất báo cáo nghiệm thu. | `docs/C2_test-execution/*_Execution.xlsx`<br>`*_Report.docx` |
-| **C6** | `/c6-sprint-review` | **Tổng kết Sprint & Retrospective**: Đối chiếu Planned vs Actual, đo đạc velocity trend, phân tích bug health, retro 4L và ghi Sprint Log tích lũy. | `docs/C3_sprint-review/*_Review.xlsx`<br>`*_Sprint_Log.xlsx` |
+| **C4** | `/c4-trailofbits-security-skills` | **Kiểm toán bảo mật (Security Audit)**: Rà soát 7 vector lỗ hổng nghiêm trọng (IDOR, JWT flaws, bypass schema, rò rỉ credential/log, SQLi, ReDoS). | `docs/C4_security-audit/Security_Audit_Report.md` |
+| **C5** | `/c5-test-execution` | **Quản lý thực thi kiểm thử**: Theo dõi kết quả UT/IT/ST/UAT, danh sách defect, tính tỷ lệ pass/fail theo viewpoint, xuất báo cáo nghiệm thu. | `docs/C5_test-execution/*_Execution.xlsx`<br>`*_Report.docx` |
+| **C6** | `/c6-sprint-review` | **Tổng kết Sprint & Retrospective**: Đối chiếu Planned vs Actual, đo đạc velocity trend, phân tích bug health, retro 4L và ghi Sprint Log tích lũy. | `docs/C6_sprint-review/*_Review.xlsx`<br>`*_Sprint_Log.xlsx` |
 | **C7** | `/c7-change-request` | **Quản lý yêu cầu thay đổi (CR)**: Phân tích phạm vi ảnh hưởng (Impact Analysis), tính toán lại công số man-day khi scope thay đổi sau khi chốt. | `*_CR[N]_Change_Request.xlsx`<br>`*_Impact_Summary.md` |
 | **C8** | `/c8-release-deployment` | **Kế hoạch phát hành & Deploy Production**: Checklist pre/post deploy đa tầng, quản lý migration DB an toàn, kịch bản smoke test và phương án rollback dự phòng ≤ 15 phút. | `Release_Plan_v[N].docx`<br>`Deployment_Checklist.xlsx`<br>`Smoke_Test_Runbook.md` |
 
@@ -80,7 +80,7 @@ Kho kỹ năng (Skills) và công cụ mở rộng (MCP Servers) toàn diện ch
 
 | Bước | Lệnh Skill | Tác dụng & Thời điểm dùng | Đầu ra chính |
 |:---:|---|---|---|
-| **X1** | `/x1-acquire-codebase-knowledge` | **Khảo sát kiến trúc repo 4 tầng**: Phân tích Router → Middleware → Service → Repository bằng AST Serena LSP siêu tiết kiệm token trước khi code/sửa lỗi. | `docs/X0_codebase-knowledge/Architecture_Survey.md` |
+| **X1** | `/x1-acquire-codebase-knowledge` | **Khảo sát kiến trúc repo 4 tầng**: Phân tích Router → Middleware → Service → Repository bằng AST Serena LSP siêu tiết kiệm token trước khi code/sửa lỗi. | `docs/X1_codebase-knowledge/Architecture_Survey.md` |
 | **X2** | `/x2-project-architecture` | **Trực quan hóa kiến trúc hệ thống**: Tạo trang HTML self-contained vẽ toàn bộ kiến trúc module, API map, ERD và tiến độ bằng sơ đồ Code-Backed (Archify). | `*_Architecture_v[N].html` |
 | **X3** | `/x3-project-status` | **Dashboard hiện trạng dự án**: Hiển thị nhanh ngay trong chat vị trí hiện tại trong pipeline, tài liệu đã có / còn thiếu, gate nào đang chặn. | *(Trực tiếp trong chat)* |
 | **X4** | `/x4-meeting-minutes` | **Biên bản cuộc họp**: Chuyển transcript/notes họp thành biên bản Docx ký duyệt + Excel 4 sheet; tự động đẩy câu hỏi mở vào QA Tracker. | `*_Minutes_[date].docx`<br>`*_Minutes_[date].xlsx` |

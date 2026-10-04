@@ -1,10 +1,10 @@
 ---
 name: a9-project-timeline
-version: "3.4.0"
+version: "3.8.0"
 description: >-
   Lập kế hoạch dự án từ estimate MD: sprint plan, Gantt, milestones, critical path, risk calendar
   (Excel) + file .ics import calendar. Hỗ trợ parallel team. Trigger: "timeline", "sprint plan",
-  "gantt", "milestone", "kế hoạch dự án", "bao giờ xong". Bước A6.
+  "gantt", "milestone", "kế hoạch dự án", "bao giờ xong". Bước A9.
 ---
 
 # Project Timeline Skill — Project Manager Assistant

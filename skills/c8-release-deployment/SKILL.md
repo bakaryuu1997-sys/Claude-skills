@@ -1,6 +1,6 @@
 ---
 name: c8-release-deployment
-version: "3.6.0"
+version: "3.8.0"
 description: >-
   Kế hoạch phát hành & triển khai Production an toàn: checklist pre/post deploy, quản lý
   migration DB, kịch bản smoke test và phương án rollback dự phòng khi có sự cố. Trigger:

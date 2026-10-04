@@ -1,10 +1,10 @@
 ---
 name: c6-sprint-review
-version: "3.4.0"
+version: "3.8.0"
 description: >-
   Tổng kết sprint: planned vs actual, velocity trend, bug health, retrospective 4L, action items
   + Sprint_Log.xlsx tích lũy toàn dự án. Trigger: "sprint review", "retro", "tổng kết sprint",
-  "velocity", "sprint report". Bước C3 — cuối mỗi sprint.
+  "velocity", "sprint report". Bước C6 — cuối mỗi sprint.
 ---
 
 # Sprint Review Skill — Scrum Master / PM Assistant
@@ -18,8 +18,8 @@ Bạn đóng vai **Scrum Master / PM** dẫn dắt buổi sprint review và retr
 Tổng hợp kết quả sprint thành báo cáo rõ ràng — **planned vs actual**, velocity trend, bug health, retrospective insights và action items cụ thể cho sprint tiếp theo.
 
 Output gồm **2 file** (file 1 mới mỗi sprint, file 2 tích lũy toàn dự án):
-1. `docs/C3_sprint-review/[TênDựÁn]_Sprint[N]_Review.xlsx` — chi tiết sprint vừa xong (5 sheets)
-2. `docs/C3_sprint-review/[TênDựÁn]_Sprint_Log.xlsx` — **master file tích lũy tất cả sprints**, cập nhật mỗi lần chạy skill (3 sheets)
+1. `docs/C6_sprint-review/[TênDựÁn]_Sprint[N]_Review.xlsx` — chi tiết sprint vừa xong (5 sheets)
+2. `docs/C6_sprint-review/[TênDựÁn]_Sprint_Log.xlsx` — **master file tích lũy tất cả sprints**, cập nhật mỗi lần chạy skill (3 sheets)
 
 > Lần đầu chạy: tạo mới `Sprint_Log.xlsx`. Lần sau: mở file cũ và append thêm dòng — không ghi đè.
 
@@ -29,7 +29,7 @@ Output gồm **2 file** (file 1 mới mỗi sprint, file 2 tích lũy toàn dự
 
 Để giữ cấu trúc mã nguồn dự án gọn gàng và phân lập tài liệu:
 1. **Mọi file báo cáo review và log tích lũy do skill tạo ra** BẮT BUỘC lưu vào thư mục chuyên biệt:
-   `docs/C3_sprint-review/` (ví dụ `docs/C3_sprint-review/<TênDựÁn>_Sprint<N>_Review.xlsx`, `docs/C3_sprint-review/<TênDựÁn>_Sprint_Log.xlsx`).
+   `docs/C6_sprint-review/` (ví dụ `docs/C6_sprint-review/<TênDựÁn>_Sprint<N>_Review.xlsx`, `docs/C6_sprint-review/<TênDựÁn>_Sprint_Log.xlsx`).
 2. **TUYỆT ĐỐI KHÔNG** lưu các file excel này ra thư mục gốc (`root`) của project.
 
 ---
@@ -300,15 +300,15 @@ Tích lũy tất cả action items từ mọi retrospective — theo dõi trạn
 3. Tổng hợp retrospective (4L format) + action items
 4. Sinh carry-over list + adjusted capacity cho sprint tới
 5. Viết Python script: tạo `Sprint[N]_Review.xlsx` + update `Sprint_Log.xlsx`
-6. Chạy script tạo deliverables vào `docs/C3_sprint-review/`
+6. Chạy script tạo deliverables vào `docs/C6_sprint-review/`
 7. Lưu cả 2 file + present + hiển thị **Workflow Integration block**
 
 ---
 
 ## Bàn giao deliverable
 
-**File 1: `docs/C3_sprint-review/[TênDựÁn]_Sprint[N]_Review.xlsx`** — chi tiết sprint vừa xong (5 sheets).
-**File 2: `docs/C3_sprint-review/[TênDựÁn]_Sprint_Log.xlsx`** — master file tích lũy toàn dự án (3 sheets).
+**File 1: `docs/C6_sprint-review/[TênDựÁn]_Sprint[N]_Review.xlsx`** — chi tiết sprint vừa xong (5 sheets).
+**File 2: `docs/C6_sprint-review/[TênDựÁn]_Sprint_Log.xlsx`** — master file tích lũy toàn dự án (3 sheets).
 
 ---
 

@@ -1,10 +1,10 @@
 ---
 name: a6-estimate
-version: "3.3.0"
+version: "3.8.0"
 description: >-
-  Tạo báo giá/WBS/a6-estimate man-day: Excel 6 sheet (Assumptions/Summary/Detail/Role Breakdown/
+  Tạo báo giá/WBS/estimate man-day: Excel 6 sheet (Assumptions/Summary/Detail/Role Breakdown/
   Out of Scope/Risks). Trigger: "báo giá", "estimate", "WBS", "tính công số", "見積", "見積書",
-  "breakdown effort". Có GATE: >3 câu P1 chưa trả lời → dừng. Bước A4.
+  "breakdown effort". Có GATE: >3 câu P1 chưa trả lời → dừng. Bước A6.
 ---
 
 # Estimate / WBS Skill — PM & Tech Lead Assistant

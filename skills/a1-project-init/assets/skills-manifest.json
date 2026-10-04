@@ -1,5 +1,5 @@
 {
-  "manifest_version": "3.5.0",
+  "manifest_version": "3.8.0",
   "updated_at": "2026-07-09",
   "pipeline_source": "a1-project-init/references/pipeline.md",
   "shared": {
@@ -11,7 +11,7 @@
   "skills": [
     {
       "name": "a1-project-init",
-      "version": "3.5.0",
+      "version": "3.8.0",
       "step": "A1",
       "phase": "prepare",
       "summary": "Tạo project-context.json — nguồn sự thật chung",
@@ -27,7 +27,7 @@
     },
     {
       "name": "a2-requirement-analysis",
-      "version": "3.3.0",
+      "version": "3.8.0",
       "step": "A2",
       "phase": "prepare",
       "summary": "Phân tích yêu cầu mơ hồ: scope, Q&A P1-P3, assumptions, risks",
@@ -46,7 +46,7 @@
     },
     {
       "name": "a3-prototype-ui",
-      "version": "3.3.0",
+      "version": "3.8.0",
       "step": "A3",
       "phase": "prepare",
       "optional": true,
@@ -64,7 +64,7 @@
     },
     {
       "name": "a4-api-design",
-      "version": "3.5.0",
+      "version": "3.8.0",
       "step": "A4",
       "phase": "prepare",
       "parallel_with": "db-design",
@@ -85,7 +85,7 @@
     },
     {
       "name": "a5-db-design",
-      "version": "3.4.0",
+      "version": "3.8.0",
       "step": "A5",
       "phase": "prepare",
       "parallel_with": "api-design",
@@ -106,7 +106,7 @@
     },
     {
       "name": "a6-estimate",
-      "version": "3.3.0",
+      "version": "3.8.0",
       "step": "A6",
       "phase": "prepare",
       "gate": ">3 câu P1 mở → dừng",
@@ -124,7 +124,7 @@
     },
     {
       "name": "a7-estimate-template-fill",
-      "version": "3.3.0",
+      "version": "3.8.0",
       "step": "A7",
       "phase": "prepare",
       "optional": true,
@@ -141,7 +141,7 @@
     },
     {
       "name": "a8-test-plan",
-      "version": "3.4.0",
+      "version": "3.8.0",
       "step": "A8",
       "phase": "prepare",
       "summary": "Sinh test cases 17 cột + Traceability + UAT checklist + k6 plan",
@@ -158,7 +158,7 @@
     },
     {
       "name": "a9-project-timeline",
-      "version": "3.4.0",
+      "version": "3.8.0",
       "step": "A9",
       "phase": "prepare",
       "summary": "Sprint plan, Gantt, milestones, critical path + .ics",
@@ -177,7 +177,7 @@
     },
     {
       "name": "b1-project-kickoff",
-      "version": "3.4.0",
+      "version": "3.8.0",
       "step": "B1",
       "phase": "kickoff",
       "gate": ">3 câu P1 mở → hoãn kickoff",
@@ -198,7 +198,7 @@
     },
     {
       "name": "b2-basic-design",
-      "version": "3.4.0",
+      "version": "3.8.0",
       "step": "B2",
       "phase": "kickoff",
       "summary": "基本設計 — thiết kế external khách duyệt: screen list/spec/flow",
@@ -217,7 +217,7 @@
     },
     {
       "name": "b3-detail-design",
-      "version": "3.4.0",
+      "version": "3.8.0",
       "step": "B3",
       "phase": "kickoff",
       "requires": [
@@ -240,7 +240,7 @@
     },
     {
       "name": "c3-code-review",
-      "version": "3.5.0",
+      "version": "3.8.0",
       "step": "C3",
       "phase": "run",
       "recurring": "per PR",
@@ -259,14 +259,14 @@
     },
     {
       "name": "c5-test-execution",
-      "version": "3.4.0",
+      "version": "3.8.0",
       "step": "C5",
       "phase": "run",
       "recurring": "per test phase",
       "summary": "Tracker + report thực thi UT/IT/ST/UAT, defects, exit criteria",
       "outputs": [
-        "docs/C2_test-execution/*_Test_Execution.xlsx",
-        "docs/C2_test-execution/*_Test_Report_*.docx"
+        "docs/C5_test-execution/*_Test_Execution.xlsx",
+        "docs/C5_test-execution/*_Test_Report_*.docx"
       ],
       "intents": [
         "kết quả test",
@@ -279,14 +279,14 @@
     },
     {
       "name": "c6-sprint-review",
-      "version": "3.4.0",
+      "version": "3.8.0",
       "step": "C6",
       "phase": "run",
       "recurring": "per sprint",
       "summary": "Planned vs actual, velocity, retro 4L, Sprint_Log tích lũy",
       "outputs": [
-        "docs/C3_sprint-review/*_Sprint*_Review.xlsx",
-        "docs/C3_sprint-review/*_Sprint_Log.xlsx"
+        "docs/C6_sprint-review/*_Sprint*_Review.xlsx",
+        "docs/C6_sprint-review/*_Sprint_Log.xlsx"
       ],
       "intents": [
         "sprint review",
@@ -297,7 +297,7 @@
     },
     {
       "name": "c7-change-request",
-      "version": "3.3.0",
+      "version": "3.8.0",
       "step": "C7",
       "phase": "run",
       "recurring": "khi scope đổi",
@@ -316,7 +316,7 @@
     },
     {
       "name": "d1-handover-doc",
-      "version": "3.4.0",
+      "version": "3.8.0",
       "step": "D1",
       "phase": "close",
       "summary": "Tài liệu bàn giao 12 mục Docx + Workbook Excel 7 sheet + Runbook",
@@ -334,7 +334,7 @@
     },
     {
       "name": "menu",
-      "version": "3.5.0",
+      "version": "3.8.0",
       "step": "-",
       "phase": "meta",
       "summary": "Menu điều hướng — sinh ĐỘNG từ manifest + frontmatter",
@@ -349,7 +349,7 @@
     },
     {
       "name": "x2-project-architecture",
-      "version": "3.4.0",
+      "version": "3.8.0",
       "step": "X2",
       "phase": "cross",
       "summary": "HTML self-contained trực quan hóa kiến trúc + module/API/DB + trạng thái tài liệu",
@@ -365,7 +365,7 @@
     },
     {
       "name": "x3-project-status",
-      "version": "3.3.0",
+      "version": "3.8.0",
       "step": "X3",
       "phase": "cross",
       "summary": "Dashboard hiện trạng dự án trong chat (đọc-only)",
@@ -380,7 +380,7 @@
     },
     {
       "name": "x6-skill-doctor",
-      "version": "3.5.0",
+      "version": "3.8.0",
       "step": "X6",
       "phase": "meta",
       "summary": "Linter cho chính bộ skill — 10 rule chống regression",
@@ -394,13 +394,13 @@
     },
     {
       "name": "c1-dev-implement",
-      "version": "3.5.0",
+      "version": "3.8.0",
       "step": "C1",
       "phase": "run",
       "recurring": "per task",
       "summary": "Dev viết code theo thiết kế: scaffold/feature/bugfix + UT + PR description",
       "outputs": [
-        "docs/C0_dev-implement/PR_*.md",
+        "docs/C1_dev-implement/PR_*.md",
         "code + unit test"
       ],
       "intents": [
@@ -414,7 +414,7 @@
     },
     {
       "name": "x4-meeting-minutes",
-      "version": "3.4.0",
+      "version": "3.8.0",
       "step": "X4",
       "phase": "cross",
       "summary": "Biên bản họp Docx + Workbook Excel 4 sheet + md, đổ ngược Q&A/scope vào pipeline",
@@ -433,12 +433,12 @@
     },
     {
       "name": "x1-acquire-codebase-knowledge",
-      "version": "3.5.0",
+      "version": "3.8.0",
       "step": "X1",
       "phase": "cross",
       "summary": "Khảo sát kiến trúc repo 4 tầng (Router/Middleware/Service/ORM) bằng Serena LSP",
       "outputs": [
-        "docs/X0_codebase-knowledge/Architecture_Survey.md"
+        "docs/X1_codebase-knowledge/Architecture_Survey.md"
       ],
       "intents": [
         "khảo sát kiến trúc",
@@ -451,7 +451,7 @@
     },
     {
       "name": "c2-api-test-suite-generator",
-      "version": "3.5.0",
+      "version": "3.8.0",
       "step": "C2",
       "phase": "run",
       "recurring": "per task",
@@ -471,13 +471,13 @@
     },
     {
       "name": "c4-trailofbits-security-skills",
-      "version": "3.5.0",
+      "version": "3.8.0",
       "step": "C4",
       "phase": "run",
       "recurring": "per PR",
       "summary": "Kiểm toán bảo mật backend (Trail of Bits + OWASP API Top 10): IDOR, JWT, log leak, injection",
       "outputs": [
-        "docs/C1_security-audit/Security_Audit_Report.md"
+        "docs/C4_security-audit/Security_Audit_Report.md"
       ],
       "intents": [
         "kiểm tra bảo mật",
@@ -490,7 +490,7 @@
     },
     {
       "name": "x5-coding-standards",
-      "version": "3.5.0",
+      "version": "3.8.0",
       "step": "X5",
       "phase": "cross",
       "summary": "Hiến pháp kỹ thuật nội bộ: strict TS, Git Conventional Commits, PR 7 mục & Self-Improvement Loop",
@@ -507,7 +507,7 @@
     },
     {
       "name": "b0-proposal-sow",
-      "version": "3.6.0",
+      "version": "3.8.0",
       "step": "B0",
       "phase": "launch",
       "summary": "Biên soạn Proposal kỹ thuật & SOW (Statement of Work) chốt hợp đồng",
@@ -528,7 +528,7 @@
     },
     {
       "name": "c8-release-deployment",
-      "version": "3.6.0",
+      "version": "3.8.0",
       "step": "C8",
       "phase": "run",
       "recurring": "per release",
@@ -550,7 +550,7 @@
     },
     {
       "name": "d2-uat-acceptance",
-      "version": "3.6.0",
+      "version": "3.8.0",
       "step": "D2",
       "phase": "close",
       "summary": "Nghiệm thu UAT với khách hàng, biên bản bàn giao tính năng ký duyệt (Sign-Off)",
@@ -570,7 +570,7 @@
     },
     {
       "name": "d3-user-guide-manual",
-      "version": "3.6.0",
+      "version": "3.8.0",
       "step": "D3",
       "phase": "close",
       "summary": "Sổ tay hướng dẫn sử dụng (User Manual) và Admin Guide chuyên nghiệp kèm FAQ",

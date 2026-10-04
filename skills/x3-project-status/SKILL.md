@@ -1,11 +1,11 @@
 ---
 name: x3-project-status
-version: "3.3.0"
+version: "3.8.0"
 description: >-
   Dashboard hiện trạng dự án NGAY TRONG CHAT (không tạo file): đang ở bước nào trong pipeline,
   tài liệu nào có/thiếu/lỗi thời, gate nào đang chặn, velocity & go-live projection, bước kế tiếp
   nên làm. Trigger: "project status", "tình hình dự án", "đang ở bước nào", "tiến độ tổng thể",
-  "trạng thái dự án", "dashboard dự án", "còn thiếu gì". Bước X2 — chạy bất kỳ lúc nào.
+  "trạng thái dự án", "dashboard dự án", "còn thiếu gì". Bước X3 — chạy bất kỳ lúc nào.
   Muốn bản HTML đẹp để gửi khách → /x2-project-architecture.
 ---
 
@@ -14,7 +14,7 @@ description: >-
 ## Mục tiêu
 
 Trả lời 4 câu hỏi của PM trong MỘT lần chạy, **ngay trong chat, không tạo file**:
-1. Dự án đang ở **bước nào** trong pipeline (A0→D1)?
+1. Dự án đang ở **bước nào** trong pipeline (A1→D3)?
 2. Tài liệu nào **đã có / còn thiếu / lỗi thời** (stale)?
 3. **Gate nào đang chặn** (P1 chưa trả lời? bug Critical mở? CR chờ duyệt)?
 4. **Bước kế tiếp** nên làm là gì?
@@ -54,7 +54,7 @@ Bổ sung thủ công duy nhất (script chưa cover): đọc `*_Sprint_Log.xlsx
 Vị trí pipeline : <giai đoạn> — đã xong <k>/<n> bước chuẩn bị, sprint <i>/<tổng>
 Go-live         : target <ngày> · projection <ngày> (<±lệch>)
 
-TÀI LIỆU (A0→D1)
+TÀI LIỆU (A1→D3)
 ✅ <bước> <skill> — <file> (<ngày>)
 ⚠️ <bước> <skill> — STALE: <lý do, nguồn nào mới hơn> → chạy lại /<skill>
 ⬜ <bước> <skill> — chưa có

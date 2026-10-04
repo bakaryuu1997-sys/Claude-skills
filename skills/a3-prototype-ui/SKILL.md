@@ -1,10 +1,10 @@
 ---
 name: a3-prototype-ui
-version: "3.3.0"
+version: "3.8.0"
 description: >-
   Tạo prototype HTML click được (1 file self-contained, mở browser chạy ngay, không cần internet)
   để demo/validate requirement với khách. Trigger: "prototype", "mockup", "demo UI", "wireframe",
-  "clickable prototype", "khách muốn xem UI". Bước A2 — song song lúc chờ trả lời Q&A.
+  "clickable prototype", "khách muốn xem UI". Bước A3 — song song lúc chờ trả lời Q&A.
 ---
 
 # Prototype UI Skill — UX Prototyper Assistant

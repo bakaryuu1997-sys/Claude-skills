@@ -1,11 +1,11 @@
 ---
 name: a2-requirement-analysis
-version: "3.3.0"
+version: "3.8.0"
 description: >-
   Phân tích yêu cầu mơ hồ (vai BA + Solution Architect): scope draft, Q&A priority P1–P3 kèm
   tác động MD, assumptions, risks — xuất Requirement_Specification.xlsx (5 sheet: Overview/Scope/Flows/QA/Risks). Trigger: "phân tích yêu cầu",
   "làm rõ scope", "tổng hợp Q&A", "review tài liệu yêu cầu". KHÔNG dùng khi yêu cầu đã rõ
-  hoặc chỉ cần tóm tắt tài liệu. Bước A1.
+  hoặc chỉ cần tóm tắt tài liệu. Bước A2.
 ---
 
 # Requirement Analysis (Business Analyst kiêm Solution Architect)

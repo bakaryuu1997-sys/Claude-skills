@@ -1,6 +1,6 @@
 ---
 name: menu
-version: "3.5.0"
+version: "3.8.0"
 description: >-
   Menu điều hướng toàn bộ skill — sinh ĐỘNG từ skills-manifest.json + frontmatter thực tế
   (không hardcode, không bao giờ lỗi thời). Trigger: "/menu", "menu", "có những skill gì",

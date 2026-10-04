@@ -1,6 +1,6 @@
 ---
 name: b1-project-kickoff
-version: "3.4.0"
+version: "3.8.0"
 description: >-
   Chuẩn bị họp khởi động với khách: kickoff deck (pptx), project charter (docx), RACI,
   communication plan, DoR/DoD, biên bản họp. Trigger: "kickoff", "họp khởi động",

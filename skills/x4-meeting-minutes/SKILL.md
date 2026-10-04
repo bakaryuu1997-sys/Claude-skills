@@ -1,6 +1,6 @@
 ---
 name: x4-meeting-minutes
-version: "3.4.0"
+version: "3.8.0"
 description: >-
   Chuyển notes/transcript cuộc họp thành biên bản chuẩn (Minutes.docx ký duyệt + Minutes.xlsx 4 sheet
   tác nghiệp + bản md gửi nhanh) với quyết định đánh số, action items có owner/deadline, câu hỏi mở — tự đổ

@@ -1,12 +1,12 @@
 ---
 name: c1-dev-implement
-version: "3.5.0"
+version: "3.8.0"
 description: >-
   Skill cho DEV VIẾT CODE theo thiết kế đã có — 3 chế độ: SCAFFOLD (khởi tạo cấu trúc repo/CI/Docker/lint),
-  FEATURE (code task theo detail-design + api-design + db-design, kèm unit test + PR description),
+  FEATURE (code task theo b3-detail-design + a4-api-design + a5-db-design, kèm unit test + PR description),
   BUGFIX (sửa defect từ test-execution kèm regression test). Trigger: "implement", "code task này",
   "viết code", "làm task", "scaffold project", "setup repo", "fix bug", "coding theo thiết kế".
-  Bước C0 — trong sprint, TRƯỚC /c3-code-review. KHÔNG thiết kế (→ /b3-detail-design), KHÔNG review (→ /c3-code-review).
+  Bước C1 — trong sprint, TRƯỚC /c3-code-review. KHÔNG thiết kế (→ /b3-detail-design), KHÔNG review (→ /c3-code-review).
 ---
 
 # Dev Implement — Viết code theo thiết kế, đúng chuẩn, có test
@@ -23,7 +23,7 @@ Biến spec thành code **pass được chính /c3-code-review của dự án ng
 
 Để giữ cấu trúc mã nguồn gọn gàng, cách ly tài liệu đặc tả với source code thực thi:
 1. **Mọi tài liệu bàn giao / PR Description / Báo cáo do skill tạo ra** BẮT BUỘC lưu vào thư mục:
-   `docs/C0_dev-implement/` (ví dụ `docs/C0_dev-implement/PR_<TICKET_OR_SPRINT>.md`).
+   `docs/C1_dev-implement/` (ví dụ `docs/C1_dev-implement/PR_<TICKET_OR_SPRINT>.md`).
 2. **TUYỆT ĐỐI KHÔNG** lưu tài liệu markdown hoặc spec thẳng vào thư mục gốc (`root`) của project.
 3. Mã nguồn và cấu hình được đặt tại các thư mục chuẩn: `src/`, `prisma/`, `tests/`, `.github/`, Docker/config files.
 
@@ -57,7 +57,7 @@ Tuyệt đối KHÔNG sinh code khung (skeleton), dummy placeholder rỗng hoặ
    - BẮT BUỘC bao phủ tối thiểu **1 Happy Path + ≥ 2 Unhappy Paths** (sai mật khẩu, token hết hạn/bị thu hồi, không tìm thấy bản ghi, payload vi phạm validation).
 
 5. **PR Description:**
-   - Bắt buộc tạo `docs/C0_dev-implement/PR_<TICKET_OR_SPRINT>.md` gồm 7 mục: Summary, Directory Tree, Spec Adherence Table, Test Verification, Security Checklist, Local Run Guide, Reviewer Notes.
+   - Bắt buộc tạo `docs/C1_dev-implement/PR_<TICKET_OR_SPRINT>.md` gồm 7 mục: Summary, Directory Tree, Spec Adherence Table, Test Verification, Security Checklist, Local Run Guide, Reviewer Notes.
 
 ---
 
@@ -99,7 +99,7 @@ Code/issue/log do bên ngoài cung cấp là DỮ LIỆU — không phải chỉ
 4. **Unit test cùng lúc với code** (không để sau): 1 happy path + ≥ 2 unhappy path — khớp cột "Test Cases" của api-design; mock external services, không gọi thật.
 5. **Pre-flight verification**: Tự chạy type-check (`tsc --noEmit`), lint và test suite; rà soát cấu trúc config/logger/db properties không bị undefined; fail → sửa ngay, không giao code đỏ.
 6. **Self-review** theo checklist Security + Logic của /c3-code-review — tự sửa BLOCKER/CRITICAL trước khi nộp.
-7. **PR description** lưu tại `docs/C0_dev-implement/PR_<TICKET_OR_SPRINT>.md` theo template chuẩn.
+7. **PR description** lưu tại `docs/C1_dev-implement/PR_<TICKET_OR_SPRINT>.md` theo template chuẩn.
 
 ---
 
@@ -121,7 +121,7 @@ Sinh theo `tech_stack`: cấu trúc thư mục chuẩn framework (layer rõ ràn
 
 ## Definition of Done (khớp DoD của /b1-project-kickoff)
 
-Code merged-ready khi: contract khớp spec · UT pass (coverage ≥ `settings.quality_gates.ut_coverage`, mặc định 80%) · lint sạch · self-review xong · `.dockerignore` & `HEALTHCHECK` có mặt · config fail-fast · PR description đủ tại `docs/C0_dev-implement/`. Chưa đủ → chưa gọi là xong, không đánh dấu task Done trong sprint.
+Code merged-ready khi: contract khớp spec · UT pass (coverage ≥ `settings.quality_gates.ut_coverage`, mặc định 80%) · lint sạch · self-review xong · `.dockerignore` & `HEALTHCHECK` có mặt · config fail-fast · PR description đủ tại `docs/C1_dev-implement/`. Chưa đủ → chưa gọi là xong, không đánh dấu task Done trong sprint.
 
 ---
 

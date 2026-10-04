@@ -1,6 +1,6 @@
 ---
 name: x5-coding-standards
-version: "3.5.0"
+version: "3.8.0"
 description: >-
   Hiến pháp kỹ thuật nội bộ: ép chuẩn Tech Stack (strict TS/Zod/Prisma transaction),
   quy chuẩn Git Conventional Commits, PR checklist 7 mục kèm bằng chứng test pass thực tế,

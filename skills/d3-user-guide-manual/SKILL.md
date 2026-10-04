@@ -1,6 +1,6 @@
 ---
 name: d3-user-guide-manual
-version: "3.6.0"
+version: "3.8.0"
 description: >-
   Biên soạn tài liệu Hướng dẫn sử dụng (User Manual) và Admin Guide chuyên nghiệp: hướng dẫn
   thao tác từng bước, minh họa vị trí nút bấm UI, quy trình nghiệp vụ và FAQ xử lý sự cố.

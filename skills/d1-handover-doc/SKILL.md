@@ -1,6 +1,6 @@
 ---
 name: d1-handover-doc
-version: "3.4.0"
+version: "3.8.0"
 description: >-
   Tạo tài liệu bàn giao sau go-live: Handover.docx 12 mục + Handover_Workbook.xlsx 7 sheet tác nghiệp
   (Tech stack, Envs, DB, APIs, Runbook, Known issues, Contacts) + Runbook.md. Trigger: "bàn giao",

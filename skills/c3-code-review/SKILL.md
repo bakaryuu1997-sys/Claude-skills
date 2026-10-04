@@ -1,10 +1,10 @@
 ---
 name: c3-code-review
-version: "3.5.0"
+version: "3.8.0"
 description: >-
-  Review code/PR theo chuẩn DỰ ÁN NỘI BỘ: đối chiếu spec api-design/a5-db-design, xuất Excel checklist
+  Review code/PR theo chuẩn DỰ ÁN NỘI BỘ: đối chiếu spec a4-api-design/a5-db-design, xuất Excel checklist
   5 sheet (Summary/Checklist/Files/Defects/Praises) + Report.md, báo cáo severity + verdict. Trigger:
-  "review code", "review PR", "review diff". Bước C1 — mỗi PR.
+  "review code", "review PR", "review diff". Bước C3 — mỗi PR.
 ---
 
 # Code Review Skill — Senior Engineer Reviewer

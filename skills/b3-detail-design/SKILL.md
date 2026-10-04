@@ -1,11 +1,11 @@
 ---
 name: b3-detail-design
-version: "3.4.0"
+version: "3.8.0"
 description: >-
   Tạo Thiết kế chi tiết (詳細設計 / Internal Design) cho dev code: class/module, sequence diagram,
   logic xử lý, CRUD matrix, validation spec, error map (docx + xlsx + Mermaid).
   Trigger: "detail design", "詳細設計", "thiết kế chi tiết", "class design", "sequence diagram",
-  "CRUD matrix". CẦN api-design + db-design trước. KHÔNG dùng cho thiết kế màn hình khách duyệt
+  "CRUD matrix". CẦN a4-api-design + a5-db-design trước. KHÔNG dùng cho thiết kế màn hình khách duyệt
   (→ /b2-basic-design). Bước B3.
 ---
 

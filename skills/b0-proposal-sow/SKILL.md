@@ -1,6 +1,6 @@
 ---
 name: b0-proposal-sow
-version: "3.6.0"
+version: "3.8.0"
 description: >-
   Biên soạn Proposal kỹ thuật & Statement of Work (SOW) chuyên nghiệp cho khách ký chốt hợp
   đồng: bối cảnh, giải pháp kiến trúc, phạm vi In/Out scope, mốc nghiệm thu, cam kết SLA &

@@ -1,6 +1,6 @@
 ---
 name: b2-basic-design
-version: "3.4.0"
+version: "3.8.0"
 description: >-
   Tạo Thiết kế cơ bản (基本設計 / External Design) khách ký duyệt: screen list, sơ đồ chuyển màn hình,
   đặc tả màn hình I/O, business flow, external IF, message list (docx + xlsx + Mermaid).

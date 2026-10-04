@@ -1,10 +1,10 @@
 ---
 name: a5-db-design
-version: "3.4.0"
+version: "3.8.0"
 description: >-
   Thiết kế database schema: Excel data dictionary + Health Check 10 rules + circular-FK check,
   migration SQL (PostgreSQL), Mermaid ERD. Trigger: "thiết kế database", "schema", "ERD",
-  "CREATE TABLE", "migration", "data model". Bước A3 (song song /a4-api-design).
+  "CREATE TABLE", "migration", "data model". Bước A5 (song song /a4-api-design).
 ---
 
 # DB Design Skill — Database Architect Assistant

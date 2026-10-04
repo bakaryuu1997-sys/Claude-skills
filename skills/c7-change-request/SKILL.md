@@ -1,10 +1,10 @@
 ---
 name: c7-change-request
-version: "3.3.0"
+version: "3.8.0"
 description: >-
   Phân tích impact + re-estimate + tài liệu Change Request để khách ký duyệt khi scope thay đổi
   sau khi đã chốt. Trigger: "change request", "CR", "khách muốn thêm/sửa/bớt tính năng",
-  "impact analysis", "estimate lại phần này". Bước C4 — bất kỳ lúc nào trong dự án.
+  "impact analysis", "estimate lại phần này". Bước C7 — bất kỳ lúc nào trong dự án.
 ---
 
 # Change Request Skill — PM & Business Analyst

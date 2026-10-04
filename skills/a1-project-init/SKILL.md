@@ -1,11 +1,11 @@
 ---
 name: a1-project-init
-version: "3.5.0"
+version: "3.8.0"
 description: >-
   Khởi tạo project-context.json (MỘT LẦN mỗi dự án): project info, tech stack, team, settings,
   links — nguồn sự thật chung mọi skill tự đọc. Kèm schema + validator + load_context.py +
   pipeline.md dùng chung cho cả bộ skill. Trigger: "khởi tạo dự án", "project init",
-  "setup project", "bắt đầu dự án mới". Bước A0 — CHẠY ĐẦU TIÊN.
+  "setup project", "bắt đầu dự án mới". Bước A1 — CHẠY ĐẦU TIÊN.
 ---
 
 # Project Init Skill — Project Context Setup

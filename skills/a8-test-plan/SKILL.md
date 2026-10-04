@@ -1,10 +1,10 @@
 ---
 name: a8-test-plan
-version: "3.4.0"
+version: "3.8.0"
 description: >-
   Sinh test plan + test cases (Excel 14 cột — KHÔNG chứa kết quả chạy, kết quả ở /c5-test-execution),
   Traceability Matrix tự sinh, UAT checklist, k6 performance plan. Trigger: "test plan",
-  "viết test case", "kế hoạch test", "QA plan", "UAT checklist". Bước A5.
+  "viết test case", "kế hoạch test", "QA plan", "UAT checklist". Bước A8.
 ---
 
 # Test Plan Skill — QA Lead Assistant

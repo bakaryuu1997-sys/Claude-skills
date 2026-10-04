@@ -1,6 +1,6 @@
 ---
 name: d2-uat-acceptance
-version: "3.6.0"
+version: "3.8.0"
 description: >-
   Quản lý nghiệm thu UAT với khách hàng: kiểm tra tiêu chuẩn nghiệm thu (Acceptance Criteria),
   biên bản bàn giao tính năng ký duyệt (Sign-Off) và danh mục punch list bảo hành. Trigger:

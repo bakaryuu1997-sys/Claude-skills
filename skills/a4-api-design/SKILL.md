@@ -1,10 +1,10 @@
 ---
 name: a4-api-design
-version: "3.5.0"
+version: "3.8.0"
 description: >-
   Thiết kế API endpoints, xuất Excel (Method/URL/Input/Output/Middleware/Errors/Test Cases)
   + Postman Collection + OpenAPI YAML. Trigger: "thiết kế API", "API spec", "liệt kê endpoints",
-  "bảng API Excel", "Postman", "OpenAPI". Bước A3 pipeline (a1-project-init/references/pipeline.md).
+  "bảng API Excel", "Postman", "OpenAPI". Bước A4 pipeline (a1-project-init/references/pipeline.md).
 ---
 
 # API Design Skill — Backend Tech Lead Assistant

@@ -1,11 +1,11 @@
 ---
 name: c5-test-execution
-version: "3.4.0"
+version: "3.8.0"
 description: >-
   QUẢN LÝ + BÁO CÁO thực thi test UT/IT/ST/UAT: tracker pass/fail/blocked, defect list, metrics
   (pass rate, defect density), exit criteria, test report (xlsx + docx). Trigger: "test execution",
   "kết quả test", "bug report", "defect list", "test report", "exit criteria", "単体テスト", "結合テスト".
-  KHÁC /a8-test-plan (sinh case) — skill này CHẠY + REPORT. Bước C2.
+  KHÁC /a8-test-plan (sinh case) — skill này CHẠY + REPORT. Bước C5.
 ---
 
 # Test Execution — Quản lý & báo cáo thực thi UT / IT / ST / UAT
@@ -29,7 +29,7 @@ Nguyên tắc:
 
 Để giữ cấu trúc dự án ngăn nắp và tách bạch tài liệu với source code:
 1. **Mọi file báo cáo và workbook do skill tạo ra** BẮT BUỘC lưu vào thư mục chuyên biệt:
-   `docs/C2_test-execution/` (ví dụ `docs/C2_test-execution/<TênDựÁn>_Test_Execution.xlsx`, `docs/C2_test-execution/<TênDựÁn>_Test_Report_<Phase>.docx`).
+   `docs/C5_test-execution/` (ví dụ `docs/C5_test-execution/<TênDựÁn>_Test_Execution.xlsx`, `docs/C5_test-execution/<TênDựÁn>_Test_Report_<Phase>.docx`).
 2. **TUYỆT ĐỐI KHÔNG** lưu các file excel/docx kiểm thử vào thư mục gốc (`root`) của project.
 
 ---
@@ -150,9 +150,9 @@ Dùng skill **docx**. Cấu trúc 7 phần:
 
 ## Bàn giao deliverable
 
-**File 1: `docs/C2_test-execution/[TênDựÁn]_Test_Execution.xlsx`** — tracker 4 phase + Defects + Dashboard (có công thức tự động).
-**File 2: `docs/C2_test-execution/[TênDựÁn]_Test_Report_[Phase].docx`** — report cho phase đang tổng kết (UT/IT/ST/UAT).
-**File 3: `docs/C2_test-execution/[TênDựÁn]_test_results.json`** — snapshot kết quả kiểm thử tự động (Single Source of Truth đồng bộ sang Excel và Word).
+**File 1: `docs/C5_test-execution/[TênDựÁn]_Test_Execution.xlsx`** — tracker 4 phase + Defects + Dashboard (có công thức tự động).
+**File 2: `docs/C5_test-execution/[TênDựÁn]_Test_Report_[Phase].docx`** — report cho phase đang tổng kết (UT/IT/ST/UAT).
+**File 3: `docs/C5_test-execution/[TênDựÁn]_test_results.json`** — snapshot kết quả kiểm thử tự động (Single Source of Truth đồng bộ sang Excel và Word).
 
 **Luôn kết thúc bằng:**
 - Bảng tóm tắt metrics phase hiện tại

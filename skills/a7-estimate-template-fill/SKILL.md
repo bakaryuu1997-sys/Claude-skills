@@ -1,10 +1,10 @@
 ---
 name: a7-estimate-template-fill
-version: "3.3.0"
+version: "3.8.0"
 description: >-
   Điền task + công số dev vào template báo giá 見積書 CÓ SẴN (block 開発 của 見積明細書),
   giữ nguyên công thức/logo/block khác. Trigger: "điền báo giá vào template", "fill estimate
-  template", "điền 開発 block", đưa file 見積書.xlsx. KHÔNG tạo báo giá từ đầu (→ /a6-estimate). Bước A4b.
+  template", "điền 開発 block", đưa file 見積書.xlsx. KHÔNG tạo báo giá từ đầu (→ /a6-estimate). Bước A7.
 ---
 
 # Estimate Template Fill — điền block 開発 của 見積明細書

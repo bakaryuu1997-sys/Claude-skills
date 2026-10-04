@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "dev-lifecycle-skills",
-      "version": "3.5.0",
+      "version": "3.8.0",
       "description": "27+ Production-grade lifecycle skills: Requirements, API design, DB design, Testing, Code Review, Security Audit, Coding Standards",
       "source": "./",
       "category": "Software Engineering",
@@ -19,5 +19,6 @@
         "architecture"
       ]
     }
-  ]
+  ],
+  "version": "3.8.0"
 }

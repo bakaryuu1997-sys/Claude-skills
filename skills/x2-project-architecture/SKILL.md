@@ -1,13 +1,13 @@
 ---
 name: x2-project-architecture
-version: "3.4.0"
+version: "3.8.0"
 description: >-
   Sinh file HTML self-contained trực quan hóa TOÀN BỘ kiến trúc & cấu trúc dự án: sơ đồ hệ thống SVG thuần
   kết hợp sơ đồ động Code-Backed (Archify), cây module/màn hình, API map, ERD, trạng thái pipeline, team
   & links — đọc từ project-context + output các skill khác. Trigger: "architecture", "kiến trúc dự án",
   "sơ đồ kiến trúc", "cấu trúc dự án", "architecture overview", "vẽ kiến trúc HTML".
   KHÁC /engineering:architecture (viết ADR); skill này VẼ kiến trúc thành HTML cho cả team/khách xem.
-  Bước X1 — chạy bất kỳ lúc nào sau A3, cập nhật sau mỗi thay đổi lớn.
+  Bước X2 — chạy bất kỳ lúc nào sau A4/A5, cập nhật sau mỗi thay đổi lớn.
 ---
 
 # Project Architecture — Bản đồ dự án dạng HTML tương tác
