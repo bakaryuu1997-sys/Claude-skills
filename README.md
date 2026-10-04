@@ -1,4 +1,4 @@
-# Claude Skills & Antigravity Suite 🚀
+﻿# Claude Skills & Antigravity Suite 🚀
 
 Kho kỹ năng (Skills) và công cụ mở rộng (MCP Servers) toàn diện cho quy trình phát triển phần mềm chuẩn doanh nghiệp (hỗ trợ Claude Code, Codex, Cursor và Antigravity).
 
@@ -121,6 +121,8 @@ Kho kỹ năng (Skills) và công cụ mở rộng (MCP Servers) toàn diện ch
 
 ## ⚡ KỸ NĂNG ĐẶC NHIỆM & LẬP TRÌNH TỰ TRỊ (SUPERPOWERS)
 *Quy chuẩn quy trình kỹ nghệ phần mềm cấp cao, vận hành subagents và kiểm thử chuyên sâu.*
+
+> 💡 **Ghi chú về nguồn gốc:** 12 kỹ năng đặc nhiệm dưới đây (`brainstorming`, `writing-plans`, `test-driven-development`...) được tích hợp từ plugin `superpowers` đi kèm của hệ thống (khi cài đặt bộ suite, các kỹ năng này sẽ tự động khả dụng để hỗ trợ toàn bộ quy trình phát triển).
 
 | Nhóm Kỹ Năng | Lệnh Skill | Mô tả & Nguyên tắc vận hành |
 |---|---|---|

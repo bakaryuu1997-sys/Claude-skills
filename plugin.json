@@ -44,7 +44,7 @@
     "claude-mem": {
       "command": "node",
       "args": [
-        "C:/Users/asus/Claude/Projects/claude-skill/claude-mem/plugin/scripts/mcp-server.cjs"
+        "${CLAUDE_PLUGIN_ROOT}/claude-mem/plugin/scripts/mcp-server.cjs"
       ]
     }
   }
