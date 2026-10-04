@@ -1,21 +1,105 @@
-﻿# Claude Skills & Antigravity Suite 🚀
+# Claude Skills & Antigravity Suite 🚀
 
 Kho kỹ năng (Skills) và công cụ mở rộng (MCP Servers) toàn diện cho quy trình phát triển phần mềm chuẩn doanh nghiệp (hỗ trợ Claude Code, Codex, Cursor và Antigravity).
 
 ---
 
 ## 📑 Mục Lục Nhanh
-1. [📦 Giai Đoạn A — Chuẩn Bị & Thiết Kế (A1 → A9)](#-giai-đoạn-a--chuẩn-bị--thiết-kế-a1--a9)
-2. [🚀 Giai Đoạn B — Khởi Động & Đặc Tả Chi Tiết (B0 → B3)](#-giai-đoạn-b--khởi-động--đặc-tả-chi-tiết-b0--b3)
-3. [🔄 Giai Đoạn C — Vận Hành, Phát Triển & Kiểm Thử (C1 → C8)](#-giai-đoạn-c--vận-hành-phát-triển--kiểm-thử-c1--c8)
-4. [🏁 Giai Đoạn D — Kết Thúc & Bàn Giao Dự Án (D1 → D3)](#-giai-đoạn-d--kết-thúc--bàn-giao-dự-án-d1--d3)
-5. [🛠️ Giai Đoạn X — Cross-Cutting & Tiêu Chuẩn Kỹ Thuật (X1 → X7)](#️-giai-đoạn-x--cross-cutting--tiêu-chuẩn-kỹ-thuật-x1--x7)
-6. [🧭 Meta — Điều Hướng Hệ Thống (/menu)](#-meta--điều-hướng-hệ-thống)
-7. [🧠 Kỹ Năng Bộ Nhớ AI & Khảo Sát Codebase (Claude-Mem Skills)](#-kỹ-năng-bộ-nhớ-ai--khảo-sát-codebase)
-8. [🎨 Kỹ Năng Thiết Kế Giao Diện Đẳng Cấp (UI/UX Pro Max)](#-kỹ-năng-thiết-kế-giao-diện-đẳng-cấp-uiux-pro-max)
-9. [⚡ Kỹ Năng Đặc Nhiệm & Lập Trình Tự Trị (Superpowers Skills)](#-kỹ-năng-đặc-nhiệm--lập-trình-tự-trị-superpowers)
-10. [🔌 Hệ Thống Công Cụ Mở Rộng MCP (Model Context Protocol)](#-hệ-thống-công-cụ-mở-rộng-mcp-servers)
-11. [⚙️ Hướng Dẫn Cài Đặt & Đồng Bộ Tự Động](#️-hướng-dẫn-cài-đặt--đồng-bộ-tự-động)
+1. [📊 Sơ Đồ Quy Trình Vận Hành (SDLC Architecture Flow)](#-sơ-đồ-quy-trình-vận-hành-sdlc-architecture-flow)
+2. [📦 Giai Đoạn A — Chuẩn Bị & Thiết Kế (A1 → A9)](#-giai-đoạn-a--chuẩn-bị--thiết-kế-a1--a9)
+3. [🚀 Giai Đoạn B — Khởi Động & Đặc Tả Chi Tiết (B0 → B3)](#-giai-đoạn-b--khởi-động--đặc-tả-chi-tiết-b0--b3)
+4. [🔄 Giai Đoạn C — Vận Hành, Phát Triển & Kiểm Thử (C1 → C8)](#-giai-đoạn-c--vận-hành-phát-triển--kiểm-thử-c1--c8)
+5. [🏁 Giai Đoạn D — Kết Thúc & Bàn Giao Dự Án (D1 → D3)](#-giai-đoạn-d--kết-thúc--bàn-giao-dự-án-d1--d3)
+6. [🛠️ Giai Đoạn X — Cross-Cutting & Tiêu Chuẩn Kỹ Thuật (X1 → X7)](#️-giai-đoạn-x--cross-cutting--tiêu-chuẩn-kỹ-thuật-x1--x7)
+7. [🧭 Meta — Điều Hướng Hệ Thống (/menu)](#-meta--điều-hướng-hệ-thống)
+8. [🧠 Kỹ Năng Bộ Nhớ AI & Khảo Sát Codebase (Claude-Mem Skills)](#-kỹ-năng-bộ-nhớ-ai--khảo-sát-codebase)
+9. [🎨 Kỹ Năng Thiết Kế Giao Diện Đẳng Cấp (UI/UX Pro Max)](#-kỹ-năng-thiết-kế-giao-diện-đẳng-cấp-uiux-pro-max)
+10. [⚡ Kỹ Năng Đặc Nhiệm & Lập Trình Tự Trị (Superpowers Skills)](#-kỹ-năng-đặc-nhiệm--lập-trình-tự-trị-superpowers)
+11. [🔌 Hệ Thống Công Cụ Mở Rộng MCP (Model Context Protocol)](#-hệ-thống-công-cụ-mở-rộng-mcp-servers)
+12. [⚙️ Hướng Dẫn Cài Đặt & Đồng Bộ Tự Động](#️-hướng-dẫn-cài-đặt--đồng-bộ-tự-động)
+
+---
+
+## 📊 SƠ ĐỒ QUY TRÌNH VẬN HÀNH (SDLC ARCHITECTURE FLOW)
+
+Để tối ưu hóa trải nghiệm quan sát và đảm bảo phông chữ luôn hiển thị to, rõ ràng, hệ thống quy trình được tách biệt thành **2 sơ đồ trực quan độc lập**:
+1. **Chu Trình Tuyến Tính SDLC Chính (Phase A → B → C → D)**: Toàn bộ luồng phát triển phần mềm tuần tự từ khởi tạo đến bàn giao.
+2. **Bộ Công Cụ Quản Trị & Bổ Trợ Ngang (Phase X & Meta)**: Các công cụ giám sát hiện trạng, khảo sát kiến trúc, tiêu chuẩn coding và điều hướng hệ thống.
+
+---
+
+### 1. Chu Trình Tuyến Tính SDLC Chính (Phases A → B → C → D)
+
+```mermaid
+flowchart TD
+    subgraph Phase_A["PHASE A: Chuẩn Bị & Đặc Tả Nghiệp Vụ (A1 → A9)"]
+        A1["A1: project-init<br/>(project-context.json)"] --> A2["A2: requirement-analysis<br/>(Scope Draft & QA Tracker)"]
+        A2 --> A3["A3: prototype-ui<br/>(Clickable HTML Mockup)"]
+        A2 --> A4["A4: api-design<br/>(API Spec, Postman, OpenAPI)"]
+        A4 --> A5["A5: db-design<br/>(PostgreSQL Schema & ERD)"]
+        A2 & A3 & A4 & A5 --> GateA{"Gate P1 Check<br/>(<=3 Open Qs)"}
+        GateA -- Pass --> A6["A6: estimate<br/>(WBS Man-day 6 Sheets)"]
+        A6 --> A7["A7: estimate-template-fill<br/>(Điền form 見積書)"]
+        A6 --> A8["A8: test-plan<br/>(Test Case 14 Cột & Traceability)"]
+        A6 & A8 --> A9["A9: project-timeline<br/>(Sprint Plan, Gantt, ICS)"]
+    end
+
+    subgraph Phase_B["PHASE B: Đề Xuất & Thiết Kế Kỹ Thuật (B0 → B3)"]
+        A2 & A6 --> B0["B0: proposal-sow<br/>(Hợp đồng & Phạm vi SOW)"]
+        A9 & B0 --> B1["B1: project-kickoff<br/>(Charter & RACI Matrix)"]
+        A2 & A3 & A4 --> B2["B2: basic-design<br/>(Thiết kế Cơ bản 基本設計)"]
+        B2 & A4 & A5 --> B3["B3: detail-design<br/>(Thiết kế Chi tiết 詳細設計)"]
+    end
+
+    subgraph Phase_C["PHASE C: Lập Trình, Kiểm Thử & Phát Hành (C1 → C8)"]
+        B3 --> C1["C1: dev-implement<br/>(Scaffold, Feature, Bugfix)"]
+        C1 --> C2["C2: api-test-suite-generator<br/>(Jest / Pytest Suites)"]
+        C1 & C2 --> C3["C3: code-review<br/>(PR Checklist & Defect Matrix)"]
+        C1 --> C4["C4: trailofbits-security-skills<br/>(Audit OWASP & Auth/IDOR)"]
+        C1 -. Biến động scope .-> C7["C7: change-request<br/>(Đánh giá tác động & Re-estimate)"]
+        C2 & C3 & C4 --> C5["C5: test-execution<br/>(UT/IT/ST Tracker & Metrics)"]
+        C5 --> C6["C6: sprint-review<br/>(Velocity & 4L Retro)"]
+        C5 & C6 --> GateC{"Gate Bug Check<br/>(0 Critical Bug)"}
+        GateC -- Pass --> C8["C8: release-deployment<br/>(Deploy & Rollback Plan)"]
+    end
+
+    subgraph Phase_D["PHASE D: Nghiệm Thu & Bàn Giao Vận Hành (D1 → D3)"]
+        C8 --> D1["D1: handover-doc<br/>(Runbook & Tài liệu Bàn giao)"]
+        D1 --> D2["D2: uat-acceptance<br/>(Biên bản Nghiệm thu Sign-off)"]
+        D2 --> D3["D3: user-guide-manual<br/>(Hướng dẫn Vận hành & HDSD)"]
+    end
+```
+
+---
+
+### 2. Bộ Công Cụ Quản Trị & Bổ Trợ Ngang (Phase X & Meta)
+
+```mermaid
+flowchart TD
+    subgraph Meta_Nav["🧭 Meta: Điều Hướng Toàn Hệ Thống"]
+        MENU["/menu: Dynamic Intent Matching<br/>(Tự động điều hướng task đến đúng skill theo ngữ cảnh)"]
+    end
+
+    subgraph Phase_X["🛠️ Giai Đoạn X: Quản Trị, Tiêu Chuẩn & Bổ Trợ Ngang"]
+        subgraph Group1["🔍 Khảo Sát & Trực Quan Hóa"]
+            X1["X1: acquire-codebase-knowledge<br/>(Khảo sát kiến trúc 4 tầng bằng Serena AST)"]
+            X2["X2: project-architecture<br/>(Bản đồ kiến trúc HTML tương tác Code-Backed)"]
+        end
+
+        subgraph Group2["📋 Quản Trị Tiến Độ & Họp Hành"]
+            X3["X3: project-status<br/>(Console Dashboard hiện trạng & Gating status)"]
+            X4["X4: meeting-minutes<br/>(Biên bản họp chuẩn Docx/Xlsx & Sync QA Tracker)"]
+        end
+
+        subgraph Group3["🛡️ Chuẩn Hóa & Báo Cáo"]
+            X5["X5: coding-standards<br/>(Hiến pháp kỹ thuật, Strict TS & Git PR Rules)"]
+            X6["X6: skill-doctor<br/>(Linter kiểm toán nội bộ kho kỹ năng)"]
+            X7["X7: presentation-deck<br/>(Slide thuyết trình 16:9 Marp & PowerPoint)"]
+        end
+    end
+
+    MENU -. Điều phối & Kích hoạt .-> Phase_X
+```
 
 ---
 
