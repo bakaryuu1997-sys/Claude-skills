@@ -174,7 +174,7 @@ flowchart TD
 | **X4** | `/x4-meeting-minutes` | **Biên bản cuộc họp**: Chuyển transcript/notes họp thành biên bản Docx ký duyệt + Excel 4 sheet; tự động đẩy câu hỏi mở vào QA Tracker. | `*_Minutes_[date].docx`<br>`*_Minutes_[date].xlsx` |
 | **X5** | `/x5-coding-standards` | **Hiến pháp kỹ thuật nội bộ**: Ép chuẩn Strict TypeScript, Prisma Transactions, Git Conventional Commits, checklist PR 7 mục & Self-Improvement Loop. | `docs/X5_coding-standards/ENGINEERING_STANDARDS.md` |
 | **X6** | `/x6-skill-doctor` | **Linter kiểm định chính bộ skill**: Quét 12 quy tắc chống regression, kiểm tra frontmatter, độ dài mô tả, anti-pattern công thức Excel và tính đồng bộ manifest. | *(Trực tiếp trong chat)* |
-| **X7** | `/x7-presentation-deck` | **Tạo slide thuyết trình chuyên nghiệp**: Xuất slide PowerPoint (`.pptx`) 16:9 thiết kế dạng thẻ hiện đại + file HTML interactive slide tự chạy trên trình duyệt web cho pitch, demo, kickoff, sprint review. | `*_Presentation_Deck.pptx`<br>`*_Slide_Deck.html` |
+| **X7** | `/x7-presentation-deck` | **Tạo slide thuyết trình chuyên nghiệp**: Xuất slide PowerPoint (`.pptx`) 16:9 thiết kế dạng thẻ hiện đại + file HTML interactive slide tự chạy theo kiến trúc Slidev / Bento visual (Dark mode, live code blocks, phím tắt full screen) cho pitch, demo, kickoff, sprint review. | `*_Presentation_Deck.pptx`<br>`*_Slide_Deck.html` |
 
 ---
 

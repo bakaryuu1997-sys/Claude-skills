@@ -65,6 +65,29 @@ Trích xuất: `project.name`, `client`, `tech_stack`, `team`, `estimates`, `mil
 
 ---
 
+## ⚡ Kiến Trúc Slide HTML Hiện Đại (Slidev & Bento Interactive Architecture)
+
+File HTML xuất ra (`docs/presentations/[TênDựÁn]_Slide_Deck.html`) được xây dựng theo chuẩn tương tác của các công cụ hàng đầu (**Slidev**, **Gamma**, **AiPPT**):
+
+### 1. Thẩm Mỹ Kỹ Thuật Số (Modern Tech Aesthetic)
+- **Bảng màu nền sâu (Deep Canvas)**: Nền tối doanh nghiệp (`bg-slate-950` / `#020617`), kết hợp viền mờ tối giản (`border-slate-800/80` / `#1e293b`).
+- **Điểm nhấn màu thương hiệu (Accent Glow)**: Màu Sky Blue (`#38bdf8`), Emerald (`#34d399`), Indigo (`#818cf8`) phân định vai trò; cấm viền dạ quang neon chói gắt.
+- **Phân cấp phông chữ (Typography Hierarchy)**: Tiêu đề đanh thép, số đo kích thước lớn (Display metrics), văn bản giải thích phụ `text-slate-400`.
+
+### 2. Các Khối Hiển Thị Thành Phần (Component-Based Slide Blocks)
+- **Bento KPI Grid**: Hiển thị số liệu định lượng lớn (ví dụ: `100% PASS`, `<50ms`, `0 Defect`) kèm badge đo lường, không dùng bảng biểu khô khan.
+- **Code Block Tương Tác (Slidev Style)**: Khối code hiển thị font Monospace (`font-mono`), đánh dấu ngôn ngữ, nút copy mã nguồn nhanh, và hiệu ứng làm nổi bật dòng code trọng tâm.
+- **Luồng Kiến Trúc (Architecture Flow)**: Sơ đồ SVG hoặc flex/grid card phân tầng trực quan (Client → Gateway → Microservices → Database).
+
+### 3. Trải Nghiệm Thuyết Trình Trực Tiếp (Live Presentation Controls)
+- **Điều hướng bàn phím đầy đủ**: `←` / `→` hoặc `Space` (Chuyển trang), `Home` / `End` (Trang đầu / Trang cuối).
+- **Chế độ trình chiếu toàn màn hình (Fullscreen Mode)**: Nhấn phím `F` để mở/đóng fullscreen không viền trình duyệt.
+- **Thanh tiến độ & Bộ đếm (Progress & Counter)**: Thanh tiến độ siêu mượt ở cạnh trên và bộ đếm `X / Total` ở góc trên.
+- **Chế độ xem lưới tổng quan (Overview Grid Mode)**: Nhấn phím `O` hoặc `G` để xem thumbnail toàn bộ slide và click nhảy nhanh đến slide bất kỳ.
+- **Độc lập 100% (Zero-Dependency & Offline-Ready)**: File HTML tự chạy offline khi nhấp đúp, không yêu cầu npm hay web server.
+
+---
+
 ## 🔗 Workflow Integration
 
 **Nguồn sự thật pipeline: `<skills_dir>/a1-project-init/references/pipeline.md`** — KHÔNG vẽ lại pipeline trong response; nếu nơi khác mô tả thứ tự lệch, pipeline.md thắng.

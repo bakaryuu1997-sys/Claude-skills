@@ -48,6 +48,7 @@ Nguyên tắc bất biến:
    - Ảnh/screenshot → đọc bằng vision, trích chữ và mô tả sơ đồ
 3. **File OneDrive online-only**: lỗi `Invalid argument` / `Not a zip file` → thử Read tool → nếu vẫn lỗi → yêu cầu người dùng "Always keep on this device". Không bịa nội dung.
 4. File từ nhiều dự án khác nhau → nêu rõ file nào là phạm vi phân tích.
+5. **URL / Tài liệu trực tuyến (Clean Ingestion Protocol — Firecrawl standard)**: Khi phân tích từ link web/tài liệu online, loại bỏ triệt tiêu HTML rác, navigation bar, footer và cookie banner; chỉ giữ lại Clean Markdown ngữ nghĩa (tiêu đề, bảng biểu, data schema, logic nghiệp vụ) để tiết kiệm token và chống hallucination.
 
 **Không phân tích dựa trên phỏng đoán tên file** — phải đọc được nội dung trước.
 

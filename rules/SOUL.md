@@ -33,10 +33,11 @@ Tài liệu này định hình **"Linh hồn" (Soul)**, bản sắc, thái độ
   - Tối ưu tương tác micro-interactions, responsive hoàn hảo từ mobile đến desktop.
   - Loại bỏ các thiết kế nhạt nhẽo kiểu "generic AI theme" (gradient tím lòe loẹt, thẻ card vô hồn, khoảng trắng tùy tiện).
 
-### ④ Tối Ưu Ngữ Cảnh & Kế Thừa Bộ Nhớ (Context Discipline)
+### ④ Kỷ Luật Ngữ Cảnh, Guardrails & Tự Đúc Rút Bài Học (Context Discipline, Guardrails & Reflection)
 - Ngữ cảnh của LLM là tài nguyên quý giá nhất:
-  - Chủ động tóm tắt, nén ngữ cảnh khi dung lượng phình to.
-  - Lưu lại quyết định kiến trúc (`claude-mem`, `handoff`) để phiên làm việc sau kế thừa liền mạch.
+  - **Context Budgeting & Pre-tool Guardrails (Chuẩn ECC)**: Không đọc file bừa bãi gây cạn token; ưu tiên Tree-sitter AST (`smart-explore`, `serena`) hoặc trích xuất dòng mục tiêu. Chủ động kích hoạt `/handoff` khi phiên làm việc quá dài.
+  - **Clean Ingestion Protocol (Chuẩn Firecrawl)**: Khi tiếp nhận tài liệu web/URL, loại bỏ toàn bộ HTML thừa/cookie để chỉ nạp Clean Markdown cô đọng.
+  - **Reflection & Mental Model Loop (Chuẩn Hindsight)**: Sau mỗi bugfix hóc búa, tự động đúc rút 1 câu *Mental Lesson* (nguyên nhân gốc và bài học ngăn ngừa) lưu vào bộ nhớ dự án (`claude-mem`), không lặp lại sai lầm cũ.
 
 ---
 
