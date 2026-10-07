@@ -37,10 +37,10 @@ flowchart TD
         A2 --> A3["A3: prototype-ui<br/>(Clickable HTML Mockup)"]
         A2 --> A4["A4: api-design<br/>(API Spec, Postman, OpenAPI)"]
         A4 --> A5["A5: db-design<br/>(PostgreSQL Schema & ERD)"]
+        A4 & A5 --> A8["A8: test-plan<br/>(Test Case 14 Cột & Traceability)"]
         A2 & A3 & A4 & A5 --> GateA{"Gate P1 Check<br/>(<=3 Open Qs)"}
         GateA -- Pass --> A6["A6: estimate<br/>(WBS Man-day 6 Sheets)"]
         A6 --> A7["A7: estimate-template-fill<br/>(Điền form 見積書)"]
-        A6 --> A8["A8: test-plan<br/>(Test Case 14 Cột & Traceability)"]
         A6 & A8 --> A9["A9: project-timeline<br/>(Sprint Plan, Gantt, ICS)"]
     end
 
@@ -138,7 +138,7 @@ flowchart TD
 | Bước | Lệnh Skill | Tác dụng & Thời điểm dùng | Đầu ra chính |
 |:---:|---|---|---|
 | **C1** | `/c1-dev-implement` | **Lập trình viên viết code**: 3 chế độ (SCAFFOLD khởi tạo repo/Docker/CI, FEATURE code tính năng theo spec, BUGFIX sửa lỗi). | Code `src/`, `tests/`<br>`docs/C1_dev-implement/PR_*.md` |
-| **C2** | `/c2-api-test-suite-generator` | **Tự động sinh test suite API**: Sinh mã integration test thực thi được (Jest/Supertest/Pytest) bao phủ 8 mã HTTP + mock DB fixtures. | `tests/api/*_api.test.ts`<br>`tests/fixtures/*_fixture.ts` |
+| **C2** | `/c2-api-test-suite-generator` | **Tự động sinh test suite API**: Sinh mã integration test thực thi được (Jest/Supertest/Pytest) bao phủ 8 mã HTTP + mock DB fixtures. | `tests/api/*_api.test.ts`<br>`tests/fixtures/*_fixture.ts`<br>`docs/C2_api-test-suite-generator/*.md` |
 | **C3** | `/c3-code-review` | **Review code & PR**: Đối chiếu spec api/db design, kiểm tra chuẩn kỹ thuật, xuất báo cáo checklist Excel 5 sheet và Markdown. | `*_Code_Review_Report.xlsx`<br>`*_Code_Review_Report.md` |
 | **C4** | `/c4-trailofbits-security-skills` | **Kiểm toán bảo mật (Security Audit)**: Rà soát 7 vector lỗ hổng nghiêm trọng (IDOR, JWT flaws, bypass schema, rò rỉ credential/log, SQLi, ReDoS). | `docs/C4_security-audit/Security_Audit_Report.md` |
 | **C5** | `/c5-test-execution` | **Quản lý thực thi kiểm thử**: Theo dõi kết quả UT/IT/ST/UAT, danh sách defect, tính tỷ lệ pass/fail theo viewpoint, xuất báo cáo nghiệm thu. | `docs/C5_test-execution/*_Execution.xlsx`<br>`*_Report.docx` |

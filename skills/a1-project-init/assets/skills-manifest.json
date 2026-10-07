@@ -458,7 +458,8 @@
       "summary": "Tự động sinh test suite API (Jest/Supertest): 8 mã HTTP + mock DB/Auth fixtures",
       "outputs": [
         "tests/api/*_api.test.ts",
-        "tests/fixtures/*_fixture.ts"
+        "tests/fixtures/*_fixture.ts",
+        "docs/C2_api-test-suite-generator/API_TEST_SUITE_*.md"
       ],
       "intents": [
         "api test suite",

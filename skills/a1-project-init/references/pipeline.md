@@ -1,4 +1,4 @@
-﻿# PIPELINE DỰ ÁN — NGUỒN SỰ THẬT DUY NHẤT (v3.0.0)
+# PIPELINE DỰ ÁN — NGUỒN SỰ THẬT DUY NHẤT (v3.8.0)
 
 > File này là nơi DUY NHẤT định nghĩa thứ tự pipeline, hằng số chung và hợp đồng I/O giữa các skill.
 > Mọi skill chỉ ghi "bước hiện tại + bước kế tiếp" và trỏ về đây. Nếu bất kỳ tài liệu/skill nào mô tả
