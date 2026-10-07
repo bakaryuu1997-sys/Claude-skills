@@ -98,6 +98,10 @@ Hệ thống tự động suy luận ngôn ngữ tự nhiên tiếng Việt (bao
 | *"tăng cá tính UI", "làm UI đậm nét hơn", "bolder UI"* | `/impeccable bolder` |
 | *"tiết chế UI", "làm dịu giao diện lại", "quieter UI"* | `/impeccable quieter` |
 | *"xử lý edge case giao diện", "lỗi tràn chữ", "harden UI"* | `/impeccable harden` |
+| *"dựng layout độc bản", "chống trùng lặp bố cục", "khung xương web", "hallmark", "build UI mới"* | `/hallmark` (hoặc `hallmark build`) |
+| *"học DNA thiết kế", "bóc tách style từ ảnh", "học mẫu từ website", "hallmark study"* | `hallmark study <screenshot/URL>` |
+| *"đổi mới diện mạo", "đập đi xây lại layout", "hallmark redesign"* | `hallmark redesign` |
+| *"soi lỗi anti-pattern giao diện", "hallmark audit"* | `hallmark audit` |
 | *"menu", "hướng dẫn", "có những skill gì", "danh sách kỹ năng"* | `/menu` |
 | *"tìm trong trí nhớ", "lần trước làm thế nào", "tra cứu memory"* | `/mem-search` |
 | *"bàn giao ca làm việc", "tạo handoff", "tóm tắt phiên để tiếp tục"* | `/handoff` |
