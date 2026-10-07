@@ -90,10 +90,14 @@ Hệ thống tự động suy luận ngôn ngữ tự nhiên tiếng Việt (bao
 | *"kiểm tra sức khỏe skills", "audit bộ skill", "linter skills", "skill doctor"* | `/x6-skill-doctor` |
 | *"tạo slide thuyết trình", "làm powerpoint", "tạo pitch deck", "slide báo cáo dự án"* | `/x7-presentation-deck` |
 
-### Tiện ích Bổ trợ & Thẩm mỹ Giao diện
+### Tiện ích Bổ trợ, Thẩm Mỹ Giao Diện & Design Director
 | Người dùng nói (Tiếng Việt tự nhiên) | Kỹ năng được kích hoạt |
 |---|---|
 | *"trau chuốt UI", "chống AI slop", "bảng màu đẹp", "typography chuẩn", "làm UI có gu"* | `/ui-ux-pro-max` |
+| *"trau chuốt UI đỉnh cao", "audit UI", "impeccable", "làm UI đẳng cấp", "polish giao diện"* | `/impeccable polish` hoặc `/impeccable audit` |
+| *"tăng cá tính UI", "làm UI đậm nét hơn", "bolder UI"* | `/impeccable bolder` |
+| *"tiết chế UI", "làm dịu giao diện lại", "quieter UI"* | `/impeccable quieter` |
+| *"xử lý edge case giao diện", "lỗi tràn chữ", "harden UI"* | `/impeccable harden` |
 | *"menu", "hướng dẫn", "có những skill gì", "danh sách kỹ năng"* | `/menu` |
 | *"tìm trong trí nhớ", "lần trước làm thế nào", "tra cứu memory"* | `/mem-search` |
 | *"bàn giao ca làm việc", "tạo handoff", "tóm tắt phiên để tiếp tục"* | `/handoff` |

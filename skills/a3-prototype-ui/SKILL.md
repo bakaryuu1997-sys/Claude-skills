@@ -19,6 +19,8 @@ Từ requirement hoặc mô tả, **tự động sinh ra file HTML prototype ho�
 
 Output: `[TênDựÁn]_Prototype_v1.html` — **1 file duy nhất, mở trình duyệt là chạy, không cần internet (luôn có hậu tố version _v1.html)**
 
+> 💡 **Khuyến nghị Trau chuốt Giao diện (Design Polish)**: Sau khi sinh file prototype HTML, có thể gọi `/impeccable audit` hoặc `/impeccable polish` (kết hợp bảng màu & font từ `ui-ux-pro-max`) để rà soát 60 quy tắc chống AI Slop và vi chỉnh typography/spacing đạt chuẩn Design Director trước khi demo cho khách.
+
 ---
 
 ## Bước -1 — Đọc Project Context (nếu có)
