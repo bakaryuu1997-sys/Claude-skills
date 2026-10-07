@@ -140,12 +140,15 @@ flowchart TD
 |:---:|---|---|---|
 | **C1** | `/c1-dev-implement` | **Lập trình viên viết code**: 3 chế độ (SCAFFOLD khởi tạo repo/Docker/CI, FEATURE code tính năng theo spec, BUGFIX sửa lỗi). | Code `src/`, `tests/`<br>`docs/C1_dev-implement/PR_*.md` |
 | **C2** | `/c2-api-test-suite-generator` | **Tự động sinh test suite API**: Sinh mã integration test thực thi được (Jest/Supertest/Pytest) bao phủ 8 mã HTTP + mock DB fixtures. | `tests/api/*_api.test.ts`<br>`tests/fixtures/*_fixture.ts`<br>`docs/C2_api-test-suite-generator/*.md` |
-| **C3** | `/c3-code-review` | **Review code & PR**: Đối chiếu spec api/db design, kiểm tra chuẩn kỹ thuật, xuất báo cáo checklist Excel 5 sheet và Markdown. | `*_Code_Review_Report.xlsx`<br>`*_Code_Review_Report.md` |
+| **C3** | `/c3-code-review` | **Review code & PR**: Đối chiếu spec api/db design, kiểm tra chuẩn kỹ thuật, xuất báo cáo checklist Excel 5 sheet và Markdown (hỗ trợ companion CLI `ocr review` từ Alibaba). | `docs/C3_code-review/*_Code_Review_Report.xlsx`<br>`docs/C3_code-review/*_Code_Review_Report.md` |
 | **C4** | `/c4-trailofbits-security-skills` | **Kiểm toán bảo mật (Security Audit)**: Rà soát 7 vector lỗ hổng nghiêm trọng (IDOR, JWT flaws, bypass schema, rò rỉ credential/log, SQLi, ReDoS). | `docs/C4_security-audit/Security_Audit_Report.md` |
 | **C5** | `/c5-test-execution` | **Quản lý thực thi kiểm thử**: Theo dõi kết quả UT/IT/ST/UAT, danh sách defect, tính tỷ lệ pass/fail theo viewpoint, xuất báo cáo nghiệm thu. | `docs/C5_test-execution/*_Execution.xlsx`<br>`*_Report.docx` |
 | **C6** | `/c6-sprint-review` | **Tổng kết Sprint & Retrospective**: Đối chiếu Planned vs Actual, đo đạc velocity trend, phân tích bug health, retro 4L và ghi Sprint Log tích lũy. | `docs/C6_sprint-review/*_Review.xlsx`<br>`*_Sprint_Log.xlsx` |
 | **C7** | `/c7-change-request` | **Quản lý yêu cầu thay đổi (CR)**: Phân tích phạm vi ảnh hưởng (Impact Analysis), tính toán lại công số man-day khi scope thay đổi sau khi chốt. | `*_CR[N]_Change_Request.xlsx`<br>`*_Impact_Summary.md` |
 | **C8** | `/c8-release-deployment` | **Kế hoạch phát hành & Deploy Production**: Checklist pre/post deploy đa tầng, quản lý migration DB an toàn, kịch bản smoke test và phương án rollback dự phòng ≤ 15 phút. | `Release_Plan_v[N].docx`<br>`Deployment_Checklist.xlsx`<br>`Smoke_Test_Runbook.md` |
+
+> ⚡ **Công Cụ Soi Lỗi Cơ Học Siêu Tốc — Alibaba Open Code Review (`ocr`):**
+> Hệ thống tích hợp sẵn công cụ CLI chính thức `@alibaba-group/open-code-review` của Alibaba Group (Go binary + LLM). Trước khi chạy `/c3-code-review` đối chiếu spec kiến trúc, lập trình viên có thể chạy `ocr review` trên dòng lệnh để tự động bóc tách Git diff, bắt lỗi Null Pointer, Race Condition, Memory Leak với mức tiêu thụ token chỉ bằng **1/9** thông thường và độ lệch vị trí (Position Drift) bằng 0.
 
 ---
 

@@ -20,7 +20,7 @@ Review code thay đổi và đưa ra **báo cáo có cấu trúc** — phân lo�
 ## Quy ước thư mục đầu ra (Output Directory Convention) — BẮT BUỘC
 
 Khi xuất file báo cáo review chi tiết (hoặc lưu log audit PR):
-1. **Mọi file báo cáo review** BẮT BUỘC lưu vào thư mục chuyên biệt: `docs/C1_code-review/`.
+1. **Mọi file báo cáo review** BẮT BUỘC lưu vào thư mục chuyên biệt: `docs/C3_code-review/`.
 2. **Bộ đôi output tiêu chuẩn (Dual Deliverables):**
    - **`[TênDựÁn]_Code_Review_Report.xlsx`**: Workbook 5 sheet (Review_Summary, Review_Checklist 22 tiêu chí, Files_Reviewed & LOC, Findings_Defects log kèm fix, Key_Praises).
    - **`[TênDựÁn]_Code_Review_Report.md`**: Báo cáo Markdown chi tiết lưu trữ lịch sử PR.
@@ -31,12 +31,24 @@ Khi xuất file báo cáo review chi tiết (hoặc lưu log audit PR):
 
 ## Tiêu chuẩn Thiết kế & Nội dung Excel Tác nghiệp (Enterprise Workbook Standards)
 
-File `docs/C1_code-review/[TênDựÁn]_Code_Review_Report.xlsx` được thiết kế theo chuẩn Enterprise 5 sheets chi tiết sâu:
+File `docs/C3_code-review/[TênDựÁn]_Code_Review_Report.xlsx` được thiết kế theo chuẩn Enterprise 5 sheets chi tiết sâu:
 - **Sheet 1: `Review_Summary`**: KPI summary cards (Tổng files, LOC, Defect metrics, Final Verdict), Thông tin phiên review đầy đủ, Bảng ma trận phân bổ Defect theo mức độ nghiêm trọng, Bảng đánh giá chất lượng phân tầng (Layer Quality Scorecard), Biên bản ký duyệt & điều kiện Merge Gates.
 - **Sheet 2: `Review_Checklist`**: 22 tiêu chí kiểm soát chuyên sâu (Clean Architecture, OWASP ASVS v4.0, NIST SP 800-63B, Docker CIS, TypeScript Strict Mode) kèm mức độ rủi ro, tệp tin liên quan, kết quả thẩm tra (PASS, FIXED, REC) và phân tích kỹ thuật chi tiết.
 - **Sheet 3: `Files_Reviewed`**: Danh mục toàn bộ tệp mã nguồn được rà soát (Đường dẫn, Phân hệ/Layer, Ngôn ngữ, LOC, Đánh giá độ phức tạp/Rủi ro, Hàm/Lớp kiểm tra trọng tâm, Review focus, Trạng thái thẩm tra).
 - **Sheet 4: `Findings_Defects`**: Sổ theo dõi khiếm khuyết chi tiết (Finding ID, Severity badge, Phân loại lỗi, Vị trí File:Line, Mô tả hiện tượng & Tác động hệ thống, Phân tích nguyên nhân gốc rễ RCA, Mã nguồn sửa chữa Before/After snippet, Bằng chứng kiểm chứng Verification Evidence, Trạng thái xử lý).
 - **Sheet 5: `Key_Praises`**: Tuyên dương 8 điểm sáng kỹ thuật vượt trội (Argon2id, Dual-token & Session Revocation, 2-tier Rate Limiter, WebSocket Heartbeat, Anti-echo Broadcast, Centralized Error Envelope, Non-root Container, High Coverage Unit Test) kèm cơ chế kỹ thuật sâu, lợi ích hệ thống và tiêu chuẩn đối chiếu.
+
+---
+
+## ⚡ Phối hợp cùng Alibaba Open Code Review (`ocr review`)
+
+Hệ thống đã tích hợp sẵn công cụ CLI chính thức của Alibaba Group (`@alibaba-group/open-code-review`):
+- **Bắt lỗi cơ học siêu tiết kiệm token (1/9 token)**: Trước khi đối chiếu spec, có thể chạy trực tiếp:
+  ```bash
+  ocr review          # Tự động đọc Git diff và bắt lỗi Null Pointer, Race condition, Memory leak
+  ocr scan <folder>   # Quét toàn bộ thư mục mã nguồn không cần Git diff
+  ```
+- **Phân công nhiệm vụ**: Alibaba OCR phụ trách phát hiện lỗi dòng lệnh cơ học với độ chính xác tuyệt đối (Position Drift = 0). Sau đó, `c3-code-review` tiếp quản kết quả để đối chiếu với đặc tả `API_Design.xlsx` / `DB_Design.xlsx` và hoàn thiện Workbook Excel 5 sheet nghiệm thu.
 
 #### Quy chuẩn UX & Định dạng Workbook:
 - **Gridlines:** Kích hoạt `ws.views.sheetView[0].showGridLines = True` trên 100% sheets.

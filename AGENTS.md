@@ -65,7 +65,8 @@ Hệ thống tự động suy luận ngôn ngữ tự nhiên tiếng Việt (bao
 |---|---|
 | *"code task này", "implement tính năng", "scaffold dự án", "fix bug này", "viết code theo spec"* | `/c1-dev-implement` |
 | *"sinh test suite API", "viết integration test API", "test Jest/Supertest", "test Pytest"* | `/c2-api-test-suite-generator` |
-| *"review code", "review PR", "soi lỗi pull request", "kiểm tra diff"* | `/c3-code-review` |
+| *"review code", "review PR", "soi lỗi pull request", "kiểm tra diff"* | `/c3-code-review` (kết hợp `ocr review`) |
+| *"soi lỗi dòng lệnh", "alibaba code review", "ocr review", "quét lỗi diff tự động"* | `ocr review` (Alibaba Open Code Review) |
 | *"kiểm tra bảo mật", "audit security", "quét lỗ hổng IDOR", "kiểm tra JWT", "SQLi check"* | `/c4-trailofbits-security-skills` |
 | *"báo cáo test", "quản lý kết quả test", "defect list", "tổng hợp bug UT/IT", "exit criteria"* | `/c5-test-execution` |
 | *"tổng kết sprint", "sprint review", "họp retro", "tính velocity", "4L retrospective"* | `/c6-sprint-review` |
