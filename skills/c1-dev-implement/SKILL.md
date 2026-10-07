@@ -29,9 +29,12 @@ Biến spec thành code **pass được chính /c3-code-review của dự án ng
 
 ---
 
-## Tiêu chuẩn chống sơ sài & Chất lượng nghiêm ngặt (Anti-Superficiality Standard)
+## Tiêu chuẩn chống sơ sài & Chất lượng nghiêm ngặt (Anti-Superficiality Standard & Full-Output)
 
-Tuyệt đối KHÔNG sinh code khung (skeleton), dummy placeholder rỗng hoặc comment `// TODO`:
+Tuyệt đối KHÔNG sinh code khung (skeleton), dummy placeholder rỗng hoặc comment viết tắt:
+- **Cấm tuyệt đối trong mã nguồn**: `// TODO: tự code tiếp`, `// ...`, `/* rest of code unchanged */`, `// implement here`, `// similar to above`, bare `...`.
+- **Cấm thoái thác trong câu trả lời**: Không dùng các câu như *"vì lý do ngắn gọn"*, *"bạn tự viết tiếp nhé"*, *"các hàm khác tương tự"*.
+- **Sinh mã nguồn hoàn chỉnh**: Nếu yêu cầu một file hay module, xuất đầy đủ 100% logic có thể chạy được. Nếu tiến trình tiến gần giới hạn token, ngắt tại breakpoint sạch sẽ (hết hàm / hết class) và thông báo: `[PAUSED — Hoàn thành X/Y. Gõ "tiếp tục" để sinh tiếp: <tên_hàm_tiếp_theo>]`.
 
 1. **Nguyên tắc Cấu hình Tập trung (Config Integrity & Fail-Fast):**
    - File cấu hình (`src/config/index.ts`) bắt buộc khai báo Type/Interface rõ ràng, đồng bộ cấu trúc object (tránh lệch giữa các module gọi như `config.server.port` vs `config.port`).

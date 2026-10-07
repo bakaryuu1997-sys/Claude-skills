@@ -54,6 +54,12 @@ Output: `[TênDựÁn]_Prototype_v1.html` — **1 file duy nhất, mở trình d
 ### Nguyên tắc chung
 - **Realistic, không placeholder** — dùng tên/data thực tế của dự án (món ăn thật, dữ liệu nghiệp vụ thật...)
 - **Thiết kế rõ ràng, chuẩn mực** — bố cục sạch sẽ (clean layout), khoảng cách nhất quán (consistent spacing), font chữ dễ đọc, tuân thủ checklist "Đủ tốt để demo".
+- **Chống "AI Slop" & Thẩm mỹ có gu (Anti-AI Slop & Impeccable Taste)** —
+  - Tuyệt đối tránh các mẫu giao diện AI generic: cấm lạm dụng gradient tím/hồng neon vô hồn (`#8B5CF6` $\rightarrow$ `#EC4899`), cấm phủ kính mờ (glassmorphism) đục ngầu vô tội vạ, cấm bố cục 3 card đều tăm tắp vô hồn.
+  - Áp dụng bộ 3 thông số định hình (*The Three Dials*):
+    * `DESIGN_VARIANCE`: Cân bằng bố cục (đối xứng chỉn chu cho B2B/Admin; phá cách linh hoạt cho Consumer/Landing).
+    * `MOTION_INTENSITY`: Vi chuyển động tinh tế (`transition: 150ms ease-out`), cấm animation giật cục hay vòng lặp vô tận gây nhức mắt.
+    * `VISUAL_DENSITY`: Mật độ hiển thị chuẩn mực (thoáng đãng cho trải nghiệm đọc/consumer; tinh gọn, tối ưu diện tích cho bảng dữ liệu/dashboard).
 - **Unified Theme (Đồng nhất sáng/tối, tuyệt đối không clashing)** — Chọn 1 phong cách màu xuyên suốt: toàn bộ Light Theme thanh lịch (nền `#F8FAFC`, sidebar sáng, viền `#E2E8F0`, font slate) HOẶC toàn bộ Dark Theme chuẩn. Tuyệt đối không pha trộn sidebar đen kịt đi kèm nội dung trắng bệch gây chói mắt và không đồng bộ.
 - **Quy chuẩn Mobile Frame (`.mobile-mode`)** —
   - Khung mobile bắt buộc `flex-direction: column !important;` để không bị vỡ giao diện.

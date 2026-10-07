@@ -16,7 +16,8 @@ Kho kỹ năng (Skills) và công cụ mở rộng (MCP Servers) toàn diện ch
 9. [🎨 Kỹ Năng Thiết Kế Giao Diện Đẳng Cấp (UI/UX Pro Max)](#-kỹ-năng-thiết-kế-giao-diện-đẳng-cấp-uiux-pro-max)
 10. [⚡ Kỹ Năng Đặc Nhiệm & Lập Trình Tự Trị (Superpowers Skills)](#-kỹ-năng-đặc-nhiệm--lập-trình-tự-trị-superpowers)
 11. [🔌 Hệ Thống Công Cụ Mở Rộng MCP (Model Context Protocol)](#-hệ-thống-công-cụ-mở-rộng-mcp-servers)
-12. [⚙️ Hướng Dẫn Cài Đặt & Đồng Bộ Tự Động](#️-hướng-dẫn-cài-đặt--đồng-bộ-tự-động)
+12. [📜 Quy Tắc Toàn Cục & Ý Định Tiếng Việt (AGENTS.md & SOUL.md)](#-quy-tắc-toàn-cục--bộ-phân-loại-ý-định-tiếng-việt-agentsmd--soulmd)
+13. [⚙️ Hướng Dẫn Cài Đặt & Đồng Bộ Tự Động](#️-hướng-dẫn-cài-đặt--đồng-bộ-tự-động)
 
 ---
 
@@ -257,7 +258,22 @@ flowchart TD
 
 ---
 
-## ⚙️ HƯỚNG DẪN CÀI ĐẶT & ĐỒNG BỘ TỰ ĐỘNG
+## 📜 QUY TẮC TOÀN CỤC & BỘ PHÂN LOẠI Ý ĐỊNH TIẾNG VIỆT (AGENTS.md & SOUL.md)
+
+Hệ thống được trang bị bộ quy tắc toàn cục [`AGENTS.md`](./AGENTS.md) và triết lý hoạt động [`SOUL.md`](./SOUL.md) (tự động nhận diện bởi cả Claude Code và Antigravity):
+
+1. **Bộ Phân Loại Ý Định Tiếng Việt Tự Nhiên (Vietnamese Intent Classifier)**:
+   - Giao tiếp bằng tiếng Việt đời thường hoặc từ lóng dev (*"soi bug"*, *"trau chuốt UI"*, *"soạn báo giá"*, *"review PR"*...).
+   - Hệ thống tự động ánh xạ chính xác vào **38 skills chuẩn** của dự án mà không cần nhớ cú pháp tiếng Anh.
+2. **Kỷ Luật Viết Code Đầy Đủ (Anti-Lazy & Full-Output Enforcement)**:
+   - Cấm tuyệt đối code tắt, cấm comment kiểu `// TODO: tự code tiếp`, `/* rest of code unchanged */` hoặc placeholder rỗng.
+   - Bắt buộc sinh mã nguồn hoàn chỉnh có thể chạy được, xử lý triệt để nguyên nhân gốc rễ (Root-Cause First).
+3. **Thẩm Mỹ Giao Diện & Chống "AI Slop"**:
+   - Tích hợp tiêu chuẩn thiết kế có gu (Taste), cấm màu tím neon gradient generic của AI, đồng bộ hóa iconography và vi chỉnh khoảng cách/typography chuẩn mực.
+
+---
+
+## ⚙️ HƯỚNG DẪN CÀI ĐẶT & ĐỒNG BỘ TỰ ĐỘNG (BƯỚC 13)
 
 ### 1. Cài đặt trên máy khác (Claude Code / Codex / Antigravity)
 * Mở menu Plugin trên công cụ làm việc → **Marketplaces** → **Add Marketplace** → Dán link:

@@ -75,7 +75,10 @@ Before delivering app UI code, verify every item below. Start with the process s
 
 ### Visual Quality
 - [ ] No emojis used as icons (use SVG instead)
-- [ ] All icons come from a consistent icon family and style
+- [ ] All icons come from a consistent icon family and style (Phosphor / Radix / Tabler)
+- [ ] Anti-AI Slop: No generic AI purple/neon gradients (`#8B5CF6` → `#EC4899`), no unmotivated blurry glassmorphism, no identical repetitive 3-card layouts
+- [ ] Taste & The Three Dials: Balance `DESIGN_VARIANCE` (1–10), `MOTION_INTENSITY` (1–10), and `VISUAL_DENSITY` (1–10) tailored to target audience (B2B SaaS vs Consumer vs Editorial)
+- [ ] Typography Hierarchy: Clear rhythm across H1 > H2 > Body > Caption with proportional line-height and font-weight contrast
 - [ ] Official brand assets are used with correct proportions and clear space
 - [ ] Pressed-state visuals do not shift layout bounds or cause jitter
 - [ ] Semantic theme tokens are used consistently (no ad-hoc per-screen hardcoded colors)

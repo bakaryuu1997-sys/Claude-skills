@@ -62,7 +62,7 @@ Mọi hướng dẫn quy chuẩn, template và cấu hình linter nội bộ lư
    - `chore`: Cấu hình build, dependency, linting.
 
 2. **PR Description Bắt Buộc 7 Mục (Template Chuẩn):**
-   Mỗi PR bắt buộc tạo file mô tả tại `docs/C0_dev-implement/PR_<TICKET_OR_SPRINT>.md` gồm đủ 7 mục:
+   Mỗi PR bắt buộc tạo file mô tả tại `docs/C1_dev-implement/PR_<TICKET_OR_SPRINT>.md` gồm đủ 7 mục:
    1. **Summary**: Tóm tắt thay đổi (1–3 câu).
    2. **Directory Tree**: Danh sách các file tạo mới hoặc sửa đổi.
    3. **Spec Adherence Table**: Bảng đối chiếu từng tiêu chí với Detail Design / API Spec.
@@ -83,6 +83,22 @@ Mọi hướng dẫn quy chuẩn, template và cấu hình linter nội bộ lư
 3. **Hai Điều Kiện Bất Di Bất Dịch**:
    - **Bắt buộc có bước xác nhận**: Luôn chặn quyền tự ý ghi đè file của AI. Phải chờ người dùng duyệt trước khi sửa file.
    - **Chỉ cập nhật lỗi quy trình, bỏ qua lỗi tức thời**: Lọc bỏ các yêu cầu cá biệt nhất thời, chỉ lưu trữ các chuẩn mực mang tính hệ thống.
+
+---
+
+## Trụ Cột 4: Kỷ Luật Xuất Mã Nguồn Đầy Đủ & Chống Viết Tắt (Full-Output Enforcement)
+
+1. **Cấm tuyệt đối các mẫu mã nguồn viết tắt (Banned Code Patterns):**
+   - `// TODO: tự code tiếp`, `// ...`, `/* rest of code unchanged */`, `// implement here`, `// similar to above`.
+   - Dấu ba chấm trần (`...`) thay cho logic nội tại của hàm hoặc module.
+   - Thay thế mã nguồn thật bằng mô tả lời nói hoặc khung sườn (skeleton) rỗng khi được yêu cầu code hoàn chỉnh.
+2. **Cấm các mẫu thoái thác trong văn bản (Banned Prose Shortcuts):**
+   - *"Báo cho tôi nếu bạn muốn tôi viết tiếp"*, *"Vì lý do ngắn gọn..."*, *"Phần còn lại tương tự như trên..."*.
+3. **Cơ chế xử lý khi vượt ngưỡng Token (Clean Breakpoint Splitting):**
+   - Khi phản hồi chạm ngưỡng giới hạn token, tuyệt đối không nén chất lượng hay cắt xén các hàm cuối.
+   - Viết mã nguồn chất lượng cao đến đúng một điểm ngắt sạch (hết một file, một hàm hoặc một section).
+   - Đóng lại bằng thông báo rõ ràng: `[PAUSED — Hoàn thành X/Y. Gõ "tiếp tục" để sinh tiếp: <tên_hàm_tiếp_theo>]`.
+
 
 ---
 
