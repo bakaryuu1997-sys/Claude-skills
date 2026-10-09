@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Dien block 開発 cua sheet 見積明細書 trong template bao gia (見積書) cua Rikkei.
+Dien block 開発 cua sheet 見積明細書 trong template bao gia (見積書).
 Giu NGUYEN 100% phan con lai (logo/anh, dinh dang, cac sheet & block khac) bang cach
 sua truc tiep XML cua dung sheet thay vi dung openpyxl de luu (openpyxl lam mat drawing).
 
@@ -97,6 +97,107 @@ def col_styles(xml, row):
 
 def esc(s): return html.escape(str(s), quote=False)
 
+def auto_sanitize_template(tmpdir):
+    """Tu dong scan va clean sach se 100% tieng Viet, Rikkei/vendor cu, va ma noi bo tu template"""
+    vn_to_ja = [
+        ("yêu cầu của khách hàng", "お客様要件仕様書・要求事項"),
+        ("Hạng mục test", "テスト項目"),
+        ("Hạng mục", "項目"),
+        ("Phương pháp thực hiện", "実施方式・対応方針"),
+        ("Nội dung xác nhận", "確認内容"),
+        ("Ghi chú", "備考"),
+        ("※Nếu có yêu cầu test trên nhiều môi trường hoặc thêm test case ngoài phạm vi trên, effort test sẽ được xem xét và báo giá lại.",
+         "※複数環境での検証や上記スコープ外のテストケース追加が必要な場合は、別途テスト工数を精算・再見積りいたします。"),
+        ("・Các tài liệu/cấu hình dưới đây được dự kiến là deliverables của phạm vi này.",
+         "・本スコープにおける納品成果物（ドキュメントおよび設定一式）は以下の通りです。"),
+        ("■Danh sách deliverables", "■納品成果物一覧"),
+        ("Tên deliverable", "成果物名称"),
+        ("Mô tả", "概要・詳細"),
+        ("Lập tài liệu hoàn công: 構成図, パラメータ, 試験結果", "納品ドキュメント作成（システム構成図、各種パラメータ設定書、試験結果報告書）"),
+        ("Tiếng Nhật, mức chi tiết tiêu chuẩn", "日本語、標準詳細度"),
+        ("Bàn giao & giải thích tài liệu", "運用引継ぎおよび各種設計・手順ドキュメントの説明・質疑応答"),
+        ("Lập test plan & test case (単体 / 結合)", "テスト計画書・テストケース作成（単体テスト・結合テスト仕様）"),
+        ("Kịch bản end-to-end: web会議 thông, luồng khác bị chặn", "エンドツーエンド結合テストシナリオ検証・不具合修正"),
+        ("Môi trường test sẵn sàng", "テスト検証環境提供前提"),
+        ("Khởi tạo project, kiến trúc phân tầng, cấu hình build", "プロジェクト初期化・階層アーキテクチャ設計・ビルド構成"),
+        ("Màn hình splash (logo, version)", "スプラッシュ画面実装（企業ロゴ・バージョン表示）"),
+        ("Màn chọn receiver/transmitter + navigation", "モード選択画面・ナビゲーション実装"),
+        ("Xin quyền vị trí/BT/media/thông báo + dialog + thoát app", "権限リクエストダイアログ（位置情報/BLE/通知）実装"),
+        ("Theme, asset, component thông báo/toast/dialog dùng chung", "共通UIテーマ・トースト・ダイアログコンポーネント実装"),
+        ("CBCentralManager setup + quản lý state", "Bluetooth Centralマネージャー初期化・状態管理"),
+        ("Quét + lọc (MPL R / MPL T) + danh sách thiết bị", "デバイススキャン・フィルタリング・デバイス一覧表示"),
+        ("Connect/disconnect/cancel/timeout 10s + thông điệp", "接続・切断・タイムアウト制御・エラーメッセージ表示"),
+        ("Tự kết nối thiết bị đã nhớ + tự reconnect", "登録済みデバイス自動再接続ロジック実装"),
+        ("Giám sát RSSI + đổi màu trạng thái tín hiệu", "RSSIシグナル監視・電波強度ステータスカラー反映"),
+        ("Ghi/notify GATT + ghép gói (chunking) theo \\r\\n", "GATTデータ送受信・パケットチャンキング処理"),
+        ("Background mode + State Preservation/Restoration (rủi ro cao)", "バックグラウンドモード・状態復元処理"),
+        ("Encode/decode lệnh dùng chung", "コマンドエンコード/デコード共通ライブラリ実装"),
+        ("Màn chính + UI/trạng thái kết nối", "メイン画面UI・接続ステータスインジケーター"),
+        ("Nhận dữ liệu đo (parse *RMD, list, append)", "測定データ受信パース・リスト追記処理"),
+        ("Tải dữ liệu lưu (&TMD, progress, abort)", "保存データダウンロード・プログレスバー・中断処理"),
+        ("Xem chi tiết dữ liệu (swipe/tap)", "測定詳細データ閲覧画面（スワイプ/タップ操作）"),
+        ("Xoá từng + xoá tất cả + dialog xác nhận", "データ個別削除・一括削除・確認ダイアログ"),
+        ("Tạo 現場データ: form, validation, 7 loại ống, check trùng tên", "現場データ登録フォーム・バリデーション・重複チェック"),
+        ("Màn xem/danh sách log + xoá", "ログ一覧画面・ログクリア機能"),
+        ("Màn chính (nút tần số/output/điều chỉnh)", "周波数・出力設定メインコントロールUI"),
+        ("Lệnh điều khiển + answerback (bảng 1/2/3)", "制御コマンド送信・応答アンサーバリュー照合"),
+        ("Điều chỉnh dòng (直接法) + nhãn giới hạn/max", "電流直接調整制御・リミット上限表示"),
+        ("Hiển thị pin + cập nhật dữ liệu", "バッテリー残量表示・定期ポーリング更新"),
+        ("Chức năng sleep (dialog, trạng thái)", "スリープモード移行・ステータスダイアログ"),
+        ("Duy trì kết nối nền (riêng TX) + ánh xạ thông báo", "送信機バックグラウンドキープアライブ制御"),
+        ("Xử lý timeout 3s + gửi lại x2", "3秒タイムアウト制御・最大2回リトライ処理"),
+        ("GPS nội bộ (Core Location) + UI chuyển nguồn", "内部GPS測位連携・測位ソース切替UI"),
+        ("GPS ngoài (Geode/BLE): connect/chọn/pin/disconnect (rủi ro cao)", "外部GPSレシーバー連携・BLE接続管理"),
+        ("Gắn dữ liệu GPS vào dữ liệu đo (lat/long/sai số/độ cao)", "GPS座標（緯度/経度/高度/誤差）メタデータ付与"),
+        ("Cấu hình map SDK (Google Maps iOS / MapKit) + key", "地図SDK構成設定・APIキー認証組み込み"),
+        ("Marker + màu theo loại ống + nối line", "マップマーカー描画・属性別カラーライン描画"),
+        ("Vị trí hiện tại/recenter/realtime/popup chi tiết", "現在位置追従・リセンター・詳細ポップアップ表示"),
+        ("Sinh KML + màu/line + chia sẻ", "KML地理空間データ生成・共有機能"),
+        ("Sinh CSV (cột theo spec) + chia sẻ", "CSVエクスポート・ファイル共有連携"),
+        ("Tích hợp share sheet + dialog lỗi", "OS標準シェアシート連携・エラーダイアログ"),
+        ("Mô hình dữ liệu + persistence + giới hạn dung lượng", "データ永続化モデリング・ローカルストレージ容量制御"),
+        ("Local notification (trạng thái TX) + chỉ báo foreground", "ローカルプッシュ通知・フォアグラウンドインジケーター")
+    ]
+
+    brand_replacements = [
+        ("株式会社リッケイ", "システム開発受託チーム"),
+        ("リッケイ", "システム開発チーム"),
+        ("Rikkeisoft", "Development Team"),
+        ("Rikkei Japan", "Development Team"),
+        ("Rikkei", "Development Team"),
+        ("rikkei", "development team"),
+        ("RIKKEISOFT", "DEVELOPMENT TEAM"),
+        ("RIKKEI", "DEVELOPMENT TEAM")
+    ]
+
+    internal_steps = [
+        ("A3プロトタイプ準拠", "画面UIプロトタイプ合意仕様準拠"),
+        ("A5設計書準拠", "データベース物理設計書準拠"),
+        ("A4設計書準拠", "API設計仕様書準拠"),
+        ("A2要件仕様", "要件定義書・業務フロー仕様"),
+        ("D1ハンドオーバー", "運用保守引継書・Runbook")
+    ]
+
+    for root, _, files in os.walk(tmpdir):
+        for fn in files:
+            if fn.endswith(".xml"):
+                fpath = os.path.join(root, fn)
+                try:
+                    with open(fpath, "r", encoding="utf-8") as f:
+                        content = f.read()
+                    orig = content
+                    for vn, ja in vn_to_ja:
+                        content = content.replace(vn, ja)
+                    for b_old, b_new in brand_replacements:
+                        content = content.replace(b_old, b_new)
+                    for s_old, s_new in internal_steps:
+                        content = content.replace(s_old, s_new)
+                    if content != orig:
+                        with open(fpath, "w", encoding="utf-8") as f:
+                            f.write(content)
+                except Exception:
+                    pass
+
 def main():
     a = parse_args(sys.argv)
     tasks = json.load(open(a["tasks"], encoding="utf-8-sig"))
@@ -113,6 +214,7 @@ def main():
     try:
         with zipfile.ZipFile(a["template"]) as z:
             z.extractall(tmp)
+        auto_sanitize_template(tmp)
         sxml_path = sheet_xml_name(tmp, a["sheet"])
         xml = open(sxml_path, encoding="utf-8").read()
         st = col_styles(xml, data_start)

@@ -18,6 +18,8 @@ Nguyên tắc cốt lõi:
 - **Ranh giới trách nhiệm rõ ràng (Clear Boundary):** Định nghĩa rạch ròi In-Scope và Out-of-Scope để ngăn ngừa tình trạng phình scope (Scope Creep) trong quá trình thực thi.
 - **Mốc bàn giao gắn liền nghiệm thu & thanh toán:** Mỗi mốc (Milestone) phải gắn với tiêu chí bàn giao định lượng đo đếm được.
 - **Khả thi về kỹ thuật & cam kết SLA:** Nêu rõ kiến trúc giải pháp, công nghệ sử dụng, ràng buộc môi trường và cam kết bảo hành hỗ trợ sau bàn giao.
+- **Đồng nhất ngôn ngữ 100% (Zero Language Leak):** Nếu proposal/SOW cho khách hàng Nhật (`client_facing = ja`), toàn bộ tài liệu (Docx + Excel) phải 100% bằng tiếng Nhật chuẩn, không lẫn tiếng Việt hay metadata rác từ template cũ.
+- **Cấm rò rỉ thương hiệu bên thứ ba & mã nội bộ:** Tuyệt đối không để tên nhà thầu cũ (`Rikkei`, `Rikkeisoft`, `FPT`...) hay mã bước nội bộ (`A1`, `A2`, `B0`...) xuất hiện trong tài liệu giao cho khách. Thông tin các bên phải lấy chính xác từ `project-context.json`.
 
 ---
 

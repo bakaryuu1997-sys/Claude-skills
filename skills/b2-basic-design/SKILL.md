@@ -19,9 +19,11 @@ Ranh giới rõ ràng:
 - **Detail Design = "làm thế nào bên trong"** (internal) — class/module, sequence diagram, logic thuật toán, DB schema access. → dùng `/b3-detail-design`.
 
 Nguyên tắc cốt lõi:
-- **Truy vết 100% (Traceability):** Mỗi màn hình phải ánh xạ về một hoặc nhiều Functional Requirements đã chốt ở A1 (Zero gap).
+- **Truy vết 100% (Traceability):** Mỗi màn hình phải ánh xạ về một hoặc nhiều Yêu cầu nghiệp vụ (Functional Requirements) đã chốt trong tài liệu yêu cầu (Zero gap).
 - **Không thiết kế màn hình ngoài scope:** Bám sát Scope Baseline đã ký duyệt trong Project Charter; tính năng mới phải qua Change Request.
 - **Chống sơ sài (Anti-Superficiality):** Deliverable phải đầy đủ chi tiết thực tế, bảng biểu hoàn chỉnh, không dùng khung xương hay placeholder "TBD".
+- **Đồng nhất ngôn ngữ 100% (Zero Language Leak):** Nếu thiết kế cơ bản cho khách Nhật (`client_facing = ja`), toàn bộ file docx, xlsx, Mermaid diagram phải 100% bằng tiếng Nhật chuẩn. Tuyệt đối không để sót tiếng Việt từ tài liệu nháp hay template.
+- **Cấm rò rỉ thương hiệu bên thứ ba & mã bước:** Tuyệt đối không để tên các bên thầu cũ (`Rikkei`, `Rikkeisoft`, `FPT`...) hay mã bước nội bộ (`A1`, `A2`, `B2`...) xuất hiện trong tài liệu gửi khách.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: c5-test-execution
-version: "3.8.0"
+version: "3.11.0"
 description: >-
   QUẢN LÝ + BÁO CÁO thực thi test UT/IT/ST/UAT: tracker pass/fail/blocked, defect list, metrics
   (pass rate, defect density), exit criteria, test report (xlsx + docx). Trigger: "test execution",
@@ -42,10 +42,16 @@ Tuyệt đối KHÔNG tạo tracker hay report qua loa với số lượng test 
    - E2E Web UI: Khai thác Playwright MCP / script tự động tương tác DOM thực tế (browser click, fill form, check modal, verify offline banner).
    - Unit Test & Integration Test: Chạy Jest / Pytest runner xuất báo cáo độ bao phủ nhánh (Branch Coverage) và dòng (Line Coverage).
    - API Test: Chạy test suite Postman / Newman kiểm thử toàn bộ mã lỗi HTTP và JSON schema.
-3. **Đồng bộ Single Source of Truth qua JSON:** Khi thực thi kiểm thử tự động, runner BẮT BUỘC lưu trữ snapshot kết quả vào file JSON chuẩn hóa (`*_test_results.json`) làm nguồn sự thật duy nhất (Single Source of Truth) trước khi đồng bộ vào Excel và Word report để đảm bảo tính nhất quán 100%.
+3. **Đồng bộ Single Source of Truth qua JSON & Universal Test Runner Adapter:** Khi thực thi kiểm thử tự động, runner BẮT BUỘC lưu trữ snapshot kết quả vào file JSON chuẩn hóa (`*_test_results.json`) làm nguồn sự thật duy nhất (Single Source of Truth) trước khi đồng bộ vào Excel và Word report để đảm bảo tính nhất quán 100%. Tự động nhận diện và trích xuất kết quả từ CLI của framework (`jest --json`, `pytest --json-report`, `cargo test --format=json`) bao gồm danh sách suite, test name, duration, assertion status và coverage.
 4. **Minh bạch bằng chứng kiểm thử (Verification Evidence):** Mọi ca kiểm thử Fail bắt buộc phải có mã Bug ID liên kết trực tiếp sang sheet `Defects`, kèm log lỗi hoặc ảnh chụp màn hình bằng chứng thực tế.
 5. **Phân tích theo Ma trận Góc nhìn (Test Viewpoint Analysis):** Sheet `Dashboard` phản ánh tỷ lệ Pass/Fail phân tầng theo 6 nhóm Viewpoint (UI, Validation, Business Flow, Network/Offline, Security, Exception) để chỉ ra chính xác cấu phần nào còn điểm nghẽn kỹ thuật.
 6. **Cổng kiểm soát chất lượng (Quality Gate):** Đọc trực tiếp từ context; bắt buộc 100% test cases đã chạy và 0 bug Critical/High mở mới được tuyên bố ĐẠT Phase kiểm thử.
+7. **Cơ chế tự động khóa Release Gate (Automated Release Blocker Enforcement Rule):**
+   Runner script bắt buộc đọc trực tiếp từ file JSON snapshot (`*_test_results.json`). Nếu phát hiện `open_critical_defects > 0` hoặc `open_high_defects > 0` hoặc bất kỳ chỉ số độ bao phủ (Coverage) nào thấp hơn ngưỡng tối thiểu trong `quality_gates`, hệ thống BẮT BUỘC gán nhãn `❌ NOT QUALIFIED / RELEASE BLOCKED` và highlight đỏ toàn bộ thẻ KPI/kết luận, tuyệt đối cấm tuyên bố vượt qua cổng chất lượng hoặc phê duyệt release khi còn vi phạm.
+8. **Kiểm Soát Bằng Chứng Cam Kết Hồi Quy Bắt Buộc (Defect Regression Evidence Enforcement Rule):**
+   Mọi bug/defect khi chuyển sang trạng thái `Closed` trong sheet `Defects` và JSON snapshot BẮT BUỘC phải điền đủ 4 trường dữ liệu nghiệm chứng hồi quy: `Regression Test ID`, `Regression Impact Scope` (danh mục module/hàm bị ảnh hưởng), `Required Regression Suites` (danh sách test suite bắt buộc retest), và `Verification Git Commit Hash`. Nếu thiếu bất kỳ trường nào, hệ thống tự động gán cờ `UNVERIFIED_FIX` và coi như chưa giải quyết xong lỗi, ngăn chặn phê duyệt Quality Gate.
+9. **Bảng Đo Lường Độ Trễ & Cảnh Báo Test Chạy Chậm (Test Execution Latency & Flaky Benchmark Tracker):**
+   Tự động trích xuất thuộc tính thời gian chạy (`duration` tính bằng mili-giây) của từng test suite từ kết quả Jest/Pytest vào file snapshot JSON (`*_test_results.json`) và hiển thị bảng xếp hạng `Top 5 Slowest Test Suites` trên sheet `Dashboard`. Tự động gắn nhãn cảnh báo `WARN: SLOW SUITE` đối với các suite chạy vượt quá 3.0 giây, nhắc nhở đội ngũ dev chủ động tối ưu mock I/O để duy trì tổng thời gian kiểm thử CI dưới ngưỡng 15 giây.
 
 ### Công cụ hỗ trợ điều hướng & tra cứu mã nguồn (Code Navigation Tools)
 
@@ -103,10 +109,11 @@ Sheet **UT / IT / ST / UAT** (cùng cấu trúc):
 - Cột **Bug ID**: bắt buộc điền nếu Fail
 
 Sheet **Defects** (quản lý bug):
-`Bug ID | Tiêu đề | Phase phát hiện | Severity | Priority | Trạng thái | Steps to reproduce | Expected | Actual | Assignee | Ngày mở | Ngày đóng | Test ID liên quan`
+`Bug ID | Tiêu đề | Phase phát hiện | Severity | Priority | Trạng thái | Steps to reproduce | Expected | Actual | Assignee | Ngày mở | Ngày đóng | Test ID liên quan | Regression Test ID | Regression Impact Scope | Required Regression Suites | Verification Git Commit Hash`
 
 - **Severity**: 🔴 Critical / 🟠 High / 🟡 Medium / 🟢 Low
 - **Trạng thái**: Open / In Progress / Fixed / Retest / Closed / Reject
+- **Truy vết kiểm thử hồi quy & Ma trận vùng ảnh hưởng (Defect Regression Blast Radius Matrix)**: Bắt buộc điền `Regression Test ID`, `Regression Impact Scope` (phạm vi module/dịch vụ bị ảnh hưởng), `Required Regression Suites` (danh sách suite bắt buộc retest) và `Verification Git Commit Hash` đối với mọi bug chuyển trạng thái `Closed` để làm bằng chứng thực nghiệm rằng defect đã được kiểm thử hồi quy thành công và cam kết không tái phát.
 
 Sheet **Dashboard** (tự tính bằng công thức):
 - Theo phase: Total / Run / Pass / Fail / Blocked / **Pass rate %** / Execution rate %

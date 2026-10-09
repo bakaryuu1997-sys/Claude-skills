@@ -228,6 +228,11 @@ Những hạng mục **không** có trong báo giá này, dạng bảng rõ ràn
 - Role Breakdown sheet: dùng màu role riêng biệt (BE=xanh dương, Mobile=tím, QA=xanh lá, PM=vàng)
 - Dùng `=SUM(...)` formula — không hardcode tổng
 
+### ⚠️ Kỷ luật Ngôn ngữ & Khử rác Deliverable (Zero Language Leak & Anti-Vendor Branding)
+- **100% đồng nhất ngôn ngữ**: Khi `client_facing = ja`, 100% nội dung cả 6 sheet (Assumptions, Summary, Detail Estimate, Role Breakdown, Out of Scope, Risks) BẮT BUỘC bằng tiếng Nhật chuẩn. Tuyệt đối không để lẫn tiếng Việt hay tiếng Anh (trừ thuật ngữ kỹ thuật quốc tế).
+- **Tuyệt đối cấm thương hiệu bên thứ ba**: Cấm để tên các công ty/nhà thầu cũ (như `Rikkei`, `Rikkeisoft`, `リッケイ`, `FPT`...) xuất hiện trong tài liệu.
+- **Tuyệt đối cấm mã nội bộ**: Thay thế toàn bộ mã bước (`A1`, `A3`, `A5`...) bằng tên tài liệu chính thức (`要件定義書`, `画面UIプロトタイプ仕様`, `DB物理設計仕様`...).
+
 ## Lưu và trình bày
 
 Lưu file vào folder Cowork của người dùng. Present file. Kết thúc bằng:

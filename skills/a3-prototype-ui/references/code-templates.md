@@ -129,6 +129,19 @@ function exportFeedback() {
   overflow: hidden;
   position: relative;
 }
+
+/* ── RESPONSIVE DEVICE TOGGLE CSS (BẮT BUỘC KHI CÓ TOGGLE MOBILE/DESKTOP) ── */
+.viewport-mobile .app-sidebar { display: none !important; }
+.viewport-mobile .app-shell { flex-direction: column !important; width: 100% !important; }
+.viewport-mobile .app-main { width: 100% !important; }
+.viewport-mobile .app-header { padding: 0 12px !important; }
+.viewport-mobile .screen-content-area { padding: 12px !important; padding-bottom: 70px !important; }
+.viewport-mobile .stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+.viewport-mobile .stat-val { font-size: 16px !important; }
+.viewport-mobile .card { padding: 12px 14px !important; margin-bottom: 12px !important; }
+.viewport-mobile .mobile-bottom-nav { display: flex !important; }
+.viewport-mobile .desktop-only { display: none !important; }
+.viewport-mobile .mobile-only { display: block !important; }
 ```
 
 ### Screen switching

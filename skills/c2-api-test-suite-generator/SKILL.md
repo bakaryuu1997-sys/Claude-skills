@@ -1,6 +1,6 @@
 ---
 name: c2-api-test-suite-generator
-version: "3.8.0"
+version: "3.11.0"
 description: >-
   Tự động sinh mã nguồn test suite API thực thi được (Jest/Supertest, Pytest/Httpx):
   bao phủ 8 mã HTTP (200, 422, 401, 403, 404, 409, 429, 500), ép case validation BVA,
@@ -37,6 +37,7 @@ Mỗi endpoint API bắt buộc phải có tối thiểu 4 ca kiểm thử trong
    - Payload đầy đủ trường hợp lệ.
    - Kiểm tra Response Body khớp 100% schema DTO (kiểm tra kiểu dữ liệu, các trường ID, timestamps ISO 8601).
    - Kiểm tra Header phản hồi (ví dụ: `Content-Type: application/json; charset=utf-8`).
+   - **Tự Động Rà Soát & Bổ Sung Decorator `@HttpCode` Cho Action/Simulation Endpoint (`@HttpCode` Parity Linter)**: Trong API Design, các endpoint POST mang tính chất hành động (Action/Trigger) hoặc truy vấn mô phỏng (Simulate/Calculation) như `/apply`, `/calculate`, `/simulate`, `/export` thường được thiết kế trả về `200 OK`. Trước khi sinh test cho các endpoint `@Post()` có status 200 trong spec, skill tự động kiểm tra mã nguồn controller xem có decorator `@HttpCode(HttpStatus.OK)` hay chưa; nếu thiếu, tự động bổ sung decorator vào controller để đồng bộ 100% giữa API contract và code thực tế, tránh lỗi lệch mã HTTP giữa spec và runtime framework.
 
 2. **400 Bad Request / 422 Unprocessable Entity (Validation & BVA):**
    - **Boundary Value Analysis (BVA)**: Kiểm tra giá trị cận trên (max + 1) và cận dưới (min - 1) của độ dài chuỗi, số lượng phần tử mảng, giá trị số.
@@ -44,6 +45,8 @@ Mỗi endpoint API bắt buộc phải có tối thiểu 4 ca kiểm thử trong
    - Sai định dạng dữ liệu (Email không có `@`, UUID sai chuẩn, Boolean truyền string rác).
    - Payload rỗng (`{}`) hoặc JSON cú pháp hỏng.
    - Error envelope chuẩn: `{ success: false, error: { code, message, statusCode: 422, details } }`.
+   - **Phân Tách Kiểm Thử Lỗi Cú Pháp DTO vs Lỗi Ngữ Nghĩa Nghiệp Vụ (Syntactic DTO vs Semantic Domain Validation BVA Split)**: Khi sinh test case cho các trường dạng chuỗi có cấu trúc hoặc tham số nghiệp vụ (như `targetMonth: YYYY-MM`, mã phân loại, dải ngày), bắt buộc phải phân tách thành 2 ca kiểm thử độc lập: (1) Cú pháp sai cấu trúc (chuỗi rác vi phạm regex/schema pipe -> kỳ vọng HTTP 400 kèm mã chuẩn `VAL_001`), (2) Cú pháp đúng schema nhưng vi phạm ngữ nghĩa miền (ví dụ tháng `2026-99`, ngày 31 cho tháng 30 ngày, hoặc ngày kết thúc < ngày bắt đầu -> kỳ vọng HTTP 400 kèm mã lỗi nghiệp vụ của domain engine như `INVALID_TARGET_MONTH` hoặc `INVALID_DATE`) nhằm xác nhận cả 2 lớp phòng vệ (Schema Filter & Domain Rule) đều hoạt động chính xác.
+   - **Quy chuẩn mã lỗi Framework (HTTP 400 vs 422)**: Tùy theo framework backend, kiểm tra mã trả về tương ứng: ví dụ NestJS mặc định ném `BadRequestException` (HTTP 400) cho DTO validation trừ khi có cấu hình riêng `errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY`, trong khi FastAPI / Rails trả về 422. Test suite phải linh hoạt khớp đúng cấu hình thực tế của project.
 
 3. **401 Unauthorized (Authentication Failure):**
    - Không đính kèm Header `Authorization`.
@@ -78,10 +81,15 @@ Mỗi endpoint API bắt buộc phải có tối thiểu 4 ca kiểm thử trong
 1. **Mock Database / ORM:**
    - Dùng mock client (ví dụ `jest.mock('../../src/services/prisma.service')` hoặc in-memory sqlite/transaction rollback).
    - Khởi tạo fixture độc lập trong `beforeEach()`, xóa sạch mock bằng `jest.clearAllMocks()` để tránh ô nhiễm state giữa các test case.
-2. **Mock Authentication Helper:**
+2. **Mock Authentication Helper & Strategy Contract:**
    - Tạo hàm helper `generateTestToken(userId, role, tokenVersion)` ký token thật với secret test để tái sử dụng trong toàn bộ test suite.
+   - Khi framework sử dụng Passport/JWT Guard, file fixture BẮT BUỘC phải export sẵn hàm helper (ví dụ: `setupMockAuthStrategy(prismaMock, userFixture)`) tự động mock cả `findUnique` và `findFirst` của User/Tenant model để mọi request gắn `Bearer token` luôn pass Guard an toàn mà không bị vướng lỗi 401 giả định (false negative) do cơ chế nạp user nội bộ của strategy.
 3. **Mock External Services:**
    - Mọi kết nối ra bên ngoài (Payment Gateway, Email SMTP, S3 Storage, Third-party Webhook) bắt buộc phải mock 100%.
+4. **Đồng Bộ Môi Trường Test App (Test App Bootstrap Parity):**
+   - Khi dựng test application instance với Supertest (ví dụ: NestJS `createNestApplication()` hoặc Express app), bắt buộc phải nạp đầy đủ 100% các Global Pipes, Global Filters, Global Interceptors và Global Middlewares (như Tenant Middleware, Auth Middleware) hệt như `main.ts`. Tuyệt đối không để thiếu middleware gây ra việc test bypass qua các kiểm tra bảo mật / header cách ly đa bên thuê.
+5. **Mẫu Mock Tuần Tự Cho Các Transaction Đọc Sau Ghi (Sequential Read-After-Write Transaction Mock Pattern):**
+   - Trong các luồng nghiệp vụ tạo mới hoặc cập nhật thực thể (Create/Update API), các Service thường có thao tác kiểm tra trùng lặp trước khi ghi (`findUnique` -> `null`), sau đó thực hiện ghi (`create`/`update`), và đọc lại chính bản ghi đó kèm các bảng liên kết quan hệ (`findUnique` with `include` -> `fullEntity`). Khi dựng mock Prisma/ORM, TUYỆT ĐỐI KHÔNG mock một giá trị tĩnh dùng chung cho `findUnique` (sẽ gây lỗi `null pointer` ở bước đọc sau ghi hoặc lỗi `ConflictException` giả định ở bước kiểm tra trước ghi). Bắt buộc phải thiết lập mock tuần tự chính xác: `prismaMock.entity.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce(mockEntity)`.
 
 ---
 

@@ -39,3 +39,5 @@ Mặc định khi người dùng từ chối chọn: client_facing=vi, internal=
 4. Mermaid/diagram label theo ngôn ngữ của tài liệu chứa nó.
 5. Đổi ngôn ngữ giữa dự án = thay đổi lớn → cập nhật `settings.languages` + liệt kê tài liệu cần dịch lại
    (không âm thầm đổi từ tài liệu kế tiếp).
+6. **Zero Language Leakage từ template**: Mọi template mẫu (Excel, Word, Slide) trước khi render phải được rà soát sạch 100%. Nếu tài liệu là tiếng Nhật (`client_facing = ja`), tuyệt đối không để sót tiếng Việt hay ghi chú cũ từ template trong bất kỳ trang hay sheet nào.
+7. **Anti-Vendor-Branding Leak**: Tuyệt đối cấm để tên các nhà thầu cũ (Rikkei, Rikkeisoft, FPT, v.v.) lọt vào deliverable. Phải dùng tên tổ chức được chỉ định trong `project-context.json` hoặc tên trung tính `システム開発チーム`.

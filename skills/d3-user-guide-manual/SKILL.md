@@ -18,6 +18,8 @@ Nguyên tắc biên soạn:
 - **Ngôn ngữ người dùng (User-centric):** Sử dụng ngôn từ nghiệp vụ thân thiện, dễ hiểu, tránh thuật ngữ lập trình chuyên sâu khi viết cho người dùng cuối.
 - **Minh họa từng bước (Step-by-step with UI Cues):** Mô tả rõ ràng từng thao tác (Ví dụ: "Bước 1: Nhấp vào nút [Tạo đơn hàng] ở góc trên bên phải → Bước 2: Điền các trường bắt buộc...").
 - **FAQ thực tế:** Tổng hợp các tình huống hay gặp lỗi và cách tự khắc phục ngay trong tài liệu.
+- **Đồng nhất ngôn ngữ 100% (Zero Language Leak):** Nếu viết sổ tay người dùng cho khách Nhật (`client_facing = ja`), toàn bộ tài liệu (User Manual, Admin Guide) phải 100% bằng tiếng Nhật chuẩn, tuyệt đối không lẫn tiếng Việt từ bản nháp.
+- **Cấm rò rỉ thương hiệu bên thứ ba & mã bước:** Tuyệt đối không để tên bên thầu cũ (`Rikkei`, `Rikkeisoft`, `FPT`...) hay mã bước nội bộ (`A1`, `D3`...) xuất hiện trong tài liệu bàn giao người dùng.
 
 ---
 

@@ -240,7 +240,7 @@
     },
     {
       "name": "c3-code-review",
-      "version": "3.8.0",
+      "version": "3.11.0",
       "step": "C3",
       "phase": "run",
       "recurring": "per PR",
@@ -259,7 +259,7 @@
     },
     {
       "name": "c5-test-execution",
-      "version": "3.8.0",
+      "version": "3.11.0",
       "step": "C5",
       "phase": "run",
       "recurring": "per test phase",
@@ -279,7 +279,7 @@
     },
     {
       "name": "c6-sprint-review",
-      "version": "3.8.0",
+      "version": "3.11.0",
       "step": "C6",
       "phase": "run",
       "recurring": "per sprint",
@@ -297,7 +297,7 @@
     },
     {
       "name": "c7-change-request",
-      "version": "3.8.0",
+      "version": "3.10.0",
       "step": "C7",
       "phase": "run",
       "recurring": "khi scope đổi",
@@ -394,7 +394,7 @@
     },
     {
       "name": "c1-dev-implement",
-      "version": "3.8.0",
+      "version": "3.11.0",
       "step": "C1",
       "phase": "run",
       "recurring": "per task",
@@ -451,7 +451,7 @@
     },
     {
       "name": "c2-api-test-suite-generator",
-      "version": "3.8.0",
+      "version": "3.11.0",
       "step": "C2",
       "phase": "run",
       "recurring": "per task",
@@ -472,7 +472,7 @@
     },
     {
       "name": "c4-trailofbits-security-skills",
-      "version": "3.8.0",
+      "version": "3.11.0",
       "step": "C4",
       "phase": "run",
       "recurring": "per PR",

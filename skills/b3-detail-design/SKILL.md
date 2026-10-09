@@ -26,6 +26,8 @@ Nguyên tắc cốt lõi:
 - **Traceability 100%:** Mỗi chức năng trong Basic Design phải có phần logic và method tương ứng.
 - **Không bảng mồ côi (Zero Orphan Table):** Mọi bảng trong DB schema phải được ánh xạ ít nhất 1 thao tác CRUD trong CRUD Matrix.
 - **Chống sơ sài (Anti-Superficiality):** Deliverable phải đầy đủ chi tiết thực tế, bảng biểu hoàn chỉnh, không dùng khung xương hay placeholder "TBD".
+- **Đồng nhất ngôn ngữ 100% (Zero Language Leak):** Nếu tài liệu cho dự án tiếng Nhật, toàn bộ Detail Design (Docx, CRUD Matrix Excel, Sequence Diagrams) phải 100% bằng tiếng Nhật chuẩn, không lẫn tiếng Việt từ template nháp.
+- **Cấm rò rỉ thương hiệu bên thứ ba & mã bước:** Tuyệt đối không để tên nhà thầu cũ (`Rikkei`, `Rikkeisoft`, `FPT`...) hay mã bước nội bộ (`A1`, `B3`...) xuất hiện trong tài liệu.
 
 ---
 

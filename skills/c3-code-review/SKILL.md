@@ -1,6 +1,6 @@
 ---
 name: c3-code-review
-version: "3.8.0"
+version: "3.11.0"
 description: >-
   Review code/PR theo chuẩn DỰ ÁN NỘI BỘ: đối chiếu spec a4-api-design/a5-db-design, xuất Excel checklist
   5 sheet (Summary/Checklist/Files/Defects/Praises) + Report.md, báo cáo severity + verdict. Trigger:
@@ -32,11 +32,11 @@ Khi xuất file báo cáo review chi tiết (hoặc lưu log audit PR):
 ## Tiêu chuẩn Thiết kế & Nội dung Excel Tác nghiệp (Enterprise Workbook Standards)
 
 File `docs/C3_code-review/[TênDựÁn]_Code_Review_Report.xlsx` được thiết kế theo chuẩn Enterprise 5 sheets chi tiết sâu:
-- **Sheet 1: `Review_Summary`**: KPI summary cards (Tổng files, LOC, Defect metrics, Final Verdict), Thông tin phiên review đầy đủ, Bảng ma trận phân bổ Defect theo mức độ nghiêm trọng, Bảng đánh giá chất lượng phân tầng (Layer Quality Scorecard), Biên bản ký duyệt & điều kiện Merge Gates.
-- **Sheet 2: `Review_Checklist`**: 22 tiêu chí kiểm soát chuyên sâu (Clean Architecture, OWASP ASVS v4.0, NIST SP 800-63B, Docker CIS, TypeScript Strict Mode) kèm mức độ rủi ro, tệp tin liên quan, kết quả thẩm tra (PASS, FIXED, REC) và phân tích kỹ thuật chi tiết.
+- **Sheet 1: `Review_Summary`**: KPI summary cards (Tổng files, LOC, Defect metrics, **Thực chứng kiểm thử tích hợp: "Test Execution & Integration Evidence" [ví dụ: 61/61 Tests PASS 100% | Coverage 93.20%]**, Final Verdict), Thông tin phiên review đầy đủ, Bảng ma trận phân bổ Defect theo mức độ nghiêm trọng, Bảng đánh giá chất lượng phân tầng (Layer Quality Scorecard), Biên bản ký duyệt & điều kiện Merge Gates.
+- **Sheet 2: `Review_Checklist`**: 22 tiêu chí kiểm soát chuyên sâu (Clean Architecture, OWASP ASVS v4.0, NIST SP 800-63B, Docker CIS, TypeScript Strict Mode, **Kiểm toán độ khớp mã trạng thái Controller Decorator vs Spec**, **Ma trận đột biến nhánh rẽ & Kiểm thử kịch bản tiêu cực Branch Mutation / Negative Path**, **Kiểm toán thời lượng & phạm vi Presigned URL S3 chứng từ tài chính**, **Kiểm toán tính bất biến dữ liệu tài chính sau chốt sổ Financial Immutability Guard**) kèm mức độ rủi ro, tệp tin liên quan, kết quả thẩm tra (PASS, FIXED, REC) và phân tích kỹ thuật chi tiết.
 - **Sheet 3: `Files_Reviewed`**: Danh mục toàn bộ tệp mã nguồn được rà soát (Đường dẫn, Phân hệ/Layer, Ngôn ngữ, LOC, Đánh giá độ phức tạp/Rủi ro, Hàm/Lớp kiểm tra trọng tâm, Review focus, Trạng thái thẩm tra).
-- **Sheet 4: `Findings_Defects`**: Sổ theo dõi khiếm khuyết chi tiết (Finding ID, Severity badge, Phân loại lỗi, Vị trí File:Line, Mô tả hiện tượng & Tác động hệ thống, Phân tích nguyên nhân gốc rễ RCA, Mã nguồn sửa chữa Before/After snippet, Bằng chứng kiểm chứng Verification Evidence, Trạng thái xử lý).
-- **Sheet 5: `Key_Praises`**: Tuyên dương 8 điểm sáng kỹ thuật vượt trội (Argon2id, Dual-token & Session Revocation, 2-tier Rate Limiter, WebSocket Heartbeat, Anti-echo Broadcast, Centralized Error Envelope, Non-root Container, High Coverage Unit Test) kèm cơ chế kỹ thuật sâu, lợi ích hệ thống và tiêu chuẩn đối chiếu.
+- **Sheet 4: `Findings_Defects`**: Sổ theo dõi khiếm khuyết chi tiết phân loại rõ 2 nhóm: Pre-flight Resolved Defects (lỗi phát hiện qua TDD/test đã sửa triệt để) và Outstanding Review Defects (lỗi mới cần fix), kèm Finding ID, Severity badge, Phân loại lỗi, Vị trí File:Line, RCA, Before/After snippet, Bằng chứng kiểm chứng Verification Evidence, Trạng thái xử lý.
+- **Sheet 5: `Key_Praises`**: Tuyên dương 8 điểm sáng kỹ thuật vượt trội (Argon2id, Dual-token & Session Revocation, 2-tier Rate Limiter, WebSocket Heartbeat, Anti-echo Broadcast, Centralized Error Envelope, Non-root Container, High Coverage Unit Test & Supertest 8-Status Matrix) kèm cơ chế kỹ thuật sâu, lợi ích hệ thống và tiêu chuẩn đối chiếu.
 
 ---
 
@@ -77,6 +77,16 @@ Senior Reviewer tuyệt đối KHÔNG đưa ra nhận xét hời hợt hay chỉ
 4. **Định lượng & Phán quyết (Verdict):**
    - Đếm rõ số lượng finding theo từng Severity (BLOCKER, CRITICAL, MAJOR, MINOR, PRAISE).
    - Phán quyết minh bạch: `✅ APPROVE`, `⚠️ APPROVE WITH COMMENTS`, hoặc `🔴 REQUEST CHANGES`.
+5. **Thực chứng kiểm thử tự động (Integration & Test Evidence):**
+   - Bắt buộc đính kèm số liệu test cases thực tế và code coverage vào Summary Card. Không phê duyệt PR chỉ dựa trên phán đoán tĩnh mà không có bằng chứng test chạy pass.
+6. **Kiểm toán độ khớp mã trạng thái Controller Decorator vs Spec (Controller Decorator Parity Check):**
+   - Bắt buộc quét và đối chiếu các endpoint dạng POST mang tính chất action, simulate, status transition hoặc search (không tạo mới entity). Nếu framework (như NestJS/Spring) mặc định trả về `201 Created`, bắt buộc phải có decorator `@HttpCode(HttpStatus.OK)` (hoặc tương đương) để khớp 100% với `200 OK` đã cam kết trong `API_Design.xlsx`.
+7. **Ma trận đột biến nhánh rẽ & Kịch bản tiêu cực (Branch Mutation & Negative Path Review Matrix):**
+   - Mọi mệnh đề rẽ nhánh bảo vệ (guard clause, throw Exception, optimistic lock `version !== dto.version`, ràng buộc ngày tháng) BẮT BUỘC phải được kiểm tra chéo xem đã có Unit Test / Integration Test cho nhánh rẽ tiêu cực (Unhappy Path) hay chưa. Nghiêm cấm chỉ review nhánh thành công mà bỏ quên nhánh lỗi dẫn đến lỗ hổng logic hoặc tỷ lệ Branch Coverage tụt hậu.
+8. **Kiểm toán Thời lượng & Phạm vi Quyền của Presigned URL Chứng từ Tài chính (Signed URL TTL & IAM Least-Privilege Audit):**
+   - Khi review các endpoint xuất file hoặc tải PDF/chứng từ tài chính (`/invoices/:id/pdf`), BẮT BUỘC rà soát tham số `expiresIn`: không được vượt quá 900 giây (15 phút). Kiểm tra header tải về `ResponseContentDisposition: attachment; filename="..."` để chống lưu cache công cộng, và yêu cầu phải có test case assert cụ thể cấu hình TTL này.
+9. **Kiểm toán Tính Bất Biến của Giao Dịch Đã Chốt Sổ (Financial Immutability & Status Transition Guard Audit):**
+   - Đối với các phân hệ Kế toán, Hóa đơn (`invoices`) hoặc Giao dịch, một khi thực thể đã đạt trạng thái `SENT` (Đã phát hành) hoặc `PAID` (Đã thanh toán), BẮT BUỘC phải có guard clause chặn đứng mọi mutation sửa đổi các trường tài chính nhạy cảm (`subtotal`, `tax_amount`, chi tiết dòng tiền). BẮT BUỘC kiểm tra sự hiện diện của test case tiêu cực (Negative Path Test) cố tình update hóa đơn đã chốt sổ để assert `400 BadRequest` hoặc `409 Conflict`.
 
 ---
 

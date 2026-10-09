@@ -63,10 +63,15 @@ Output: `[TênDựÁn]_Prototype_v1.html` — **1 file duy nhất, mở trình d
     * `MOTION_INTENSITY`: Vi chuyển động tinh tế (`transition: 150ms ease-out`), cấm animation giật cục hay vòng lặp vô tận gây nhức mắt.
     * `VISUAL_DENSITY`: Mật độ hiển thị chuẩn mực (thoáng đãng cho trải nghiệm đọc/consumer; tinh gọn, tối ưu diện tích cho bảng dữ liệu/dashboard).
 - **Unified Theme (Đồng nhất sáng/tối, tuyệt đối không clashing)** — Chọn 1 phong cách màu xuyên suốt: toàn bộ Light Theme thanh lịch (nền `#F8FAFC`, sidebar sáng, viền `#E2E8F0`, font slate) HOẶC toàn bộ Dark Theme chuẩn. Tuyệt đối không pha trộn sidebar đen kịt đi kèm nội dung trắng bệch gây chói mắt và không đồng bộ.
-- **Quy chuẩn Mobile Frame (`.mobile-mode`)** —
-  - Khung mobile bắt buộc `flex-direction: column !important;` để không bị vỡ giao diện.
-  - Thanh Bottom Navigation Bar phải nằm ngang ở đáy màn hình (`width: 100%`, `height: 60-64px`), có Home Indicator bar.
-  - **Master-Detail trên Mobile**: Với màn hình Danh sách + Chi tiết (Notes, Chat, Email), trên Desktop dùng Split-view (chia cột 2 bên); trên Mobile BẮT BUỘC dùng cơ chế Drilldown (hiển thị danh sách trước, bấm vào item mới trượt mở chi tiết toàn màn hình kèm nút `‹ Quay lại`). Tuyệt đối không chia đôi màn hình dọc trên mobile.
+- **Quy chuẩn Mobile Frame & Chuyển đổi Thiết bị (Responsive Device Toggle & Mobile-First Enforcement)** —
+  - **TUYỆT ĐỐI KHÔNG để Sidebar Desktop đè vào khung Mobile**: Khi ở chế độ mobile (`.viewport-mobile`), thanh sidebar máy tính (200-240px) BẮT BUỘC phải ẩn (`.viewport-mobile .app-sidebar { display: none !important; }`). Để sidebar máy tính hiện trong khung 390px là lỗi nghiêm trọng làm ép nát toàn bộ giao diện.
+  - Khung mobile bắt buộc `flex-direction: column !important; width: 100% !important;` để giao diện chiếm trọn chiều ngang thiết bị.
+  - **Mobile Top Bar & Bottom Navigation Bar**: Trên mobile, thay thế sidebar bằng:
+    1. Header mobile gọn gàng có nút Menu / Hamburger (hoặc Breadcrumb).
+    2. Thanh Bottom Navigation Bar nằm ngang ở đáy màn hình (`width: 100%`, `height: 56-62px`, 4-5 tab icon + label), có vạch Home Indicator bar (`width: 130px`, `height: 4px`, `background: #CBD5E1`, `border-radius: 2px`).
+  - **Co giãn lưới thống kê (Stats Grid Responsive)**: Trên mobile, các lưới số liệu 4 cột phải tự động chuyển thành 2 cột (`grid-template-columns: repeat(2, 1fr) !important;`) hoặc 1 cột để số tiền, phần trăm không bị tràn ô hay rớt dòng xấu xí.
+  - **Bảng dữ liệu (Data Tables) trên Mobile**: Bọc bảng trong thẻ `overflow-x: auto;` hoặc chuyển sang card layout để có thể vuốt ngang mượt mà, không vỡ layout dọc.
+  - **Master-Detail trên Mobile**: Với màn hình Danh sách + Chi tiết (Notes, Chat, Email, Invoices), trên Desktop dùng Split-view (chia cột 2 bên); trên Mobile BẮT BUỘC dùng cơ chế Drilldown (hiển thị danh sách trước, bấm vào item mới trượt mở chi tiết toàn màn hình kèm nút `‹ Quay lại`). Tuyệt đối không chia đôi màn hình dọc trên mobile.
 - **Click được** — mọi button/tab/link quan trọng đều navigate đến màn hình tương ứng
 - **Self-contained** — 1 file HTML, không cần internet (không dùng CDN external), không cần server
 - **Fast to scan** — khách hàng nhìn 5 giây hiểu màn hình này làm gì

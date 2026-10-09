@@ -1,9 +1,9 @@
 ---
 name: c6-sprint-review
-version: "3.8.0"
+version: "3.11.0"
 description: >-
   Tổng kết sprint: planned vs actual, velocity trend, bug health, retrospective 4L, action items
-  + Sprint_Log.xlsx tích lũy toàn dự án. Trigger: "sprint review", "retro", "tổng kết sprint",
+  + Sprint_Log.xlsx tích lũy toàn dự án (dynamic table offset, contingency buffer matrix, drag coefficient & showcase agenda). Trigger: "sprint review", "retro", "tổng kết sprint",
   "velocity", "sprint report". Bước C6 — cuối mỗi sprint.
 ---
 
@@ -39,14 +39,14 @@ Output gồm **2 file** (file 1 mới mỗi sprint, file 2 tích lũy toàn dự
 Tuyệt đối KHÔNG đưa ra số liệu ước lượng cảm tính hoặc bảng review sơ sài:
 
 1. **Workbook chi tiết `[TênDựÁn]_Sprint[N]_Review.xlsx` (5 sheets đầy đủ):**
-   - **Sheet 1: Sprint Dashboard:** KPI Cards trực quan, Bảng tổng hợp các chỉ số sức khỏe, Bảng tính điểm Health Score 100 điểm.
+   - **Sheet 1: Sprint Dashboard:** KPI Cards trực quan, Bảng tổng hợp các chỉ số sức khỏe, Bảng tính điểm Health Score 100 điểm. **Kịch bản Trình chiếu Demo cho Khách hàng (Automated Stakeholder Showcase Agenda Generator)**: Bổ sung khung chương trình demo 30–45 phút trích xuất tự động từ deliverables hoàn thành (thời lượng, phân công người demo, luồng nghiệp vụ minh họa, bộ dữ liệu mẫu khuyến nghị, và danh sách câu hỏi nghiệp vụ dự kiến từ phía khách hàng kèm giải pháp phản hồi chuẩn).
    - **Sheet 2: Planned vs Actual:** Đối chiếu task-by-task từ Timeline (`Personal_Vault_Project_Timeline.xlsx`) với sản phẩm bàn giao thực tế (Mã task, MD kế hoạch, MD thực tế, status, deliverable reference, lý do chênh lệch).
-   - **Sheet 3: Velocity Tracker:** Vận tốc sprint hiện tại, tỷ lệ hoàn thành %, so sánh vận tốc trung bình, tính toán ngày Go-Live dự phóng dựa trên công số còn lại (`Remaining MD`).
+   - **Sheet 3: Velocity Tracker:** Vận tốc sprint hiện tại, tỷ lệ hoàn thành %, so sánh vận tốc trung bình, tính toán ngày Go-Live dự phóng dựa trên công số còn lại (`Remaining MD`). **Chỉ số Rủi ro Tích lũy & Hệ số Trì trệ Do Nợ Kỹ thuật (Cumulative Sprint Defect Leakage & Carry-over Debt Index / Velocity Drag Coefficient)**: Tự động đo lường tỷ lệ nợ kỹ thuật và độ trôi công số tích lũy qua các sprint. Nếu tỷ lệ bug tồn đọng hoặc số MD Enabler chưa hoàn thành vượt quá 15% năng lực sprint, tự động kích hoạt cảnh báo vàng/đỏ và tính hệ số suy giảm vận tốc (`Drag Coefficient = 1 - (Unresolved_Debt_MD / Capacity_MD)`) để hiệu chỉnh trừ điểm Health Score.
    - **Sheet 4: Retrospective (Khung 4L):** Ghi nhận đầy đủ 4 góc nhìn: What went WELL (Liked), What DIDN'T go well (Lacked), What we LEARNED (Learned), What we LONGED FOR (Longed for) + Bảng Action Items có người phụ trách, deadline, priority, status.
-   - **Sheet 5: Next Sprint Prep:** Mục tiêu Sprint tới (Sprint Goal), Cam kết công số an toàn (Velocity-adjusted commitment), Carry-over tasks, Danh mục công việc dự kiến.
+   - **Sheet 5: Next Sprint Prep:** Mục tiêu Sprint tới (Sprint Goal), Cam kết công số an toàn (Velocity-adjusted commitment), Carry-over tasks, **Cơ chế kế thừa Action Items thành Task (Retro Action to Next Sprint Task Injection)**: Tự động trích xuất các Action Item có mức độ ưu tiên 🔴 High chưa hoàn thành từ Sheet 4 và gắn trực tiếp thành Technical Debt / Enabler Task trong danh mục công việc dự kiến của Sprint N+1 với ước tính công số cụ thể (1–2 MD). **Ma Trận Phân Bổ Dự Phòng Kỹ Thuật (Contingency Buffer & Spike Allocation Matrix)**: Phân bổ minh bạch 3 cấu phần: Core Business Features MD, Enabler / Tech Debt MD (kế thừa từ Retro 🔴 High), và Technical Contingency Buffer MD (5%–10% capacity cho nghiên cứu công nghệ mới, spike kiến trúc, hoặc rủi ro tích hợp).
 
 2. **Master Workbook tích lũy `[TênDựÁn]_Sprint_Log.xlsx` (3 sheets tích lũy):**
-   - **Sheet 1: Velocity Dashboard:** Tích lũy lịch sử từng sprint: Dates, Planned MD, Completed MD, Velocity %, P1 Bugs, Health Score, Go-Live Projection, Trạng thái.
+   - **Sheet 1: Velocity Dashboard:** Tích lũy lịch sử từng sprint: Dates, Planned MD, Completed MD, Velocity %, P1 Bugs, Health Score, Go-Live Projection, Trạng thái, Drag Coefficient. **Biểu đồ Burndown/Burnup tích lũy công số (Cumulative Project Burnup/Burndown Timeseries)**: Cấu trúc chuỗi thời gian chuẩn kèm công thức tính đường tích lũy hoàn thành và dự báo biên trên/biên dưới (Best-case / Worst-case Go-Live date). **Cơ chế tính Offset động bảo vệ bảng (Dynamic Table Offset & Section Gap Enforcement)**: Vị trí của Bảng 2 (Cumulative Burnup Timeseries) luôn được tính toán tự động bằng công thức offset (`start_row = table1_last_row + 3`) hoặc bố trí khung 14 dòng chờ sẵn cho Bảng 1 ngay từ đầu, tuyệt đối cấm hardcode số dòng cố định gây đè/xô lệch dữ liệu khi append sprint mới.
    - **Sheet 2: Action Items Tracker:** Tổng hợp toàn bộ hành động cải tiến từ các buổi retro, theo dõi trạng thái hoàn thành.
    - **Sheet 3: Bug Trend:** Theo dõi mật độ defect, số bug phát hiện, đã sửa, tồn đọng qua các sprint.
    - **Cơ chế Append an toàn:** Nếu file đã có, dùng `openpyxl` mở và nối tiếp dòng mới, không ghi đè làm mất lịch sử.
@@ -226,16 +226,29 @@ Chuẩn bị cho sprint tiếp theo dựa trên kết quả vừa review:
 | Task | Assignee | Remaining MD | Reason | Priority in next sprint |
 |---|---|---|---|---|
 
+**Enabler / Technical Debt Tasks (Kế thừa tự động từ Retro Action Items 🔴 High):**
+| Task ID | Enabler Task Description | Assignee | Estimated MD | Nguồn gốc Action Item |
+|---|---|---|---|---|
+| ENB-S[N+1]-01 | [Nội dung hành động cải tiến từ Retro] | [Owner] | 1.0–2.0 MD | ACT-S[N]-01 |
+
 **Adjusted capacity** (nếu có thay đổi team/PTO):
 | Member | Normal MD | Next Sprint MD | Reason |
 |---|---|---|---|
 
-**Velocity-adjusted commitment:**
+**Velocity-adjusted commitment & Buffer Allocation Matrix:**
 ```
 Team capacity next sprint: [X] MD
 Velocity factor (avg 3 sprints): [X]%
 Safe commitment: [X] × [X]% = [Y] MD  ← chỉ plan đến Y MD, không thêm
 ```
+
+**Ma trận phân bổ hạn mức công số & Dự phòng rủi ro (Contingency Buffer & Spike Allocation):**
+| Phân loại hạn mức (Allocation Bucket) | Tỷ lệ phân bổ (%) | Công số dự kiến (MD) | Nội dung & Mục đích bảo vệ |
+|---|---|---|---|
+| Core Business Features | 85%–90% | [A] MD | Các tính năng nghiệp vụ cốt lõi theo WBS Timeline |
+| Enabler & Tech Debt Tasks | 5%–10% | [B] MD | Kế thừa trực tiếp từ Retro Action Items 🔴 High |
+| Technical Contingency Buffer | 5%–10% | [C] MD | Dự phòng spike công nghệ mới, rủi ro tích hợp & bảo mật |
+| **Tổng cam kết an toàn (Safe Commitment)** | **100%** | **[Y] MD** | **A + B + C = Y MD (Không vượt quá Safe Commitment)** |
 
 **Risk flags cho sprint tới:**
 | Risk | Probability | Mitigation cần làm trước Sprint N+1 starts |
@@ -270,7 +283,10 @@ File tích lũy qua toàn bộ dự án — PM nhìn 1 chỗ thấy sức khỏe
 | Sprint 1 | 05–16/10 | 9.6 | 9.6 | 100% | 0 | 100 🟢 | 15/11/2026 |
 | Sprint 2 | 19–30/10 | 9.6 | 9.6 | 100% | 0 | 95 🟢 | 15/11/2026 |
 
-Dưới bảng: **Rolling Average Velocity** (3 sprints gần nhất) + **Trend** (↑ improving / ↓ declining)
+Dưới bảng: **Rolling Average Velocity** (3 sprints gần nhất) + **Trend** (↑ improving / ↓ declining)  
+Kèm **Chuỗi thời gian Burnup / Burndown tích lũy**:
+- Cột `Cumulative Planned MD` và `Cumulative Actual Completed MD` đối chiếu với Total Scope MD (268 MD).
+- Dự báo biên trên / biên dưới: **Best-case Go-Live** (vận tốc 100%) vs **Worst-case Go-Live** (vận tốc 75–80%).
 
 **Sheet 2: Action Items Tracker**
 Tích lũy tất cả action items từ mọi retrospective — theo dõi trạng thái:
@@ -285,11 +301,12 @@ Tích lũy tất cả action items từ mọi retrospective — theo dõi trạn
 |---|---|---|---|---|---|---|---|
 
 **Quy tắc cập nhật Sprint Log:**
-1. Khi chạy `sprint-review` Sprint N → tự động append 1 dòng vào Velocity Dashboard
-2. Action items từ retro Sprint N → append vào Action Items Tracker
-3. Bug data → append vào Bug Trend
-4. Nếu `Sprint_Log.xlsx` chưa tồn tại → tạo mới; nếu đã tồn tại → mở và append (dùng `openpyxl` load_workbook)
-5. **Chống mất lịch sử:** nếu `Sprint_Log.xlsx` bị mất/hỏng → dựng lại từ các file `Sprint[N]_Review.xlsx` còn trong folder (quét theo mẫu tên) và `project.current_sprint` trong context; cảnh báo người dùng thay vì tạo log rỗng đè lên.
+1. Khi chạy `sprint-review` Sprint N → tự động append 1 dòng vào Velocity Dashboard.
+2. **Quy tắc Offset Động (Dynamic Table Offset)**: Trong Sheet 1, Bảng 1 (Sprint Velocity List) và Bảng 2 (Burnup Timeseries) phải được tính toán vị trí động: dòng bắt đầu của Bảng 2 = `dòng_cuối_của_bảng_1 + 3` (hoặc thiết lập sẵn 14 dòng trống cho Bảng 1), không bao giờ được hardcode số dòng khiến việc append dòng mới vào Bảng 1 đè mất header của Bảng 2.
+3. Action items từ retro Sprint N → append vào Action Items Tracker (đồng thời cập nhật trạng thái các item của sprint trước nếu đã hoàn thành).
+4. Bug data → append vào Bug Trend.
+5. Nếu `Sprint_Log.xlsx` chưa tồn tại → tạo mới; nếu đã tồn tại → mở và append (dùng `openpyxl` load_workbook).
+6. **Chống mất lịch sử:** nếu `Sprint_Log.xlsx` bị mất/hỏng → dựng lại từ các file `Sprint[N]_Review.xlsx` còn trong folder (quét theo mẫu tên) và `project.current_sprint` trong context; cảnh báo người dùng thay vì tạo log rỗng đè lên.
 
 ---
 

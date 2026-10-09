@@ -18,6 +18,8 @@ Nguyên tắc nghiệm thu:
 - **Tiêu chí định lượng rõ ràng:** Mọi hạng mục nghiệm thu phải căn cứ trên bản đặc tả yêu cầu (/a2-requirement-analysis) và kế hoạch kiểm thử chấp nhận UAT (/a8-test-plan).
 - **Phân loại lỗi tồn đọng rõ ràng (Punch List):** Tuyệt đối không còn lỗi Severity 1 (Blocker/Critical) và Severity 2 (Major). Các lỗi nhỏ Severity 3/4 không ảnh hưởng luồng chính được ghi nhận vào Punch List cam kết khắc phục trong thời gian bảo hành.
 - **Có chữ ký đại diện thẩm quyền:** Biên bản nghiệm thu phải có đầy đủ thông tin, chức danh và chữ ký của đại diện hai bên (Project Sponsor, PM, QA Lead).
+- **Đồng nhất ngôn ngữ 100% (Zero Language Leak):** Nếu nghiệm thu với khách Nhật (`client_facing = ja`), toàn bộ biên bản (Certificate, Sign-off sheet, Punch List) phải 100% bằng tiếng Nhật chuẩn, không lẫn tiếng Việt từ template cũ.
+- **Cấm rò rỉ thương hiệu bên thứ ba & mã bước:** Tuyệt đối không để tên bên thầu cũ (`Rikkei`, `Rikkeisoft`, `FPT`...) hay mã bước nội bộ (`A1`, `D2`...) xuất hiện trong tài liệu nghiệm thu.
 
 ---
 

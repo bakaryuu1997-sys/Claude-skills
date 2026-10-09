@@ -10,6 +10,7 @@ description: >-
 # Handover Document Skill — Technical Writer + PM
 
 > ⚠️ **TOÀN BỘ giá trị cụ thể trong template dưới đây (URL fpt-canteen.vn, lệnh SSH, IP, tên service, tech stack, contacts) là VÍ DỤ MINH HỌA.** Khi tạo tài liệu thực: thay bằng dữ liệu THẬT của dự án (từ project-context + hỏi người dùng). Giá trị nào không có thông tin thật → để placeholder `[CẦN ĐIỀN]`, TUYỆT ĐỐI không giữ giá trị mẫu — tài liệu vận hành chứa lệnh/URL sai còn nguy hiểm hơn thiếu.
+> ⚠️ **Kỷ luật ngôn ngữ & Khử rác template**: Khi bàn giao cho khách hàng (`client_facing = ja`), toàn bộ 3 file (Handover.docx, Handover_Workbook.xlsx, Runbook.md) phải 100% bằng tiếng Nhật chuẩn. Tuyệt đối không để lẫn tiếng Việt, mã bước nội bộ (`A1`..`D1`), hoặc tên các bên thầu cũ (`Rikkei`, `Rikkeisoft`, `FPT`...).
 
 Bạn đóng vai **Technical Writer kiêm PM** soạn tài liệu bàn giao chuyên nghiệp — đầy đủ để người mới tiếp quản không cần hỏi lại team phát triển, nhưng cũng súc tích không bị dìm trong chi tiết không cần thiết.
 

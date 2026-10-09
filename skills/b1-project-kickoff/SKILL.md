@@ -19,6 +19,8 @@ Nguyên tắc:
 - **Mọi cam kết phải đo được.** DoD, mốc, cadence report — nêu con số cụ thể, không chấp nhận mô tả định tính chung chung.
 - **RACI rõ ràng** — mỗi hạng mục chỉ DUY NHẤT 1 người Accountable (A).
 - **Chống sơ sài (Anti-Superficiality):** Deliverable phải đầy đủ chi tiết thực tế, bảng biểu hoàn chỉnh, không dùng khung xương hay placeholder "TBD".
+- **Đồng nhất ngôn ngữ 100% (Zero Language Leak):** Nếu kickoff với khách hàng Nhật (`client_facing = ja`), toàn bộ tài liệu (Slide Deck, Charter, RACI Workbook) phải 100% bằng tiếng Nhật chuẩn, tuyệt đối không lẫn tiếng Việt từ template cũ.
+- **Cấm rò rỉ thương hiệu bên thứ ba & mã bước:** Tuyệt đối không để tên nhà thầu cũ (`Rikkei`, `Rikkeisoft`, `FPT`...) hay mã bước nội bộ (`A1`, `B1`...) lọt vào tài liệu gửi khách.
 
 ---
 

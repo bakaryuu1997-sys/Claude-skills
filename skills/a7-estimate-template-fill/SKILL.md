@@ -12,7 +12,7 @@ description: >-
 ## Mục đích
 
 Điền danh sách task phát triển và công số dev vào **block 開発** của sheet **見積明細書** trong template
-báo giá chuẩn của Rikkei (株式会社リッケイ), giữ nguyên công thức, logo/ảnh và các block khác.
+báo giá chuẩn (見積書), giữ nguyên công thức, logo/ảnh và các block khác.
 
 **Phân biệt với skill `/a6-estimate`:**
 - `/a6-estimate` → **tạo mới** file Excel WBS từ requirement
@@ -77,6 +77,16 @@ Skill có sẵn template tại `assets/MPL-H12 App_IOS_見積書_template.xlsx` 
 
 Script mặc định dùng file này nếu không truyền `--template`.
 
+### ⚠️ QUY TẮC BẮT BUỘC VỀ BẢN ĐỊA HÓA & KHỬ RÁC TEMPLATE (Zero Leakage)
+1. **Kỷ luật ngôn ngữ 100% đồng nhất (Zero Language Leak)**:
+   - Nếu dự án yêu cầu tiếng Nhật (`client_facing = ja`), **100% các ô ở tất cả các sheet** (`表紙`, `前提条件`, `見積書`, `見積明細書`), bao gồm các block phụ (`手順書作成`, `結合テスト`, `BrSE担当`, `PM`), **BẮT BUỘC phải là tiếng Nhật**.
+   - TUYỆT ĐỐI CẤM để lọt bất kỳ câu từ tiếng Việt nào từ template cũ của công ty sang file giao cho khách.
+2. **Cấm rò rỉ thương hiệu bên thứ ba (Anti-Vendor-Branding Leak)**:
+   - TUYỆT ĐỐI CẤM để tên công ty outsource cũ (`Rikkei`, `Rikkeisoft`, `リッケイ`, v.v.) xuất hiện trong file Excel, đặc biệt là sheet `表紙`, `見積書` ở phần bên nhận thầu (受注者).
+   - Tên bên phát triển phải lấy từ `project-context.json` hoặc để trung tính `システム開発受託チーム`.
+3. **Cấm ký hiệu mã bước nội bộ**:
+   - TUYỆT ĐỐI CẤM dùng các mã `A1`, `A2`, `A3`, `A4`, `A5`... trong nội dung bảng tính. Thay vào đó dùng tên tài liệu nghiệp vụ chính thức (`要件定義書`, `画面UIプロトタイプ仕様`, `DB物理設計仕様`...).
+
 ---
 
 ## Chuẩn bị `tasks.json`
@@ -85,15 +95,15 @@ Format chuẩn:
 ```json
 [
   {
-    "category": "Authentication",
-    "function": "Đăng nhập SSO",
-    "detail": "Azure AD OAuth2 flow, token management, session",
+    "category": "共通基盤・認証",
+    "function": "SSOログイン認証",
+    "detail": "Azure AD OAuth2フロー連携、トークン検証・セッション管理実装",
     "dev": 7.0
   },
   {
-    "category": "Menu Management",
-    "function": "Danh sách món ăn",
-    "detail": "API list + filter + search, pagination",
+    "category": "商品・メニュー管理",
+    "function": "メニュー一覧・検索",
+    "detail": "メニュー一覧取得API・絞り込み検索・ページネーション制御",
     "dev": 3.0
   }
 ]

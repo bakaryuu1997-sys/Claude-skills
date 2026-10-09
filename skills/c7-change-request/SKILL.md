@@ -1,10 +1,10 @@
 ---
 name: c7-change-request
-version: "3.8.0"
+version: "3.10.0"
 description: >-
   Phân tích impact + re-estimate + tài liệu Change Request để khách ký duyệt khi scope thay đổi
-  sau khi đã chốt. Trigger: "change request", "CR", "khách muốn thêm/sửa/bớt tính năng",
-  "impact analysis", "estimate lại phần này". Bước C7 — bất kỳ lúc nào trong dự án.
+  sau khi đã chốt (cost of inaction & sprint capacity booking injection). Trigger: "change request", "CR",
+  "khách muốn thêm/sửa/bớt tính năng", "impact analysis", "estimate lại phần này". Bước C7 — bất kỳ lúc nào trong dự án.
 ---
 
 # Change Request Skill — PM & Business Analyst
@@ -79,8 +79,20 @@ Timeline delay = ceil(Total CR MD / team_capacity_per_sprint) sprints
 Go-live mới = Go-live cũ + (delay × sprint_duration)
 ```
 
-### Risk của việc KHÔNG làm CR
-Đôi khi từ chối CR cũng có rủi ro (khách hàng không hài lòng, thiếu tính năng quan trọng). Đánh giá cả 2 phía.
+### Cost & Billing Impact (Tự động tính tác động tài chính)
+Tự động tính toán phát sinh chi phí tiền tệ dựa trên đơn giá hợp đồng:
+```
+Rate per MM = đơn giá nhân-tháng từ hợp đồng (mặc định tham chiếu project-context.json)
+Cost Impact = Total CR MD × (Rate per MM ÷ 22) JPY
+```
+
+### Cost of Inaction & Deferral Risk (Ma Trận Đánh Giá Rủi Ro Khi TỪ CHỐI Hoặc HOÃN CR)
+Khi khách hàng hoặc ban điều hành cân nhắc giữa phê duyệt, từ chối hoặc hoãn lại CR, bắt buộc lập bảng đánh giá **Cost of Inaction**:
+| Khía cạnh rủi ro | Mức độ rủi ro | Hậu quả nếu TỪ CHỐI (Reject) | Hậu quả nếu HOÃN (Defer sang Phase 2) |
+|---|---|---|---|
+| **Tuân thủ pháp lý & Thuế vụ (Compliance)** | 🔴 Cao / 🟠 Trung bình | Vi phạm luật kế toán, thuế hoặc quy định ngành | Rủi ro bị phạt thanh tra trong thời gian vận hành Phase 1 |
+| **Trải nghiệm khách hàng & Churn (Client UX)** | 🔴 Cao / 🟠 Trung bình | Khách hàng không dùng được nghiệp vụ, nguy cơ rời bỏ | Tăng ma sát vận hành thủ công (workaround) cho người dùng |
+| **Hệ số chi phí làm lại (Rework Multiplier)** | 2.5× ～ 3.0× | Không phát sinh | Chi phí refactor lại kiến trúc sau go-live tốn gấp 2.5–3 lần |
 
 ---
 
@@ -133,6 +145,15 @@ Bảng so sánh TRƯỚC và SAU thay đổi:
 
 **Dòng summary:** Tổng tính năng thêm / sửa / bớt / giữ nguyên
 
+**Bảng kiểm kê lan truyền tác động thượng nguồn (Upstream Artifact Sync Checklist):**
+Bắt buộc liệt kê danh mục tài liệu cần cập nhật ngay khi CR được APPROVED:
+| Tài liệu thượng nguồn | File liên quan | Nội dung cần cập nhật | Trạng thái đồng bộ |
+|---|---|---|---|
+| API Design Spec | `*_API_Design.xlsx` / `api_spec.json` | Bổ sung các endpoints mới, DTO request/response | ⬜ Chờ duyệt / 🔄 Đã cập nhật |
+| Database Design | `*_DB_Design.xlsx` / `schema.prisma` | Bổ sung table/column mới, index, migration | ⬜ Chờ duyệt / 🔄 Đã cập nhật |
+| Test Plan | `*_Test_Plan.xlsx` | Bổ sung N test cases kiểm thử tính năng CR + hồi quy | ⬜ Chờ duyệt / 🔄 Đã cập nhật |
+| Project Timeline | `*_Project_Timeline.xlsx` | Bố trí task CR vào Sprint N, cập nhật WBS | ⬜ Chờ duyệt / 🔄 Đã cập nhật |
+
 ### Sheet 3: Effort Re-estimate
 
 WBS cho phần thay đổi — áp dụng đúng quy tắc của skill `/a6-estimate`:
@@ -173,6 +194,15 @@ Sau CR        : Go-Live [ngày mới] (+[N] tuần)
 Sprint bị ảnh hưởng: Sprint [X], [Y]
 Task phải hoãn: [liệt kê task phải dời sang sprint sau]
 ```
+
+**Tự Động Tính Toán Tỷ Trọng Chiếm Dụng Công Số Sprint (CR-to-Sprint Capacity Booking Breakdown):**
+Bắt buộc xuất bảng tính phân bổ công số cho Sprint kế tiếp (để đưa trực tiếp vào Sheet 5 của `/c6-sprint-review`):
+| Cấu phần công số Sprint [N] | Công số dự kiến (MD) | Tỷ trọng (%) | Ghi chú & Mục đích bảo vệ |
+|---|---|---|---|
+| Core Business Features (Timeline gốc) | [A] MD | [A/Capacity]% | Các task theo kế hoạch ban đầu không bị ảnh hưởng |
+| CR Allocated Effort (Công số từ CR này) | [B] MD | [B/Capacity]% | Task được phân bổ thực thi trong Sprint [N] |
+| Technical Contingency Buffer | [C] MD | [C/Capacity]% | Dự phòng rủi ro kỹ thuật và tích hợp |
+| **Tổng hạn mức Sprint [N] (Team Capacity)** | **[Cap] MD** | **100%** | **A + B + C = Cap MD (Bảo đảm không trễ hạn)** |
 
 **Nếu CR cần xử lý NGAY (Urgent):**
 ```
