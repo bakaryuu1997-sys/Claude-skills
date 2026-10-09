@@ -223,20 +223,20 @@ flowchart TD
 
 ---
 
-## 🔌 HỆ THỐNG CÔNG CỤ MỞ RỘNG MCP (SERVERS)
-*Bộ 3 máy chủ Model Context Protocol cung cấp siêu năng lực tương tác sâu với hệ thống, trình duyệt và mã nguồn.*
+### 🔌 HỆ THỐNG CÔNG CỤ MỞ RỘNG MCP (SERVERS)
+*Bộ 7 máy chủ Model Context Protocol (MCP Servers) chuẩn Enterprise cung cấp siêu năng lực tương tác sâu với hệ thống, cơ sở dữ liệu, trình duyệt, git và hạ tầng container.*
 
 ```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        AI ASSISTANT (ANTIGRAVITY / CLAUDE)              │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-         ┌──────────────────────────┼──────────────────────────┐
-         ▼                          ▼                          ▼
-┌──────────────────┐       ┌──────────────────┐       ┌──────────────────┐
-│    SERENA MCP    │       │  PLAYWRIGHT MCP  │       │  CLAUDE-MEM MCP  │
-│  AST Code Intel  │       │ Browser & Web E2E│       │ Persistent Memory│
-└──────────────────┘       └──────────────────┘       └──────────────────┘
+┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                 AI ASSISTANT (ANTIGRAVITY / CLAUDE)                               │
+└──────────────────────────────────────────────────┬────────────────────────────────────────────────┘
+                                                   │
+        ┌──────────────┬──────────────┬────────────┼────────────┬──────────────┬──────────────┐
+        ▼              ▼              ▼            ▼            ▼              ▼              ▼
+┌──────────────┐┌──────────────┐┌───────────┐┌───────────┐┌───────────┐┌───────────┐┌─────────────┐
+│  SERENA MCP  ││PLAYWRIGHT MCP││CLAUDE-MEM ││POSTGRESQL ││GITHUB MCP ││ FIRECRAWL ││ DOCKER MCP │
+│AST Code Intel││Web E2E & DOM ││Memory Graph││Database 16││PR & Issues││Clean Ingest││Container Ops│
+└──────────────┘└──────────────┘└───────────┘└───────────┘└───────────┘└───────────┘└─────────────┘
 ```
 
 ### 1. Serena MCP (`serena`) — AST & Semantic Code Intelligence
@@ -260,6 +260,30 @@ flowchart TD
 * **Truy vấn lịch sử**: `search`, `timeline`, `get_observations` — tra cứu lại các quyết định kỹ thuật và lỗi đã từng gặp.
 * **Tree-Sitter Structural Search**: `smart_search`, `smart_outline`, `smart_unfold` — tìm kiếm logic code bằng parser AST Tree-sitter, siêu tiết kiệm context window.
 * **Quản lý Corpus dự án**: `build_corpus`, `prime_corpus`, `query_corpus` — lập chỉ mục tri thức mã nguồn phục vụ trả lời nhanh.
+
+### 4. PostgreSQL MCP (`postgres`) — Database Inspection & Live Queries
+*Kết nối trực tiếp PostgreSQL Server (PostgreSQL 16) phục vụ thiết kế schema và debug dữ liệu:*
+* **Tra cứu cấu trúc CSDL**: Đọc danh sách bảng, schema, column data types, foreign keys và indexes.
+* **Thực thi truy vấn an toàn**: Chạy các câu lệnh `SELECT` kiểm chứng dữ liệu thực tế, kiểm tra transaction đối soát (Reconciliation), đối chiếu hóa đơn và kiểm toán toàn vẹn dữ liệu.
+* **Hỗ trợ thiết kế & Migration**: Đối chiếu schema thực tế với thiết kế CSDL (`/a5-db-design`), kiểm tra khóa ngoại vòng và đánh chỉ mục hiệu năng.
+
+### 5. GitHub MCP (`github`) — Repository Automation, PR & Issue Management
+*Tương tác chính thức với GitHub REST/GraphQL API thông qua Personal Access Token:*
+* **Quản lý Pull Request**: Tự động mở PR, cập nhật mô tả PR, gán reviewer, push branch và kiểm tra trạng thái CI checks.
+* **Quản lý Vòng đời Issue**: Tự động tạo Issue từ danh mục lỗi (`Defects`) của `/c5-test-execution`, gán nhãn severity (P1-P3) và đóng issue khi hoàn tất fix.
+* **Đồng bộ mã nguồn & Reviews**: Duyệt diff, lấy nội dung file, phản hồi review comment và hỗ trợ quy trình code review chuẩn (`/c3-code-review`).
+
+### 6. Firecrawl MCP (`firecrawl`) — Clean Web Scraping & Deep Docs Ingestion
+*Cào và nạp tài liệu kỹ thuật web sạch sẽ không rác (Clean Ingestion):*
+* **Trích xuất Markdown sạch**: Chuyển đổi mọi tài liệu kỹ thuật phức tạp (kể cả các trang dùng JavaScript nặng SPA) thành định dạng Markdown tinh gọn.
+* **Lọc bỏ rác giao diện**: Tự động loại bỏ thanh điều hướng, banner quảng cáo, cookies popup và mã rác HTML.
+* **Nghiên cứu & Khảo sát công nghệ**: Tự động crawl toàn bộ docset của các thư viện bên thứ ba (Zengin XML ISO 20022, camt.054, NestJS microservices) để làm giàu tri thức cho Agent.
+
+### 7. Docker MCP (`docker`) — Container Lifecycle & Microservices Ops
+*Giám sát và quản trị hạ tầng container cục bộ:*
+* **Quản lý Container**: Bật, tắt, restart các dịch vụ (PostgreSQL, Redis, Mailpit) theo yêu cầu.
+* **Giám sát Log theo thời gian thực**: Trích xuất log lỗi của container backend và database phục vụ gỡ lỗi hệ thống.
+* **Quản lý Docker Compose**: Kiểm tra sức khỏe (Healthcheck) của toàn bộ stack dịch vụ trong quá trình phát triển và kiểm thử tích hợp.
 
 ---
 
