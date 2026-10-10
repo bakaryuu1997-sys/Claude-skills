@@ -10,6 +10,8 @@ description: >-
 
 # Basic Design (基本設計書 / External Design)
 
+> ⚠️ **Mọi tên riêng trong ví dụ của skill này (FPT, F-Pay, canteen…) chỉ là VÍ DỤ MINH HỌA** — khi làm dự án thực phải thay bằng dữ liệu của dự án đó.
+
 ## Mục tiêu
 
 Tạo bộ tài liệu **Thiết kế cơ bản** chuẩn mực — mô tả hệ thống ở góc nhìn người dùng và khách hàng: có những màn hình nào, đi lại giữa chúng ra sao, mỗi màn hình hiển thị/nhập gì, nghiệp vụ chạy thế nào, tích hợp với hệ thống ngoài nào. Đây là tài liệu **khách hàng review và ký duyệt** trước khi vào thiết kế chi tiết.

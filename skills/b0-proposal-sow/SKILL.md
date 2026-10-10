@@ -10,6 +10,8 @@ description: >-
 
 # Proposal & Statement of Work (SOW) — Đề Xuất Kỹ Thuật & Phạm Vi Hợp Đồng
 
+> ⚠️ **Mọi tên riêng trong ví dụ của skill này (FPT, F-Pay, canteen…) chỉ là VÍ DỤ MINH HỌA** — khi làm dự án thực phải thay bằng dữ liệu của dự án đó.
+
 ## Mục tiêu
 
 Tổng hợp toàn bộ kết quả phân tích yêu cầu, thiết kế kiến trúc, báo giá công số và tiến độ thành **Bộ hồ sơ Đề xuất Kỹ thuật (Technical Proposal) và Phạm vi công việc (Statement of Work - SOW)** chuẩn mực doanh nghiệp để khách hàng ký duyệt hợp đồng.

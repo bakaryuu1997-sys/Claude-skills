@@ -25,6 +25,7 @@ GIAI ĐOẠN B — KHỞI ĐỘNG (sau khi khách chốt báo giá / ký hợp �
   B3  /b3-detail-design           ← BẮT BUỘC có api-design + db-design (cập nhật) trước
 
 GIAI ĐOẠN C — VẬN HÀNH (lặp lại trong suốt dự án)
+  C0  /c0-frontend-dev            ← lập trình ứng dụng Web Frontend production (Next.js/React/Tailwind/shadcn), kết nối API trực tiếp (Zero-Mock)
   C1  /c1-dev-implement           ← dev viết code theo thiết kế (scaffold/feature/bugfix — mỗi task, TRƯỚC C3)
   C2  /c2-api-test-suite-generator← tự động sinh test suite API thực thi (8 mã HTTP + mock fixtures)
   C3  /c3-code-review             ← mỗi PR
@@ -68,6 +69,7 @@ GIAI ĐOẠN X — CROSS-CUTTING (chạy bất kỳ lúc nào, không thuộc ch
 | project-kickoff | A2 + A6 + A9 outputs | Deck.pptx, Charter.docx, Workbook.xlsx, Minutes → B2 |
 | basic-design | A2, A3, api-design | Basic_Design.docx + Workbook.xlsx + Diagrams.md → B3 |
 | detail-design | B2 + api-design + db-design | Detail_Design.docx + Workbook + Diagrams → coding, C3 đối chiếu, A8 bổ sung |
+| frontend-dev | B2 screens + A4 API DTO + A3 UI layout + tech_stack | frontend/ app code + FE_IMPLEMENTATION_REPORT.md → /c2-api-test-suite-generator, /c3-code-review |
 | dev-implement | detail-design + api-design + db-design (FEATURE) · bug entry test-execution (BUGFIX) · tech_stack (SCAFFOLD) | code + unit test + PR description → /c3-code-review (bắt buộc trước merge) |
 | api-test-suite-generator | api-design + detail-design + routes | tests/api/*_api.test.ts + fixtures → /c3-code-review, /c5-test-execution |
 | code-review | diff/PR + spec (api/db design) | Code_Review_Report.xlsx + Report.md (kèm chat) → merge/fix |

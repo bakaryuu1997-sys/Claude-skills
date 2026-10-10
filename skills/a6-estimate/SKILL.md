@@ -9,6 +9,8 @@ description: >-
 
 # Estimate / WBS Skill — PM & Tech Lead Assistant
 
+> ⚠️ **Mọi tên riêng trong ví dụ của skill này (FPT, F-Pay, canteen…) chỉ là VÍ DỤ MINH HỌA** — khi làm dự án thực phải thay bằng dữ liệu của dự án đó.
+
 Bạn đóng vai **PM / Tech Lead** giàu kinh nghiệm lập WBS và báo giá dự án phần mềm outsource.
 
 ## Mục tiêu

@@ -1,10 +1,10 @@
 ---
 name: d1-handover-doc
-version: "3.8.0"
+version: "3.9.0"
 description: >-
   Tạo tài liệu bàn giao sau go-live: Handover.docx 12 mục + Handover_Workbook.xlsx 7 sheet tác nghiệp
-  (Tech stack, Envs, DB, APIs, Runbook, Known issues, Contacts) + Runbook.md. Trigger: "bàn giao",
-  "handover", "runbook", "tài liệu vận hành", "transfer document". Bước D1 — cuối dự án.
+  (Tech stack, Envs & Secret Vault Audit, DB, APIs, Runbook, Known issues, Contacts & 4-Week Shadowing Roadmap)
+  + Runbook.md. Trigger: "bàn giao", "handover", "runbook", "tài liệu vận hành", "transfer document". Bước D1 — cuối dự án.
 ---
 
 # Handover Document Skill — Technical Writer + PM
@@ -310,13 +310,13 @@ Trong thời gian warranty: bug P1 fix trong 24h, P2 fix trong 1 tuần.
 - Headers: heading styles để TOC tự generate
 
 **`[TênDựÁn]_Handover_Workbook.xlsx`** — tạo bằng openpyxl (Chuẩn Enterprise 7 sheet):
-- Sheet 1: `Overview_Signoff` — KPI cards (Tổng modules, endpoints, SLA uptime), Tóm tắt bàn giao, Hàng rào tiêu chí chấp nhận bàn giao, Bảng ký nghiệm thu 2 bên.
-- Sheet 2: `Tech_Stack_Envs` — Bảng ma trận 10 tầng công nghệ (version, vai trò, license) + 3 môi trường Prod/Staging/Dev + Từ điển 13 biến môi trường .env mẫu.
+- Sheet 1: `Overview_Signoff` — KPI cards (Tổng modules, endpoints, SLA uptime), Tóm tắt bàn giao, Hàng rào tiêu chí chấp nhận bàn giao, Bảng ký nghiệm thu 2 bên, và **Lộ trình Chuyển giao Tri thức 4 Tuần (4-Week Knowledge Transfer & Shadowing Roadmap)** gồm: Tuần 1 (Kiến trúc & luồng nghiệp vụ), Tuần 2 (Reverse Shadowing - quan sát), Tuần 3 (Forward Shadowing - Pair-Ops có giám sát), Tuần 4 (Full Handover Gate & Diễn tập xử lý sự cố giả định).
+- Sheet 2: `Tech_Stack_Envs` — Bảng ma trận 10 tầng công nghệ (version, vai trò, license) + 3 môi trường Prod/Staging/Dev + **Ma trận Kiểm toán Khóa Môi trường (Environment Key Verification Matrix)**: Liệt kê đầy đủ 100% biến môi trường, phân loại Secret/Plain, AWS Secrets Manager / KMS ARN, giá trị mẫu trung tính (không lộ credential), và Mandatory Flag để đối soát trước khi ký nhận.
 - Sheet 3: `Database_Schema` — Từ điển CSDL chuyên sâu cho toàn bộ các bảng: Tên cột, Kiểu dữ liệu, Khóa PK/FK/UK, Nullable, Default, Indexing & Cascade Rule.
 - Sheet 4: `API_Catalog` — Danh mục API endpoints: Method badge, Path, Tên chức năng, Auth & Permissions, Rate limit, Request/Response DTO schema, Mã lỗi chuẩn.
 - Sheet 5: `Runbook_Matrix` — Ma trận xử lý 6+ sự cố khẩn cấp (triệu chứng, nguyên nhân, câu lệnh chẩn đoán, bash script khắc phục copy-paste được, lệnh kiểm chứng, RTO).
 - Sheet 6: `Known_Issues_Debt` — Sổ theo dõi hạn chế hệ thống kèm Workaround an toàn + Danh mục Nợ kỹ thuật (Technical Debt) & backlog Phase 2.
-- Sheet 7: `Contacts_SLA` — Danh bạ đầu mối hỗ trợ 24/7 (nội bộ & bên thứ 3) + Ma trận cam kết SLA theo mức độ nghiêm trọng (P1/P2/P3).
+- Sheet 7: `Contacts_SLA` — Danh bạ đầu mối hỗ trợ 24/7 (nội bộ & bên thứ 3) + Ma trận cam kết SLA theo mức độ nghiêm trọng (P1/P2/P3) + Cam kết bảo hành 3 tháng.
 
 #### Tiêu chuẩn Thiết kế & Trải nghiệm Excel (Enterprise Workbook Standards):
 - **Hiển thị Gridlines:** Bắt buộc kích hoạt `ws.views.sheetView[0].showGridLines = True` trên 100% các sheet.

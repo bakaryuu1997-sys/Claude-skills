@@ -1,14 +1,16 @@
 ---
 name: d2-uat-acceptance
-version: "3.8.0"
+version: "3.9.0"
 description: >-
   Quản lý nghiệm thu UAT với khách hàng: kiểm tra tiêu chuẩn nghiệm thu (Acceptance Criteria),
-  biên bản bàn giao tính năng ký duyệt (Sign-Off) và danh mục punch list bảo hành. Trigger:
-  "nghiệm thu", "uat acceptance", "biên bản nghiệm thu", "sign-off", "acceptance criteria",
-  "bàn giao thanh toán". Bước D2 — sau handover D1.
+  truy vết 2 chiều SOW-UAT, biên bản bàn giao tính năng ký duyệt (Sign-Off), danh mục punch list bảo hành
+  kèm tự động chuyển đổi backlog bảo hành (punch_list_warranty_backlog.json). Trigger: "nghiệm thu",
+  "uat acceptance", "biên bản nghiệm thu", "sign-off", "acceptance criteria", "bàn giao thanh toán". Bước D2 — sau handover D1.
 ---
 
 # UAT Acceptance — Quản Lý Nghiệm Thu & Ký Duyệt Bàn Giao Khách Hàng
+
+> ⚠️ **Mọi tên riêng trong ví dụ của skill này (FPT, F-Pay, canteen…) chỉ là VÍ DỤ MINH HỌA** — khi làm dự án thực phải thay bằng dữ liệu của dự án đó.
 
 ## Mục tiêu
 
@@ -69,18 +71,20 @@ Bộ hồ sơ nghiệm thu bắt buộc gồm **2 file chính thức**:
 ### Sheet 2: UAT_Criteria_Verification
 - Cột A: Mã tiêu chí (`UAT-CRIT-01` ..)
 - Cột B: Mô tả tiêu chí chấp nhận
-- Cột C: Căn cứ tài liệu (Mục SOW / SRS tương ứng)
+- Cột C: Căn cứ tài liệu & Truy vết 2 chiều (Mục SOW `SOW-SEC-xx`, Use Case SRS, và Test Case ID `UAT-TC-xx`)
 - Cột D: Bằng chứng kiểm thử (Screenshot / Log / Test case ID)
 - Cột E: Đánh giá khách hàng (Accepted / Rejected)
 - Cột F: Ghi chú phản hồi của khách hàng
+- *Cổng kiểm soát phạm vi hợp đồng (Contractual Scope Coverage Gate)*: Đảm bảo 100% điều khoản trong phạm vi (In-Scope) của SOW đều được đối soát và nghiệm thu.
 
 ### Sheet 3: Punch_List_Minor_Defects
 - Cột A: Mã defect (`PUNCH-01` ..)
 - Cột B: Mô tả lỗi tồn đọng mức độ thấp
 - Cột C: Mức độ nghiêm trọng (Minor / Cosmetic)
 - Cột D: Ảnh hưởng đến vận hành (Không ảnh hưởng luồng chính)
-- Cột E: Kế hoạch khắc phục (Fix trong bản vá Sprint Warranty)
+- Cột E: Kế hoạch khắc phục & Người chịu trách nhiệm (Fix Owner)
 - Cột F: Hạn hoàn thành cam kết (SLA ngày hoàn thành)
+- *Tự động xuất Backlog Bảo hành*: Tự động chuyển đổi các mục trong Sheet này thành tệp backlog có cấu trúc (`punch_list_warranty_backlog.json`) tương thích issue tracker để nạp thẳng vào chu kỳ bảo hành (Warranty Sprint Patch) đầu tiên.
 
 ### Sheet 4: Warranty_Scope
 - Cột A: Thời gian bảo hành (Bắt đầu — Kết thúc)

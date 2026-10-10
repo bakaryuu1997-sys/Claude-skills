@@ -1,6 +1,6 @@
 ---
 name: c3-code-review
-version: "3.11.0"
+version: "3.13.0"
 description: >-
   Review code/PR theo chuẩn DỰ ÁN NỘI BỘ: đối chiếu spec a4-api-design/a5-db-design, xuất Excel checklist
   5 sheet (Summary/Checklist/Files/Defects/Praises) + Report.md, báo cáo severity + verdict. Trigger:
@@ -22,7 +22,7 @@ Review code thay đổi và đưa ra **báo cáo có cấu trúc** — phân lo�
 Khi xuất file báo cáo review chi tiết (hoặc lưu log audit PR):
 1. **Mọi file báo cáo review** BẮT BUỘC lưu vào thư mục chuyên biệt: `docs/C3_code-review/`.
 2. **Bộ đôi output tiêu chuẩn (Dual Deliverables):**
-   - **`[TênDựÁn]_Code_Review_Report.xlsx`**: Workbook 5 sheet (Review_Summary, Review_Checklist 22 tiêu chí, Files_Reviewed & LOC, Findings_Defects log kèm fix, Key_Praises).
+   - **`[TênDựÁn]_Code_Review_Report.xlsx`**: Workbook 5 sheet (Review_Summary, Review_Checklist 25 tiêu chí, Files_Reviewed & LOC, Findings_Defects log kèm fix, Key_Praises).
    - **`[TênDựÁn]_Code_Review_Report.md`**: Báo cáo Markdown chi tiết lưu trữ lịch sử PR.
 3. **TUYỆT ĐỐI KHÔNG** lưu file báo cáo markdown/excel vào thư mục gốc (`root`) của project.
 4. Trong phiên chat, trình bày báo cáo có cấu trúc theo format bảng tóm tắt, verdict dứt khoát và các findings trọng tâm.
@@ -33,7 +33,7 @@ Khi xuất file báo cáo review chi tiết (hoặc lưu log audit PR):
 
 File `docs/C3_code-review/[TênDựÁn]_Code_Review_Report.xlsx` được thiết kế theo chuẩn Enterprise 5 sheets chi tiết sâu:
 - **Sheet 1: `Review_Summary`**: KPI summary cards (Tổng files, LOC, Defect metrics, **Thực chứng kiểm thử tích hợp: "Test Execution & Integration Evidence" [ví dụ: 61/61 Tests PASS 100% | Coverage 93.20%]**, Final Verdict), Thông tin phiên review đầy đủ, Bảng ma trận phân bổ Defect theo mức độ nghiêm trọng, Bảng đánh giá chất lượng phân tầng (Layer Quality Scorecard), Biên bản ký duyệt & điều kiện Merge Gates.
-- **Sheet 2: `Review_Checklist`**: 22 tiêu chí kiểm soát chuyên sâu (Clean Architecture, OWASP ASVS v4.0, NIST SP 800-63B, Docker CIS, TypeScript Strict Mode, **Kiểm toán độ khớp mã trạng thái Controller Decorator vs Spec**, **Ma trận đột biến nhánh rẽ & Kiểm thử kịch bản tiêu cực Branch Mutation / Negative Path**, **Kiểm toán thời lượng & phạm vi Presigned URL S3 chứng từ tài chính**, **Kiểm toán tính bất biến dữ liệu tài chính sau chốt sổ Financial Immutability Guard**) kèm mức độ rủi ro, tệp tin liên quan, kết quả thẩm tra (PASS, FIXED, REC) và phân tích kỹ thuật chi tiết.
+- **Sheet 2: `Review_Checklist`**: 25 tiêu chí kiểm soát chuyên sâu (Clean Architecture, OWASP ASVS v4.0, NIST SP 800-63B, Docker CIS, TypeScript Strict Mode, **Kiểm toán độ khớp mã trạng thái Controller Decorator vs Spec**, **Ma trận đột biến nhánh rẽ & Kiểm thử kịch bản tiêu cực Branch Mutation / Negative Path**, **Kiểm toán thời lượng & phạm vi Presigned URL S3 chứng từ tài chính**, **Kiểm toán tính bất biến dữ liệu tài chính sau chốt sổ Financial Immutability Guard**, **Kiểm toán căn cột điện văn giao thức dây & ngân hàng cố định Wire Protocol Byte-Alignment Verification**, **Rà soát bề mặt mock xử lý lô thứ cấp Downstream Bulk-Query Surface Parity Check**) kèm mức độ rủi ro, tệp tin liên quan, kết quả thẩm tra (PASS, FIXED, REC) và phân tích kỹ thuật chi tiết.
 - **Sheet 3: `Files_Reviewed`**: Danh mục toàn bộ tệp mã nguồn được rà soát (Đường dẫn, Phân hệ/Layer, Ngôn ngữ, LOC, Đánh giá độ phức tạp/Rủi ro, Hàm/Lớp kiểm tra trọng tâm, Review focus, Trạng thái thẩm tra).
 - **Sheet 4: `Findings_Defects`**: Sổ theo dõi khiếm khuyết chi tiết phân loại rõ 2 nhóm: Pre-flight Resolved Defects (lỗi phát hiện qua TDD/test đã sửa triệt để) và Outstanding Review Defects (lỗi mới cần fix), kèm Finding ID, Severity badge, Phân loại lỗi, Vị trí File:Line, RCA, Before/After snippet, Bằng chứng kiểm chứng Verification Evidence, Trạng thái xử lý.
 - **Sheet 5: `Key_Praises`**: Tuyên dương 8 điểm sáng kỹ thuật vượt trội (Argon2id, Dual-token & Session Revocation, 2-tier Rate Limiter, WebSocket Heartbeat, Anti-echo Broadcast, Centralized Error Envelope, Non-root Container, High Coverage Unit Test & Supertest 8-Status Matrix) kèm cơ chế kỹ thuật sâu, lợi ích hệ thống và tiêu chuẩn đối chiếu.
@@ -87,6 +87,16 @@ Senior Reviewer tuyệt đối KHÔNG đưa ra nhận xét hời hợt hay chỉ
    - Khi review các endpoint xuất file hoặc tải PDF/chứng từ tài chính (`/invoices/:id/pdf`), BẮT BUỘC rà soát tham số `expiresIn`: không được vượt quá 900 giây (15 phút). Kiểm tra header tải về `ResponseContentDisposition: attachment; filename="..."` để chống lưu cache công cộng, và yêu cầu phải có test case assert cụ thể cấu hình TTL này.
 9. **Kiểm toán Tính Bất Biến của Giao Dịch Đã Chốt Sổ (Financial Immutability & Status Transition Guard Audit):**
    - Đối với các phân hệ Kế toán, Hóa đơn (`invoices`) hoặc Giao dịch, một khi thực thể đã đạt trạng thái `SENT` (Đã phát hành) hoặc `PAID` (Đã thanh toán), BẮT BUỘC phải có guard clause chặn đứng mọi mutation sửa đổi các trường tài chính nhạy cảm (`subtotal`, `tax_amount`, chi tiết dòng tiền). BẮT BUỘC kiểm tra sự hiện diện của test case tiêu cực (Negative Path Test) cố tình update hóa đơn đã chốt sổ để assert `400 BadRequest` hoặc `409 Conflict`.
+10. **Tự động Trích xuất Dữ liệu Coverage & Git Churn vào Excel Workbook (Automated Coverage & Churn Extractor):**
+    - Kịch bản sinh báo cáo Python BẮT BUỘC tự động phân tích `coverage/coverage-summary.json` (do Jest sinh ra) và log của `git diff --stat` để tự động điền 100% số liệu thực chứng kiểm thử vào Sheet 1 (`Review_Summary`) và Sheet 3 (`Files_Reviewed`), loại bỏ hoàn toàn việc đối soát thủ công.
+11. **Kiểm toán Tiêu chuẩn Độc lập của Pure Calculation Engine (Zero-IO & Pure Functions Isolation):**
+    - Tiêu chí số 23 trong Checklist: Rà soát tệp `*.engine.ts` bảo đảm 100% không chứa I/O, không `await`, không gọi DB/API trực tiếp, và 100% mốc thời gian đều được tiêm qua tham số (`asOfDate`). Đảm bảo tính tất định (Deterministic) và loại trừ hoàn toàn time-drift.
+12. **Đồng bộ Bài học Sau Review vào CSDL Bộ nhớ Dài hạn (Hindsight Reflection Memory Sync):**
+    - Sau khi hoàn thành review, tự động ghi tóm tắt 1 câu bài học kinh nghiệm phát hiện từ defect/finding vào bộ nhớ dài hạn của dự án để AI không bao giờ lặp lại lỗi tương tự ở các sprint tiếp theo.
+13. **Kiểm toán Căn cột Điện văn Giao thức Dây & Ngân hàng Cố định (Fixed-Width Wire Protocol Byte-Alignment Verification - Tiêu chí số 24):**
+    - Bắt buộc rà soát mọi hàm sinh hoặc phân tích dữ liệu điện văn định dạng cố định (Fixed-Width Wire Protocol như Zengin 120-byte DAT, MT940, SWIFT ISO 20022). Kiểm tra xem có sử dụng các helper đệm byte cố định (`pad0`, `padEnd`, `padStart`, `Buffer.alloc`) thay vì string template tự do hay không, bảo đảm byte offset của từng trường dữ liệu số tiền, mã ngân hàng, tài khoản khớp 100% với đặc tả ngân hàng đối tác, tránh lỗi parse 0 đồng hoặc lệch checksum trailer.
+14. **Rà soát Bề mặt Mock Xử lý Lô Thứ cấp trong Test Harness (Downstream Bulk-Query Surface Parity Check - Tiêu chí số 25):**
+    - Khi review các module điều phối (Orchestrator / Workflow Engine), bắt buộc rà soát các mock harness (`prismaMock`, stub repositories). Đảm bảo mock cung cấp đầy đủ các phương thức truy vấn tập hợp (`findMany`, `count`, `updateMany`, `transaction`) mà các downstream batch processor phụ thuộc vào, loại trừ triệt để runtime error "is not a function" khi kiểm thử tích hợp trên môi trường mock.
 
 ---
 

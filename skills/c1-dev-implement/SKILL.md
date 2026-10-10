@@ -1,6 +1,6 @@
 ---
 name: c1-dev-implement
-version: "3.11.0"
+version: "3.13.0"
 description: >-
   Skill cho DEV VIẾT CODE theo thiết kế đã có — 3 chế độ: SCAFFOLD (khởi tạo cấu trúc repo/CI/Docker/lint),
   FEATURE (code task theo b3-detail-design + a4-api-design + a5-db-design, kèm unit test + PR description),
@@ -49,24 +49,32 @@ Tuyệt đối KHÔNG sinh code khung (skeleton), dummy placeholder rỗng hoặ
    - Logging subsystem với Winston/Pino có daily-rotate file và phân cấp log levels.
    - CI/CD workflow (`.github/workflows/ci.yml`) tự động hóa linting, security audit và unit test.
    - **Đồng bộ Coverage Ngưỡng Hạ tầng**: Khi thiết lập ngưỡng test coverage toàn cục (≥ 80%), ở chế độ SCAFFOLD bắt buộc phải sinh đồng thời test suite tối thiểu cho các module hạ tầng cốt lõi (Filters, Interceptors, Logger, Middleware, Health Controller) cùng lúc với feature, hoặc cấu hình `collectCoverageFrom` khoanh vùng chính xác module đang active để tránh tình trạng fail coverage build do code boilerplate/infrastructure chưa có test.
+   - **Cross-Platform Subprocess & Shell Security Guard (Windows/POSIX Compatibility)**: Khi viết script thực thi dòng lệnh tự động (ví dụ adaptive test runner, build hooks, benchmark scripts), tuyệt đối lưu ý lỗi `EINVAL` trên Node.js v18.20.2+/v20.12.2+/v22+ (CVE-2024-27980) khi gọi `spawn('npx.cmd', ...)` hoặc `.bat` trên Windows mà không có `{ shell: true }`. Bắt buộc phải bọc xử lý nền tảng `shell: process.platform === 'win32'` hoặc truyền đường dẫn file thực thi trực tiếp, đồng thời escape nghiêm ngặt các đối số nhằm chống Command Injection.
 
 3. **Chế độ FEATURE:**
    - Phân tầng kiến trúc nghiêm ngặt: Router → Controller → Service → Repository / ORM Model.
-   - **Nguyên tắc Tách Biệt Bộ Tính Toán Thuần Túy (Pure Calculation Engine)**: Mọi logic tính toán tài chính, tiền tệ, thuế suất, hoặc chia ngày按分 (proration) BẮT BUỘC phải được tách thành một Service/Engine độc lập thuần túy (Pure Calculation Engine), không chứa state và không gọi trực tiếp database/external I/O. Đi kèm đó là bộ test fixture bảng chân trị (Table-Driven Tests) bao phủ 100% branch của các tháng 28, 29 (năm nhuận), 30, 31 ngày và các mốc chuyển giao ngày đầu/giữa/cuối tháng.
+   - **Quy chuẩn Động cơ Tính toán Thuần túy (Pure Calculation Engine Pattern)**: Mọi logic tài chính, tính thuế, chiết khấu, phân bổ ngày按分 (proration), aging công nợ, đánh giá rủi ro tín dụng BẮT BUỘC phải được cô lập vào tệp `*.engine.ts` riêng biệt. Động cơ này phải là các hàm thuần túy (Pure Functions), **zero dependency** vào NestJS/Prisma/HTTP Context, 100% tất định (Deterministic), và luôn hỗ trợ tiêm tham số thời gian (`asOfDate?: string | Date`) để dễ dàng test mà không cần mock hệ thống. Đi kèm đó là bộ test fixture bảng chân trị (Table-Driven Tests) bao phủ 100% branch của các tháng 28, 29 (năm nhuận), 30, 31 ngày và các mốc chuyển giao ngày đầu/giữa/cuối tháng.
    - **Chuẩn Hóa Khung Xử Lý Tài Liệu Thuế & 電帳法 (Statutory Document & Hash Integrity Pattern)**: Khi triển khai các module xuất chứng từ, hóa đơn, biên lai kế toán (nhất là hệ thống tại thị trường Nhật Bản như インボイス制度, 電子帳簿保存法), Service tạo tài liệu BẮT BUỘC phải tích hợp tính toán chuỗi băm mật mã SHA-256 (hoặc SHA-512) của file binary, cấp phát token định danh timestamp (chuẩn JIPDEC/e-Timestamp), và đính kèm chính sách Object Lock (Compliance mode 7–10 năm) trong metadata trả về để bảo đảm giá trị pháp lý và chống chối bỏ.
    - Bảo mật mật khẩu chuẩn OWASP: Argon2id (hoặc bcrypt salt ≥ 12); Dual-token JWT (Access 15m, Refresh 7d) kèm cơ chế `token_version` rotation trên DB chống replay attack.
    - Rate limiting middleware bảo vệ endpoint đăng nhập chống brute-force và DDoS API.
    - WebSocket Gateway: JWT handshake xác thực an toàn, heartbeat ping/pong 30s dọn zombie sockets chống rò rỉ RAM, client connection registry, và broadcast dispatcher có cờ loại trừ chính sender (`excludeSender`) chống vòng lặp echo.
    - Request Validation đầy đủ bằng schema (Zod/Joi/class-validator) đối chiếu 100% với `Validation_Spec` trong Detail Design.
 
-4. **Tiêu chuẩn Unit Test (TDD):**
+4. **Tiêu chuẩn Unit Test (TDD) & Vòng lặp Đột biến Nhánh (Branch Coverage Mutation Loop):**
    - Bộ test suite (Jest/Pytest/Vitest) độc lập, mock sạch database/external APIs.
    - BẮT BUỘC bao phủ tối thiểu **1 Happy Path + ≥ 2 Unhappy Paths** (sai mật khẩu, token hết hạn/bị thu hồi, không tìm thấy bản ghi, payload vi phạm validation).
+   - **Vòng lặp Đột biến Nhánh & Xử lý Giá trị Biên (Branch Coverage Mutation Loop)**: Để đảm bảo tỷ lệ bao phủ nhánh luôn đạt ≥ 85% ngay lần chạy đầu tiên, bộ test suite BẮT BUỘC phải kiểm thử các nhánh ranh giới:
+     1. Nhánh giá trị mặc định / Nullish Coalescing (ví dụ `asOfDate || fallback`).
+     2. Nhánh chia cho 0 hoặc mẫu số bằng 0 (ví dụ `totalSales === 0 ? 0 : dso`, mảng giao dịch rỗng `[]`).
+     3. Ranh giới chuyển tiếp ngưỡng điểm số / bậc thang (Boundary Thresholds, ví dụ `score = 79` thuộc MEDIUM vs `score = 80` thuộc LOW).
+     4. Nhánh thanh toán một phần (Partial Reconciliation) và các trạng thái đơn hàng tương lai chưa đến hạn.
    - **Ma trận Kiểm thử Khóa Lạc Quan & Đột biến Trường Duy Nhất (Mutation & Optimistic Lock Test Matrix)**: Khi implement hàm `update` có cơ chế Optimistic Locking (`version` check) hoặc trường duy nhất (unique code, corporate number, email), bộ test suite BẮT BUỘC phải có tối thiểu 3 kịch bản: (1) Happy path tăng version thành công, (2) Optimistic lock collision (ném 409 Conflict khi client truyền sai version), (3) Unique key collision với bản ghi khác (ném 409 Conflict khi cố tình sửa trường duy nhất trùng với entity khác) nhằm bảo đảm Branch Coverage của hàm update luôn đạt ≥ 85%.
    - **Mock Framework Request trong TypeScript Strict**: Khi test Middleware, Guard hoặc Interceptor của Express/NestJS, tuyệt đối tránh gán đè trực tiếp các thuộc tính read-only của `Request` (như `req.path`) vì sẽ gây lỗi `TS2540`. Bắt buộc dùng factory helper (ví dụ: `createMockRequest({ path, headers })`) hoặc ép kiểu an toàn (`mockReq as any` / fixture helper).
+   - **Coverage Ingestion Filter Pattern**: Khi chạy Jest với cờ `--collectCoverageFrom` cục bộ cho một module tính năng mới, cờ này sẽ ghi đè toàn bộ danh sách `coveragePathIgnorePatterns` trong file cấu hình gốc (`jest.config.js`). Do đó, lệnh chạy coverage theo phạm vi hẹp BẮT BUỘC phải kèm theo các chỉ thị loại trừ cụ thể: `--collectCoverageFrom="!src/**/*.dto.ts"` và `--collectCoverageFrom="!src/**/*.module.ts"` nhằm tránh việc tính toán sai lệch tỷ lệ Function / Branch Coverage đối với các file DTO/Module chỉ mang tính chất khai báo boilerplate.
 
-5. **PR Description:**
-   - Bắt buộc tạo `docs/C1_dev-implement/PR_<TICKET_OR_SPRINT>.md` gồm 7 mục: Summary, Directory Tree, Spec Adherence Table, Test Verification, Security Checklist, Local Run Guide, Reviewer Notes.
+5. **PR Description & Bảng Đối Soát Thiết Kế (Spec Adherence Matrix):**
+   - Bắt buộc tạo `docs/C1_dev-implement/PR_<TICKET_OR_SPRINT>.md` gồm 7 mục: Summary, Directory Tree, Spec Adherence Matrix (đối chiếu 1:1 các endpoint, tham số truy vấn, DTO validation và quy tắc nghiệp vụ với Detail Design), Test Verification & Coverage Report, Security & Guardrails Checklist, Local Run Guide, Reviewer Notes.
+   - TUYỆT ĐỐI KHÔNG để lộ các ký hiệu mã bước nội bộ của pipeline AI trong PR document và source code comments; 100% tuân thủ ngôn ngữ nghiệp vụ của dự án.
 
 ---
 

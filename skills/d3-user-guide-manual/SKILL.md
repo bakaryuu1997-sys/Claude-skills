@@ -1,14 +1,16 @@
 ---
 name: d3-user-guide-manual
-version: "3.8.0"
+version: "3.9.0"
 description: >-
   Biên soạn tài liệu Hướng dẫn sử dụng (User Manual) và Admin Guide chuyên nghiệp: hướng dẫn
-  thao tác từng bước, minh họa vị trí nút bấm UI, quy trình nghiệp vụ và FAQ xử lý sự cố.
-  Trigger: "hướng dẫn sử dụng", "user manual", "user guide", "tài liệu hdsd", "sổ tay người dùng",
-  "admin guide". Bước D3 — sau nghiệm thu UAT.
+  thao tác từng bước kèm ký hiệu vị trí UI & phím tắt, quy trình nghiệp vụ, cây quyết định
+  xử lý sự cố tự phục vụ liên kết Runbook, và FAQ. Trigger: "hướng dẫn sử dụng", "user manual",
+  "user guide", "tài liệu hdsd", "sổ tay người dùng", "admin guide". Bước D3 — sau nghiệm thu UAT.
 ---
 
 # User Guide & Manual — Sổ Tay Hướng Dẫn Người Dùng Cuối & Quản Trị Viên
+
+> ⚠️ **Mọi tên riêng trong ví dụ của skill này (FPT, F-Pay, canteen…) chỉ là VÍ DỤ MINH HỌA** — khi làm dự án thực phải thay bằng dữ liệu của dự án đó.
 
 ## Mục tiêu
 
@@ -51,8 +53,8 @@ Bộ tài liệu hướng dẫn bắt buộc gồm **3 tài liệu chuẩn**:
 
 | STT | File Deliverable | Định dạng | Tiêu chuẩn chất lượng tối thiểu |
 |---|---|---|---|
-| 1 | `[TênDựÁn]_User_Manual_EndUser.docx` | Word Document | Hướng dẫn cho người dùng cuối: Đăng nhập/Đổi mật khẩu, Hướng dẫn từng phân hệ chức năng theo luồng nghiệp vụ, Các lỗi thao tác thường gặp và cách xử lý |
-| 2 | `[TênDựÁn]_Admin_Guide.docx` | Word Document | Hướng dẫn cho Quản trị viên: Quản lý tài khoản & phân quyền (RBAC), Cấu hình tham số hệ thống, Xem nhật ký hoạt động (Audit Logs), Xử lý sự cố người dùng |
+| 1 | `[TênDựÁn]_User_Manual_EndUser.docx` | Word Document | Hướng dẫn cho người dùng cuối: Đăng nhập/Đổi mật khẩu, Hướng dẫn từng phân hệ chức năng theo luồng nghiệp vụ. **Bắt buộc tích hợp Ký hiệu Bố cục Nút bấm Trực quan (UI Cue Badges: `[画面右上: 新規登録]`, v.v.) và Bảng Ánh xạ Phím tắt Thao tác Nhanh (Keyboard Shortcuts Mapping: Enter, Esc, Ctrl+K)**, Các lỗi thao tác thường gặp và cách xử lý |
+| 2 | `[TênDựÁn]_Admin_Guide.docx` | Word Document | Hướng dẫn cho Quản trị viên: Quản lý tài khoản & phân quyền (RBAC), Cấu hình tham số hệ thống, Xem nhật ký hoạt động (Audit Logs). **Bắt buộc xây dựng Cây Quyết định Xử lý Lỗi Tự phục hồi (Self-Service Incident Decision Tree) liên kết chéo với mã sự cố Runbook (`INC-01` đến `INC-06`)** để xử lý nhanh sự cố người dùng |
 | 3 | `[TênDựÁn]_Quick_Start_Guide.md` | Markdown | Hướng dẫn tóm tắt 1 trang (Cheat sheet): URL đăng nhập, tài khoản mặc định thử nghiệm, 5 bước thao tác cơ bản nhất để bắt đầu |
 
 ---

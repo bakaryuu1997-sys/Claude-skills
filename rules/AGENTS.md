@@ -63,9 +63,10 @@ Hệ thống tự động suy luận ngôn ngữ tự nhiên tiếng Việt (bao
 | *"thiết kế cơ bản", "basic design", "sơ đồ màn hình", "screen flow", "danh sách màn hình"* | `/b2-basic-design` |
 | *"thiết kế chi tiết", "detail design", "sequence diagram", "thiết kế class", "CRUD matrix"* | `/b3-detail-design` |
 
-### Giai đoạn C — Lập trình, Kiểm thử & Đóng gói (C1 → C8)
+### Giai đoạn C — Lập trình, Kiểm thử & Đóng gói (C0 → C8)
 | Người dùng nói (Tiếng Việt tự nhiên) | Kỹ năng được kích hoạt |
 |---|---|
+| *"lập trình frontend", "viết code frontend", "dựng giao diện web", "nextjs frontend", "kết nối api frontend", "scaffold frontend"* | `/c0-frontend-dev` |
 | *"code task này", "implement tính năng", "scaffold dự án", "fix bug này", "viết code theo spec"* | `/c1-dev-implement` |
 | *"sinh test suite API", "viết integration test API", "test Jest/Supertest", "test Pytest"* | `/c2-api-test-suite-generator` |
 | *"review code", "review PR", "soi lỗi pull request", "kiểm tra diff"* | `/c3-code-review` (kết hợp `ocr review`) |

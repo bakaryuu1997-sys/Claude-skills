@@ -1,6 +1,6 @@
 ---
 name: c4-trailofbits-security-skills
-version: "3.11.0"
+version: "3.13.0"
 description: >-
   Kiểm toán bảo mật backend chuyên sâu theo phương pháp luận Trail of Bits và
   OWASP API Security Top 10: rà soát IDOR, JWT flaws, bypass schema validation,
@@ -35,6 +35,7 @@ Báo cáo kiểm toán bảo mật chi tiết bắt buộc lưu tại:
      - Kiểm tra Controller/Service có lấy `userId` từ token xác thực đã verify (`req.user.id`) hay lấy từ body/params do client gửi lên?
      - Mọi câu lệnh truy vấn DB (`SELECT`, `UPDATE`, `DELETE`) BẮT BUỘC phải kèm điều kiện quyền sở hữu: `where: { id: resourceId, userId: authenticatedUserId }`. Nếu không có quyền, trả về `404 Not Found` (để không rò rỉ sự tồn tại) hoặc `403 Forbidden`.
      - **Ma trận kiểm toán quyền hạn theo hành động nghiệp vụ (Action-Level Authority Matrix Audit)**: Bắt buộc rà soát các endpoint có tác động tài chính hoặc thay đổi trạng thái pháp lý (như `/contracts/:id/apply`, `/contracts/:id/versions`, `/contracts/:id/terminate`). Không chỉ dựa vào Role tĩnh (`ADMIN`, `USER`), phải kiểm tra xem có guard kiểm tra thẩm quyền phê duyệt nghiệp vụ (Financial Approval Limits & Lifecycle Transition Rules) để chống leo thang đặc quyền ngang/dọc.
+     - **AST Parameter Decorator Scanner for BOLA/IDOR (Rà soát tham số Route AST)**: Rà soát 100% path variables hoặc decorator `@Param()` trên các router/controller (ví dụ `:id`, `:customerId`, `:contractId`). Bắt buộc đối chiếu xem tham số này có được validate schema định dạng UUID/CUID không và có guard/interceptor/middleware xác thực quyền sở hữu đa tầng (Tenant Isolation & Resource Ownership) ngay trước khi gọi tầng Service hay không.
 
 2. **Vector 2: Broken Authentication & JWT Flaws**
    - *Nguy cơ*: Bị giả mạo token, tấn công replay, hoặc không thể vô hiệu hóa phiên đăng nhập khi người dùng đổi mật khẩu / bị khóa tài khoản.
@@ -50,6 +51,7 @@ Báo cáo kiểm toán bảo mật chi tiết bắt buộc lưu tại:
      - Tuyệt đối KHÔNG truyền trực tiếp `req.body` vào ORM (`prisma.user.create({ data: req.body })`).
      - Bắt buộc dùng Zod / DTO whitelist để lọc chính xác các trường cho phép cập nhật.
      - Không trả về các trường nhạy cảm trong response (phải loại bỏ `password_hash`, `salt`, `api_keys`).
+     - **Kiểm toán Phân tầng DTO Tái quy (Recursive Nested DTO Validation Audit)**: Trong các endpoint điều phối phức hợp (Orchestrator, Bulk Ingestion) nhận body JSON lồng nhau nhiều cấp (ví dụ DTO chứa mảng sub-entities items[], contractData), BẮT BUỘC rà soát xem thuộc tính đó có được trang bị đồng thời cặp decorator @ValidateNested({ each: true }) và @Type(() => SubDto) hay không. Nếu thiếu @ValidateNested, framework ValidationPipe sẽ âm thầm bỏ qua việc kiểm tra các decorator ràng buộc bên trong đối tượng con, tạo kẽ hở cho kẻ tấn công luồn lách payload bất hợp lệ hoặc vượt qua rào chắn phân tích biên độ (BVA).
 
 4. **Vector 4: Information Leakage & Insecure Logging**
    - *Nguy cơ*: Rò rỉ mật khẩu, token, khóa bí mật hoặc stack trace hệ thống qua log files hoặc console.
@@ -57,12 +59,14 @@ Báo cáo kiểm toán bảo mật chi tiết bắt buộc lưu tại:
      - Quét toàn bộ lệnh `logger.*` và `console.log`: Cấm log raw `req.body` ở các endpoint nhạy cảm (`/login`, `/register`, `/change-password`).
      - Centralized Error Handler: Trong môi trường production, tuyệt đối không gửi `err.stack` hoặc thông tin chi tiết của SQL exception về cho client.
      - **Kiểm toán Chuỗi Ký Số & Độ Dài Hashing Điện Tử (Cryptographic Digest Integrity & Normalization Audit)**: Trong các ứng dụng lưu trữ chứng từ tài chính kế toán (như hóa đơn điện tử, hợp đồng số tuân thủ luật 電帳法), mã băm (hash) của file PDF/tài liệu BẮT BUỘC phải sử dụng thuật toán an toàn tối thiểu từ `SHA-256`, `SHA-384` hoặc `SHA-512` (cấm tuyệt đối `MD5` và `SHA-1`). Buffer đầu vào phải được tính toán ngay trong memory/stream trước khi upload lên Cloud Storage và lưu trữ mã hex chuẩn 64 ký tự. Bắt buộc có test case kiểm thử Round-Trip: tải file về và hash lại để so khớp 100% với giá trị đã lưu trong DB.
+     - **Financial Query Parameter Privacy Audit (Bảo vệ tham số nhạy cảm tài chính trên URL)**: Rà soát nghiêm ngặt các endpoint tài chính (công nợ, hóa đơn, thanh toán, số dư tài khoản). Cấm tuyệt đối truyền tải số tiền chính xác, số tài khoản ngân hàng, hạn mức tín dụng hoặc mã số thuế trực tiếp qua GET query parameters (`/api/v1/ar?amount=...&bank_account=...`) vì sẽ bị lưu vết vào web server access logs, reverse proxy logs, CDN cache và browser history. Bắt buộc sử dụng HTTP POST với request body hoặc mã hóa query token/scope filter chuẩn mực.
 
 5. **Vector 5: Injection & Dangerous Raw Queries**
    - *Nguy cơ*: SQL Injection, NoSQL Injection, Command Injection.
    - *Checklist kiểm tra*:
      - Quét các hàm truy vấn raw: `prisma.$queryRawUnsafe()`, `db.query()` dùng phép cộng chuỗi (string concatenation) hoặc template literal không parameterize.
      - Bắt buộc dùng Parameterized Queries (`prisma.$queryRaw\`SELECT ... WHERE id = ${id}\``).
+     - **Kiểm toán An Toàn Thực Thi Tiến Trình Con Đa Nền Tảng (Cross-Platform Subprocess & Shell Injection Audit)**: Rà soát 100% các lệnh gọi thực thi subprocess (child_process.spawn, exec, execFile). Bắt buộc kiểm tra việc truyền tham số dòng lệnh qua mảng (rgs[]) đã được tham số hóa, cấm tuyệt đối nối chuỗi từ input người dùng vào shell command. Trên môi trường Windows (win32), kiểm tra cấu hình { shell: true } có điều kiện để giải quyết an toàn các hạn chế của cmd.exe (chống lỗi EINVAL liên quan đến bản vá CVE-2024-27980) mà không mở ra lỗ hổng Command Injection.
 
 6. **Vector 6: Denial of Service & Resource Exhaustion (DoS / ReDoS)**
    - *Nguy cơ*: Treo máy chủ do payload quá lớn, biểu thức chính quy nguy hiểm (Catastrophic Backtracking), hoặc tấn công brute-force / batch overload.
@@ -86,6 +90,7 @@ Báo cáo kiểm toán bảo mật chi tiết bắt buộc lưu tại:
      - Đảm bảo 0 lỗ hổng `Critical` và `High` trong production dependencies.
      - Khóa cứng phiên bản trong `package-lock.json` / `poetry.lock` / `requirements.lock` để chống supply chain tampering.
      - **Ma trận đánh giá khả năng khai thác chuỗi cung ứng theo bối cảnh (Exploitability-Driven Supply Chain Triage)**: Bắt buộc phân tách rõ ràng giữa `devDependencies` (chỉ chạy khi build/test) và `dependencies` (production runtime). Với mọi CVE phát hiện trong dependency gián tiếp (transitive dependencies), phải đánh giá mức độ tiếp cận (Attack Surface Reachability): Kiểm tra xem mã nguồn ứng dụng có import hoặc gọi trực tiếp đến hàm/module bị lỗi hay không (ví dụ: `bcrypt` không dùng hàm un-tar dynamic archive trong runtime) để xác định chính xác Exploitability và tránh báo động giả (false alarm).
+     - **Automated `npm audit --json` Parser & Triage Matrix (Tự động hóa bóc tách Audit JSON)**: Chuẩn hóa luồng phân tích tự động đầu ra `npm audit --json` thành bảng kiểm toán phụ thuộc. Bóc tách chi tiết: Advisory ID, CVE/GHSA, Severity, Package Name, Vulnerable Versions, Patched In, Dependency Type (direct/transitive), Dependency Scope (prod vs dev), và Reachability Verdict (Unreachable / Mitigated / Action Required).
      - Kiểm chứng chéo (Cross-linking Integration Test Proof): Tích hợp trực tiếp bằng chứng test auth/idor từ test suite (ví dụ `tests/api/auth_api.test.ts`) vào báo cáo kiểm toán để chứng minh logic phân quyền đã được nghiệm chứng thực nghiệm.
 
 ---

@@ -10,6 +10,8 @@ description: >-
 
 # Project Kickoff — Họp khởi động dự án với khách hàng
 
+> ⚠️ **Mọi tên riêng trong ví dụ của skill này (FPT, F-Pay, canteen…) chỉ là VÍ DỤ MINH HỌA** — khi làm dự án thực phải thay bằng dữ liệu của dự án đó.
+
 ## Mục tiêu
 
 Chuẩn bị đầy đủ và chuyên nghiệp cho buổi họp khởi động chính thức với khách hàng: thống nhất mục tiêu, phạm vi, vai trò, cách phối hợp, tiêu chí hoàn thành và các mốc lớn. Kết thúc buổi họp mọi bên phải cùng hiểu **"chúng ta đang làm gì, ai chịu trách nhiệm gì, phối hợp ra sao"**.

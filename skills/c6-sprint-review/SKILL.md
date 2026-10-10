@@ -1,10 +1,12 @@
 ---
 name: c6-sprint-review
-version: "3.11.0"
+version: "3.14.0"
 description: >-
   Tổng kết sprint: planned vs actual, velocity trend, bug health, retrospective 4L, action items
-  + Sprint_Log.xlsx tích lũy toàn dự án (dynamic table offset, contingency buffer matrix, drag coefficient & showcase agenda). Trigger: "sprint review", "retro", "tổng kết sprint",
-  "velocity", "sprint report". Bước C6 — cuối mỗi sprint.
+  + Sprint_Log.xlsx tích lũy toàn dự án (dynamic table offset, contingency buffer matrix, drag coefficient & showcase agenda)
+  + tự động sinh Slide Showcase Deck (.pptx 16:9, speaker notes) & Git Churn Rate analysis & Native LineChart
+  + Final Sprint Scope Closure / Release Transition Gate & Velocity-Driven Scope Trimming Simulator.
+  Trigger: "sprint review", "retro", "tổng kết sprint", "velocity", "sprint report". Bước C6 — cuối mỗi sprint.
 ---
 
 # Sprint Review Skill — Scrum Master / PM Assistant
@@ -17,11 +19,13 @@ Bạn đóng vai **Scrum Master / PM** dẫn dắt buổi sprint review và retr
 
 Tổng hợp kết quả sprint thành báo cáo rõ ràng — **planned vs actual**, velocity trend, bug health, retrospective insights và action items cụ thể cho sprint tiếp theo.
 
-Output gồm **2 file** (file 1 mới mỗi sprint, file 2 tích lũy toàn dự án):
+Output gồm **bộ hồ sơ toàn diện**:
 1. `docs/C6_sprint-review/[TênDựÁn]_Sprint[N]_Review.xlsx` — chi tiết sprint vừa xong (5 sheets)
-2. `docs/C6_sprint-review/[TênDựÁn]_Sprint_Log.xlsx` — **master file tích lũy tất cả sprints**, cập nhật mỗi lần chạy skill (3 sheets)
+2. `docs/C6_sprint-review/[TênDựÁn]_Sprint_Log.xlsx` — **master file tích lũy tất cả sprints**, cập nhật mỗi lần chạy skill (3 sheets, native LineChart)
+3. `docs/C6_sprint-review/[TênDựÁn]_Sprint[N]_Showcase_Deck.pptx` — **slide thuyết trình demo khách hàng (16:9, kèm speaker notes)** tự động sinh từ Stakeholder Showcase Agenda (5–7 slides)
+4. `docs/C6_sprint-review/[TênDựÁn]_Sprint[N]_Review.docx` & `.md` — báo cáo văn bản đồng bộ trang trọng
 
-> Lần đầu chạy: tạo mới `Sprint_Log.xlsx`. Lần sau: mở file cũ và append thêm dòng — không ghi đè.
+> Lần đầu chạy: tạo mới `Sprint_Log.xlsx`. Lần sau: mở file cũ và append thêm dòng theo Dynamic Table Offset — không ghi đè.
 
 ---
 
@@ -41,15 +45,19 @@ Tuyệt đối KHÔNG đưa ra số liệu ước lượng cảm tính hoặc b�
 1. **Workbook chi tiết `[TênDựÁn]_Sprint[N]_Review.xlsx` (5 sheets đầy đủ):**
    - **Sheet 1: Sprint Dashboard:** KPI Cards trực quan, Bảng tổng hợp các chỉ số sức khỏe, Bảng tính điểm Health Score 100 điểm. **Kịch bản Trình chiếu Demo cho Khách hàng (Automated Stakeholder Showcase Agenda Generator)**: Bổ sung khung chương trình demo 30–45 phút trích xuất tự động từ deliverables hoàn thành (thời lượng, phân công người demo, luồng nghiệp vụ minh họa, bộ dữ liệu mẫu khuyến nghị, và danh sách câu hỏi nghiệp vụ dự kiến từ phía khách hàng kèm giải pháp phản hồi chuẩn).
    - **Sheet 2: Planned vs Actual:** Đối chiếu task-by-task từ Timeline (`Personal_Vault_Project_Timeline.xlsx`) với sản phẩm bàn giao thực tế (Mã task, MD kế hoạch, MD thực tế, status, deliverable reference, lý do chênh lệch).
-   - **Sheet 3: Velocity Tracker:** Vận tốc sprint hiện tại, tỷ lệ hoàn thành %, so sánh vận tốc trung bình, tính toán ngày Go-Live dự phóng dựa trên công số còn lại (`Remaining MD`). **Chỉ số Rủi ro Tích lũy & Hệ số Trì trệ Do Nợ Kỹ thuật (Cumulative Sprint Defect Leakage & Carry-over Debt Index / Velocity Drag Coefficient)**: Tự động đo lường tỷ lệ nợ kỹ thuật và độ trôi công số tích lũy qua các sprint. Nếu tỷ lệ bug tồn đọng hoặc số MD Enabler chưa hoàn thành vượt quá 15% năng lực sprint, tự động kích hoạt cảnh báo vàng/đỏ và tính hệ số suy giảm vận tốc (`Drag Coefficient = 1 - (Unresolved_Debt_MD / Capacity_MD)`) để hiệu chỉnh trừ điểm Health Score.
+   - **Sheet 3: Velocity Tracker:** Vận tốc sprint hiện tại, tỷ lệ hoàn thành %, so sánh vận tốc trung bình, tính toán ngày Go-Live dự phóng dựa trên công số còn lại (`Remaining MD`). **Chỉ số Rủi ro Tích lũy & Hệ số Trì trệ Do Nợ Kỹ thuật (Cumulative Sprint Defect Leakage & Carry-over Debt Index / Velocity Drag Coefficient)**: Tự động đo lường tỷ lệ nợ kỹ thuật và độ trôi công số tích lũy qua các sprint. Nếu tỷ lệ bug tồn đọng hoặc số MD Enabler chưa hoàn thành vượt quá 15% năng lực sprint, tự động kích hoạt cảnh báo vàng/đỏ và tính hệ số suy giảm vận tốc (`Drag Coefficient = 1 - (Unresolved_Debt_MD / Capacity_MD)`) để hiệu chỉnh trừ điểm Health Score. **Tự động Bóc tách Git Commit Metrics & Code Churn Rate (Automated Git Commit Velocity & Code Churn Rate Ingestion)**: Tự động thực thi phân tích `git log --stat` trong khung thời gian sprint để trích xuất số lượng commits, số dòng thêm/xóa (insertions/deletions), tính toán tỷ lệ Code Churn Rate (`churn = deletions / insertions`) và nhúng trực tiếp vào bảng phân tích kỹ thuật nhằm chứng minh khách quan nỗ lực refactoring và mức độ ổn định của codebase.
    - **Sheet 4: Retrospective (Khung 4L):** Ghi nhận đầy đủ 4 góc nhìn: What went WELL (Liked), What DIDN'T go well (Lacked), What we LEARNED (Learned), What we LONGED FOR (Longed for) + Bảng Action Items có người phụ trách, deadline, priority, status.
-   - **Sheet 5: Next Sprint Prep:** Mục tiêu Sprint tới (Sprint Goal), Cam kết công số an toàn (Velocity-adjusted commitment), Carry-over tasks, **Cơ chế kế thừa Action Items thành Task (Retro Action to Next Sprint Task Injection)**: Tự động trích xuất các Action Item có mức độ ưu tiên 🔴 High chưa hoàn thành từ Sheet 4 và gắn trực tiếp thành Technical Debt / Enabler Task trong danh mục công việc dự kiến của Sprint N+1 với ước tính công số cụ thể (1–2 MD). **Ma Trận Phân Bổ Dự Phòng Kỹ Thuật (Contingency Buffer & Spike Allocation Matrix)**: Phân bổ minh bạch 3 cấu phần: Core Business Features MD, Enabler / Tech Debt MD (kế thừa từ Retro 🔴 High), và Technical Contingency Buffer MD (5%–10% capacity cho nghiên cứu công nghệ mới, spike kiến trúc, hoặc rủi ro tích hợp).
+   - **Sheet 5: Next Sprint Prep:** Mục tiêu Sprint tới (Sprint Goal), Cam kết công số an toàn (Velocity-adjusted commitment), Carry-over tasks, **Cơ chế kế thừa Action Items thành Task (Retro Action to Next Sprint Task Injection)**: Tự động trích xuất các Action Item có mức độ ưu tiên 🔴 High chưa hoàn thành từ Sheet 4 và gắn trực tiếp thành Technical Debt / Enabler Task trong danh mục công việc dự kiến của Sprint N+1 với ước tính công số cụ thể (1–2 MD). **Ma Trận Phân Bổ Dự Phòng Kỹ Thuật (Contingency Buffer & Spike Allocation Matrix)**: Phân bổ minh bạch 3 cấu phần: Core Business Features MD, Enabler / Tech Debt MD (kế thừa từ Retro 🔴 High), và Technical Contingency Buffer MD (5%–10% capacity cho nghiên cứu công nghệ mới, spike kiến trúc, hoặc rủi ro tích hợp). **Quy chuẩn Đóng Phạm vi Sprint Cuối & Cổng Chuyển giao Phát hành (Final Sprint Scope Closure & Release Transition Gate Checklist)**: Khi sprint hiện tại là sprint cuối cùng của lộ trình phát triển cốt lõi (`Remaining MD = 0`), Sheet 5 tự động chuyển đổi thành "Release & Deployment Transition Plan" — tổng kiểm toán 100% scope hoàn thành (Variance = 0), kích hoạt checklist nghiệm thu kỹ thuật "Zero Open Defects & Technical Debt Sign-Off" (xác nhận 0 bug mở, 0 nợ kỹ thuật tồn đọng) và thiết lập các đầu mối bàn giao sang giai đoạn Release / Deployment (`/c8-release-deployment`) và Handover (`/d1-handover-doc`). **Bộ Mô phỏng Dự báo Tác động Chậm trễ & Khuyến nghị Cắt tỉa Phạm vi (Velocity-Driven Scope Trimming & Go-Live Impact Simulator)**: Đối với các sprint thông thường giữa kỳ, khi `Completion Rate < 80%` hoặc `Drag Coefficient < 0.85`, kỹ năng tự động tính toán số ngày trễ Go-Live dự phóng (`Projected Delay Days = (Planned_MD - Velocity_MD) / Team_Daily_Burn_Rate`) và lập ma trận khuyến nghị cắt tỉa phạm vi theo chuẩn MoSCoW (tách các User Stories thuộc nhóm Could Have / Won't Have thành Backlog riêng) nhằm bảo vệ mốc bàn giao mục tiêu.
 
 2. **Master Workbook tích lũy `[TênDựÁn]_Sprint_Log.xlsx` (3 sheets tích lũy):**
-   - **Sheet 1: Velocity Dashboard:** Tích lũy lịch sử từng sprint: Dates, Planned MD, Completed MD, Velocity %, P1 Bugs, Health Score, Go-Live Projection, Trạng thái, Drag Coefficient. **Biểu đồ Burndown/Burnup tích lũy công số (Cumulative Project Burnup/Burndown Timeseries)**: Cấu trúc chuỗi thời gian chuẩn kèm công thức tính đường tích lũy hoàn thành và dự báo biên trên/biên dưới (Best-case / Worst-case Go-Live date). **Cơ chế tính Offset động bảo vệ bảng (Dynamic Table Offset & Section Gap Enforcement)**: Vị trí của Bảng 2 (Cumulative Burnup Timeseries) luôn được tính toán tự động bằng công thức offset (`start_row = table1_last_row + 3`) hoặc bố trí khung 14 dòng chờ sẵn cho Bảng 1 ngay từ đầu, tuyệt đối cấm hardcode số dòng cố định gây đè/xô lệch dữ liệu khi append sprint mới.
+   - **Sheet 1: Velocity Dashboard:** Tích lũy lịch sử từng sprint: Dates, Planned MD, Completed MD, Velocity %, P1 Bugs, Health Score, Go-Live Projection, Trạng thái, Drag Coefficient. **Biểu đồ Burndown/Burnup tích lũy công số (Cumulative Project Burnup/Burndown Timeseries)**: Cấu trúc chuỗi thời gian chuẩn kèm công thức tính đường tích lũy hoàn thành và dự báo biên trên/biên dưới (Best-case / Worst-case Go-Live date). **Cơ chế tính Offset động bảo vệ bảng (Dynamic Table Offset & Section Gap Enforcement)**: Vị trí của Bảng 2 (Cumulative Burnup Timeseries) luôn được tính toán tự động bằng công thức offset (`start_row = table1_last_row + 3`) hoặc bố trí khung 14 dòng chờ sẵn cho Bảng 1 ngay từ đầu, tuyệt đối cấm hardcode số dòng cố định gây đè/xô lệch dữ liệu khi append sprint mới. **Tích hợp Biểu đồ Đường Bản địa Excel (Native openpyxl LineChart for Cumulative Burnup)**: Tự động vẽ và chèn biểu đồ `LineChart` đa đường (Target Scope, Cumulative Planned, Cumulative Actual) trực quan ngay bên cạnh bảng chuỗi thời gian, tự động cập nhật tọa độ tham chiếu theo số sprint tích lũy.
    - **Sheet 2: Action Items Tracker:** Tổng hợp toàn bộ hành động cải tiến từ các buổi retro, theo dõi trạng thái hoàn thành.
    - **Sheet 3: Bug Trend:** Theo dõi mật độ defect, số bug phát hiện, đã sửa, tồn đọng qua các sprint.
    - **Cơ chế Append an toàn:** Nếu file đã có, dùng `openpyxl` mở và nối tiếp dòng mới, không ghi đè làm mất lịch sử.
+
+3. **Slide Thuyết Trình Demo Khách Hàng Chuyên Nghiệp (`[TênDựÁn]_Sprint[N]_Showcase_Deck.pptx`):**
+   - Định dạng chuẩn 16:9, thiết kế dạng thẻ Card-based màu doanh nghiệp, không placeholder TBD.
+   - **Tự Động Sinh Kịch Bản Diễn Giả (Automated Speaker Notes Generation)**: Mỗi slide bắt buộc sinh kèm phần `notes_slide` chứa lời thoại dẫn dắt (Opening), các luận điểm cốt lõi cần nhấn mạnh (Talking Points), và kịch bản câu trả lời định hướng cho các câu hỏi kỹ thuật/nghiệp vụ phức tạp từ khách hàng.
 
 ---
 
@@ -324,8 +332,10 @@ Tích lũy tất cả action items từ mọi retrospective — theo dõi trạn
 
 ## Bàn giao deliverable
 
-**File 1: `docs/C6_sprint-review/[TênDựÁn]_Sprint[N]_Review.xlsx`** — chi tiết sprint vừa xong (5 sheets).
-**File 2: `docs/C6_sprint-review/[TênDựÁn]_Sprint_Log.xlsx`** — master file tích lũy toàn dự án (3 sheets).
+**File 1: `docs/C6_sprint-review/[TênDựÁn]_Sprint[N]_Review.xlsx`** — chi tiết sprint vừa xong (5 sheets).  
+**File 2: `docs/C6_sprint-review/[TênDựÁn]_Sprint_Log.xlsx`** — master file tích lũy toàn dự án (3 sheets, dynamic table offset).  
+**File 3: `docs/C6_sprint-review/[TênDựÁn]_Sprint[N]_Showcase_Deck.pptx`** — slide trình chiếu demo khách hàng (16:9, 5–7 slide doanh nghiệp).  
+**File 4: `docs/C6_sprint-review/[TênDựÁn]_Sprint[N]_Review.docx` & `.md`** — báo cáo văn bản chi tiết đồng bộ.  
 
 ---
 

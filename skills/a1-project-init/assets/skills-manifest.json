@@ -240,7 +240,7 @@
     },
     {
       "name": "c3-code-review",
-      "version": "3.11.0",
+      "version": "3.13.0",
       "step": "C3",
       "phase": "run",
       "recurring": "per PR",
@@ -259,7 +259,7 @@
     },
     {
       "name": "c5-test-execution",
-      "version": "3.11.0",
+      "version": "3.13.0",
       "step": "C5",
       "phase": "run",
       "recurring": "per test phase",
@@ -279,7 +279,7 @@
     },
     {
       "name": "c6-sprint-review",
-      "version": "3.11.0",
+      "version": "3.14.0",
       "step": "C6",
       "phase": "run",
       "recurring": "per sprint",
@@ -316,7 +316,7 @@
     },
     {
       "name": "d1-handover-doc",
-      "version": "3.8.0",
+      "version": "3.9.0",
       "step": "D1",
       "phase": "close",
       "summary": "Tài liệu bàn giao 12 mục Docx + Workbook Excel 7 sheet + Runbook",
@@ -393,8 +393,30 @@
       ]
     },
     {
+      "name": "c0-frontend-dev",
+      "version": "3.16.0",
+      "step": "C0",
+      "phase": "run",
+      "recurring": "per feature/sprint",
+      "summary": "Scaffold & Lập trình ứng dụng Web Frontend production (Next.js/React/Tailwind/shadcn), kết nối API trực tiếp (Zero-Mock)",
+      "outputs": [
+        "frontend/",
+        "docs/C0_frontend-dev/FE_IMPLEMENTATION_REPORT.md"
+      ],
+      "intents": [
+        "frontend",
+        "lập trình frontend",
+        "viết code frontend",
+        "dựng giao diện web",
+        "nextjs",
+        "react frontend",
+        "kết nối api frontend",
+        "scaffold frontend"
+      ]
+    },
+    {
       "name": "c1-dev-implement",
-      "version": "3.11.0",
+      "version": "3.13.0",
       "step": "C1",
       "phase": "run",
       "recurring": "per task",
@@ -451,7 +473,7 @@
     },
     {
       "name": "c2-api-test-suite-generator",
-      "version": "3.11.0",
+      "version": "3.13.0",
       "step": "C2",
       "phase": "run",
       "recurring": "per task",
@@ -472,7 +494,7 @@
     },
     {
       "name": "c4-trailofbits-security-skills",
-      "version": "3.11.0",
+      "version": "3.13.0",
       "step": "C4",
       "phase": "run",
       "recurring": "per PR",
@@ -529,7 +551,7 @@
     },
     {
       "name": "c8-release-deployment",
-      "version": "3.8.0",
+      "version": "3.9.0",
       "step": "C8",
       "phase": "run",
       "recurring": "per release",
@@ -551,7 +573,7 @@
     },
     {
       "name": "d2-uat-acceptance",
-      "version": "3.8.0",
+      "version": "3.9.0",
       "step": "D2",
       "phase": "close",
       "summary": "Nghiệm thu UAT với khách hàng, biên bản bàn giao tính năng ký duyệt (Sign-Off)",
@@ -571,7 +593,7 @@
     },
     {
       "name": "d3-user-guide-manual",
-      "version": "3.8.0",
+      "version": "3.9.0",
       "step": "D3",
       "phase": "close",
       "summary": "Sổ tay hướng dẫn sử dụng (User Manual) và Admin Guide chuyên nghiệp kèm FAQ",

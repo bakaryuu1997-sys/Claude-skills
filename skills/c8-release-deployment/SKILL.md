@@ -1,11 +1,12 @@
 ---
 name: c8-release-deployment
-version: "3.8.0"
+version: "3.9.0"
 description: >-
   Kế hoạch phát hành & triển khai Production an toàn: checklist pre/post deploy, quản lý
-  migration DB, kịch bản smoke test và phương án rollback dự phòng khi có sự cố. Trigger:
-  "release", "deployment", "deploy production", "kế hoạch phát hành", "checklist deploy",
-  "smoke test", "rollback plan". Bước C8 — cuối mỗi chu kỳ release trước bàn giao D1.
+  migration DB (Expand/Contract pattern), kịch bản smoke test thực thi được (CLI harness),
+  và phương án rollback dự phòng khi có sự cố. Trigger: "release", "deployment",
+  "deploy production", "kế hoạch phát hành", "checklist deploy", "smoke test", "rollback plan".
+  Bước C8 — cuối mỗi chu kỳ release trước bàn giao D1.
 ---
 
 # Release & Deployment — Kế Hoạch Phát Hành & Triển Khai Production
@@ -46,13 +47,20 @@ Nguyên tắc triển khai:
 
 ## Tiêu chí Chất lượng & Chống Sơ sài (Anti-Superficiality Checklist)
 
-Bộ tài liệu phát hành gồm **3 file hoàn chỉnh**:
+Bộ tài liệu phát hành gồm **3 file hoàn chỉnh (kèm script tự động hóa)**:
 
 | STT | File Deliverable | Định dạng | Tiêu chuẩn chất lượng tối thiểu |
 |---|---|---|---|
 | 1 | `Release_Plan_v[N].docx` | Word Document | Tối thiểu **8 mục chuẩn**: Thông tin phiên bản & Release Notes, Lịch trình & Khung giờ bảo trì (Maintenance Window), Đội ngũ trực chiến (War Room & Contacts), Rủi ro & Giải pháp phòng ngừa, Quy trình Go/No-Go Decision, Kịch bản truyền thông người dùng |
-| 2 | `Deployment_Checklist.xlsx` | Excel Workbook | Đủ **4 sheets**: `Pre_Deployment`, `DB_Migration`, `Smoke_Verification`, `Rollback_Plan` |
-| 3 | `Smoke_Test_Runbook.md` | Markdown | Hướng dẫn kiểm thử nhanh (Sanity/Smoke Check) sau khi hệ thống vừa bật lại: Endpoint kiểm tra, Luồng thanh toán/đăng nhập then chốt, Tiêu chí đạt |
+| 2 | `Deployment_Checklist.xlsx` | Excel Workbook | Đủ **4 sheets**: `Pre_Deployment`, `DB_Migration` (áp dụng Expand/Contract pattern & `SET lock_timeout = '3s'`), `Smoke_Verification`, `Rollback_Plan` |
+| 3 | `Smoke_Test_Runbook.md` & Script | Markdown + Script | Hướng dẫn kiểm thử nhanh (Sanity/Smoke Check) sau khi hệ thống vừa bật lại: Endpoint kiểm tra, Luồng thanh toán/đăng nhập then chốt, Tiêu chí đạt. **Kèm Script CLI Thực thi Tự động (`smoke_test_runner.sh` / `.ps1`)** kiểm tra mã HTTP, parse JSON bằng `jq`, đo Latency (<100ms) và trả về cờ Go/No-Go Signal (Exit code 0/1). |
+
+4. **Quy chuẩn Di Chuyển CSDL Không Gián Đoạn Đa Giai Đoạn (Multi-Phase Zero-Downtime Database Migration Protocol / Expand-Contract Pattern)**:
+   Bắt buộc phân tách migration thành 3 giai đoạn:
+   - Giai đoạn 1 (Expand): Bổ sung cột/bảng mới có giá trị mặc định nullable, hỗ trợ cả phiên bản cũ và mới chạy song song.
+   - Giai đoạn 2 (Migrate): Đồng bộ dữ liệu nền ngầm qua background worker, không gây nghẽn I/O.
+   - Giai đoạn 3 (Contract): Xóa bỏ cột/bảng cũ sau khi phiên bản mới đã chạy ổn định qua tối thiểu 1 chu kỳ quyết toán.
+   - Mọi câu lệnh DDL migration bắt buộc khai báo timeout khóa: `SET lock_timeout = '3s';`.
 
 ---
 

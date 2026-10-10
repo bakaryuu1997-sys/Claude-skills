@@ -1,6 +1,6 @@
 ---
 name: c5-test-execution
-version: "3.11.0"
+version: "3.13.0"
 description: >-
   QUẢN LÝ + BÁO CÁO thực thi test UT/IT/ST/UAT: tracker pass/fail/blocked, defect list, metrics
   (pass rate, defect density), exit criteria, test report (xlsx + docx). Trigger: "test execution",
@@ -52,6 +52,16 @@ Tuyệt đối KHÔNG tạo tracker hay report qua loa với số lượng test 
    Mọi bug/defect khi chuyển sang trạng thái `Closed` trong sheet `Defects` và JSON snapshot BẮT BUỘC phải điền đủ 4 trường dữ liệu nghiệm chứng hồi quy: `Regression Test ID`, `Regression Impact Scope` (danh mục module/hàm bị ảnh hưởng), `Required Regression Suites` (danh sách test suite bắt buộc retest), và `Verification Git Commit Hash`. Nếu thiếu bất kỳ trường nào, hệ thống tự động gán cờ `UNVERIFIED_FIX` và coi như chưa giải quyết xong lỗi, ngăn chặn phê duyệt Quality Gate.
 9. **Bảng Đo Lường Độ Trễ & Cảnh Báo Test Chạy Chậm (Test Execution Latency & Flaky Benchmark Tracker):**
    Tự động trích xuất thuộc tính thời gian chạy (`duration` tính bằng mili-giây) của từng test suite từ kết quả Jest/Pytest vào file snapshot JSON (`*_test_results.json`) và hiển thị bảng xếp hạng `Top 5 Slowest Test Suites` trên sheet `Dashboard`. Tự động gắn nhãn cảnh báo `WARN: SLOW SUITE` đối với các suite chạy vượt quá 3.0 giây, nhắc nhở đội ngũ dev chủ động tối ưu mock I/O để duy trì tổng thời gian kiểm thử CI dưới ngưỡng 15 giây.
+10. **Cơ Chế Tự Động Thích Ứng Concurrency & Fallback Chống False Worker Crash (Concurrency Adaptive Runner Rule):**
+    Khi chạy test suite quy mô lớn (≥ 25 suites) trên môi trường phát triển cục bộ hoặc Windows, runner phải tự động phát hiện lỗi worker process termination (như `SIGTERM`, worker exitCode=null). Khi phát hiện worker crash do tranh chấp tài nguyên thay vì lỗi assertion logic, runner tự động fallback sang chế độ tuần tự `--runInBand` hoặc `--maxWorkers=50%` để thu thập dữ liệu coverage chính xác, loại bỏ triệt để tình trạng báo động giả (false alarm).
+11. **Giám Sát Độ Lệch Biến Thiên Coverage Giữa Các Sprint (Sprint-over-Sprint Coverage Delta & Regression Gate):**
+    Tự động đối chiếu độ bao phủ của sprint hiện tại với baseline của sprint trước đó từ snapshot `test_results.json` tích lũy. Bổ sung trường `coverage_delta` (ví dụ `statement_delta_pct`, `branch_delta_pct`) vào báo cáo và dashboard. Nếu bất kỳ module cốt lõi nào có tỷ lệ bao phủ nhánh giảm > 2.0% so với sprint trước (dù vẫn trên 80%), hệ thống tự động gắn nhãn cảnh báo `WARN: COVERAGE REGRESSION` yêu cầu bổ sung test branch trước khi pass Quality Gate.
+12. **Tự Động Đối Soát Git Diff Cho Bằng Chứng Khắc Phục Lỗi (Bi-directional Commit-to-Defect Blast Radius Traceability):**
+    Khi ghi nhận defect sang trạng thái `Closed`, runner script tích hợp lệnh `git show --stat --oneline <commit_hash>` để tự động trích xuất danh sách file bị thay đổi thực tế vào cột `Impact Scope` của sheet `Defects`. Đảm bảo bằng chứng hồi quy và phạm vi ảnh hưởng có căn cứ kỹ thuật bất biến từ Git repository, loại bỏ hoàn toàn việc nhập liệu thủ công ước tính.
+13. **Quy chuẩn Phân vùng Kiểm thử Hai Tầng & Kế hoạch Thực thi Thích ứng (Two-Tier Test Partitioning & Adaptive Execution Plan):**
+    Khi dự án mở rộng quy mô lớn (≥ 35 test suites), runner tự động phân tách các test suites thành 2 tầng: Tier 1 (Fast Unit/Engine tests không I/O - chạy song song đa luồng tối đa) và Tier 2 (Heavy Supertest API integration suites - chạy tuần tự có cô lập bộ nhớ và timeout an toàn). Bảng đo lường Latency trên Sheet `Dashboard` tự động phân nhóm và ghi nhận chiến lược thực thi này, giúp duy trì tổng thời gian chạy CI toàn dự án dưới 20 giây mà không bị lỗi crash worker bộ nhớ.
+14. **Quy chuẩn Thẩm tra Tính Toàn vẹn Dữ liệu Liên Phân hệ vào Cổng Chất lượng (Cross-Module Data Consistency & Integrity Gate Assertion):**
+    Đối với các hệ thống phức hợp có cơ chế chẩn đoán liên chuỗi (Cross-Module Health-Check / Lifecycle Consistency), runner BẮT BUỘC phải trích xuất kết quả chẩn đoán tính nhất quán dữ liệu liên phân hệ (chỉ số `crossModuleConsistency` và cảnh báo dữ liệu `warnings[]`) vào Sheet `Dashboard` và báo cáo tổng kết. Chỉ số `crossModuleConsistency == true` và `critical_warnings_count == 0` là điều kiện tiên quyết bắt buộc để cấp quyền phán quyết `QUALIFIED` cho Quality Gate.
 
 ### Công cụ hỗ trợ điều hướng & tra cứu mã nguồn (Code Navigation Tools)
 
