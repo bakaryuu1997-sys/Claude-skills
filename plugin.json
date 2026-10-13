@@ -1,51 +1,11 @@
 {
   "name": "dev-lifecycle-skills",
-  "version": "3.8.0",
+  "displayName": "Software Dev Lifecycle Skills",
+  "version": "3.16.0",
   "description": "Production-grade software engineering & lifecycle skills suite: Requirements, Architecture, Design, Estimate, Testing, Code Review, Security Audit, Coding Standards",
-  "author": {
-    "name": "bakaryuu",
-    "email": "C250363@ccg.ac.jp",
-    "url": "https://github.com/bakaryuu1997-sys"
-  },
-  "homepage": "https://github.com/bakaryuu1997-sys/Claude-skills",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/bakaryuu1997-sys/Claude-skills.git"
-  },
-  "license": "MIT",
-  "keywords": [
-    "claude-skills",
-    "antigravity",
-    "codex",
-    "dev-lifecycle",
-    "api-design",
-    "testing",
-    "security-audit",
-    "architecture"
-  ],
-  "skills": "./skills",
-  "mcpServers": {
-    "serena": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/oraios/serena",
-        "serena",
-        "start-mcp-server"
-      ]
-    },
-    "playwright": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@latest"
-      ]
-    },
-    "claude-mem": {
-      "command": "node",
-      "args": [
-        "${CLAUDE_PLUGIN_ROOT}/claude-mem/plugin/scripts/mcp-server.cjs"
-      ]
-    }
-  }
+  "suggestedPrompts": [
+    "Khởi tạo dự án mới với pipeline chuẩn",
+    "Thiết kế kiến trúc hệ thống và cơ sở dữ liệu",
+    "Chạy kiểm tra bộ kỹ năng với x6-skill-doctor"
+  ]
 }
