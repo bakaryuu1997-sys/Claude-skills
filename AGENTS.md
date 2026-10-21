@@ -106,3 +106,4 @@ Hệ thống tự động suy luận ngôn ngữ tự nhiên tiếng Việt (bao
 | *"menu", "hướng dẫn", "có những skill gì", "danh sách kỹ năng"* | `/menu` |
 | *"tìm trong trí nhớ", "lần trước làm thế nào", "tra cứu memory"* | `/mem-search` |
 | *"bàn giao ca làm việc", "tạo handoff", "tóm tắt phiên để tiếp tục"* | `/handoff` |
+| *"đánh giá sản phẩm", "soi tính năng", "app này thiếu gì", "product teardown", "gợi ý tính năng mới từ code", "phản biện sản phẩm", "so sánh đối thủ"* | `/product-teardown` |
