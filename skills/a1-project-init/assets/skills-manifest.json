@@ -1,6 +1,6 @@
 {
-  "manifest_version": "3.8.0",
-  "updated_at": "2026-07-09",
+  "manifest_version": "3.16.0",
+  "updated_at": "2026-11-06",
   "pipeline_source": "a1-project-init/references/pipeline.md",
   "shared": {
     "context_loader": "a1-project-init/scripts/load_context.py",

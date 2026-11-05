@@ -37,7 +37,7 @@ Tuyệt đối cấm các hành vi viết tắt, bỏ dở code hoặc trốn tr
 
 ## 3. Bộ Nhận Diện Ý Định Tiếng Việt Tự Nhiên (Vietnamese Intent Classifier)
 
-Hệ thống tự động suy luận ngôn ngữ tự nhiên tiếng Việt (bao gồm cả từ lóng kỹ thuật, khẩu ngữ dev) để kích hoạt chính xác bộ 38 skills chuẩn của dự án:
+Hệ thống tự động suy luận ngôn ngữ tự nhiên tiếng Việt (bao gồm cả từ lóng kỹ thuật, khẩu ngữ dev) để kích hoạt chính xác bộ 40 skills chuẩn của dự án:
 
 ### Giai đoạn A — Khởi tạo & Thiết kế Đầu vào (A1 → A9)
 | Người dùng nói (Tiếng Việt tự nhiên) | Kỹ năng được kích hoạt |
@@ -60,9 +60,10 @@ Hệ thống tự động suy luận ngôn ngữ tự nhiên tiếng Việt (bao
 | *"thiết kế cơ bản", "basic design", "sơ đồ màn hình", "screen flow", "danh sách màn hình"* | `/b2-basic-design` |
 | *"thiết kế chi tiết", "detail design", "sequence diagram", "thiết kế class", "CRUD matrix"* | `/b3-detail-design` |
 
-### Giai đoạn C — Lập trình, Kiểm thử & Đóng gói (C1 → C8)
+### Giai đoạn C — Lập trình, Kiểm thử & Đóng gói (C0 → C8)
 | Người dùng nói (Tiếng Việt tự nhiên) | Kỹ năng được kích hoạt |
 |---|---|
+| *"lập trình frontend", "dựng giao diện web", "code Next.js/React", "kết nối API cho frontend", "scaffold frontend"* | `/c0-frontend-dev` |
 | *"code task này", "implement tính năng", "scaffold dự án", "fix bug này", "viết code theo spec"* | `/c1-dev-implement` |
 | *"sinh test suite API", "viết integration test API", "test Jest/Supertest", "test Pytest"* | `/c2-api-test-suite-generator` |
 | *"review code", "review PR", "soi lỗi pull request", "kiểm tra diff"* | `/c3-code-review` (kết hợp `ocr review`) |

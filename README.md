@@ -133,11 +133,12 @@ flowchart TD
 
 ---
 
-## 🔄 GIAI ĐOẠN C — VẬN HÀNH, PHÁT TRIỂN & KIỂM THỬ (C1 → C8)
+## 🔄 GIAI ĐOẠN C — VẬN HÀNH, PHÁT TRIỂN & KIỂM THỬ (C0 → C8)
 *Vòng lặp phát triển lặp lại liên tục trong mỗi Sprint.*
 
 | Bước | Lệnh Skill | Tác dụng & Thời điểm dùng | Đầu ra chính |
 |:---:|---|---|---|
+| **C0** | `/c0-frontend-dev` | **Lập trình Web Frontend production** (Next.js/React/Tailwind/shadcn/Zod): sinh Typed API Client từ A4, dựng UI theo B2/A3, kết nối API thực, Auth JWT/Tenant, E2E Playwright. | Code frontend `src/`<br>Typed API Client |
 | **C1** | `/c1-dev-implement` | **Lập trình viên viết code**: 3 chế độ (SCAFFOLD khởi tạo repo/Docker/CI, FEATURE code tính năng theo spec, BUGFIX sửa lỗi). | Code `src/`, `tests/`<br>`docs/C1_dev-implement/PR_*.md` |
 | **C2** | `/c2-api-test-suite-generator` | **Tự động sinh test suite API**: Sinh mã integration test thực thi được (Jest/Supertest/Pytest) bao phủ 8 mã HTTP + mock DB fixtures. | `tests/api/*_api.test.ts`<br>`tests/fixtures/*_fixture.ts`<br>`docs/C2_api-test-suite-generator/*.md` |
 | **C3** | `/c3-code-review` | **Review code & PR**: Đối chiếu spec api/db design, kiểm tra chuẩn kỹ thuật, xuất báo cáo checklist Excel 5 sheet và Markdown (hỗ trợ companion CLI `ocr review` từ Alibaba). | `docs/C3_code-review/*_Code_Review_Report.xlsx`<br>`docs/C3_code-review/*_Code_Review_Report.md` |
@@ -293,7 +294,7 @@ Hệ thống được trang bị bộ quy tắc toàn cục [`AGENTS.md`](./AGEN
 
 1. **Bộ Phân Loại Ý Định Tiếng Việt Tự Nhiên (Vietnamese Intent Classifier)**:
    - Giao tiếp bằng tiếng Việt đời thường hoặc từ lóng dev (*"soi bug"*, *"trau chuốt UI"*, *"soạn báo giá"*, *"review PR"*...).
-   - Hệ thống tự động ánh xạ chính xác vào **38 skills chuẩn** của dự án mà không cần nhớ cú pháp tiếng Anh.
+   - Hệ thống tự động ánh xạ chính xác vào **40 skills chuẩn** của dự án mà không cần nhớ cú pháp tiếng Anh.
 2. **Kỷ Luật Viết Code Đầy Đủ (Anti-Lazy & Full-Output Enforcement)**:
    - Cấm tuyệt đối code tắt, cấm comment kiểu `// TODO: tự code tiếp`, `/* rest of code unchanged */` hoặc placeholder rỗng.
    - Bắt buộc sinh mã nguồn hoàn chỉnh có thể chạy được, xử lý triệt để nguyên nhân gốc rễ (Root-Cause First).
