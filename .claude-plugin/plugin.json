@@ -33,19 +33,6 @@
         "serena",
         "start-mcp-server"
       ]
-    },
-    "playwright": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@latest"
-      ]
-    },
-    "claude-mem": {
-      "command": "node",
-      "args": [
-        "${CLAUDE_PLUGIN_ROOT}/claude-mem/plugin/scripts/mcp-server.cjs"
-      ]
     }
   }
 }
