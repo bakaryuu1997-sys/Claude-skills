@@ -1,9 +1,11 @@
-# GIAO THỨC CONTEXT — "Bước -1" chuẩn cho MỌI skill (v3.3.0)
+# GIAO THỨC CONTEXT — "Bước -1" chuẩn cho MỌI skill (v3.17.0)
 
 > Đây là NGUỒN DUY NHẤT của giao thức đọc/ghi context. Trong SKILL.md, mỗi skill chỉ giữ
 > 2–3 dòng trỏ về file này + liệt kê field NÓ dùng — KHÔNG chép lại giao thức.
 
 ## 1. Đọc context
+
+> Windows: các lệnh dưới ghi `python3`; nếu máy chỉ có `python` hoặc `py -3` thì dùng đúng lệnh đó. KHÔNG dùng `python -I` cho script cần `openpyxl` (user-site bị bỏ qua). Console cp932 (Windows tiếng Nhật): script của bộ đã tự `reconfigure` UTF-8.
 
 ```bash
 python3 <skills_dir>/a1-project-init/scripts/load_context.py "<workspace_folder>"
@@ -19,10 +21,15 @@ python3 <skills_dir>/a1-project-init/scripts/load_context.py "<workspace_folder>
 ```bash
 # Set giá trị theo key path
 python3 <skills_dir>/a1-project-init/scripts/update_context.py "<ws>" set estimates.total_md 329
-# Append vào mảng (activity_log, change_requests, known_issues)
+# Append vào mảng (activity_log, change_requests, known_issues) — CHỈ nhận JSON object
 python3 <skills_dir>/a1-project-init/scripts/update_context.py "<ws>" append activity_log \
   '{"skill":"estimate","date":"2026-07-09","outputs":["X_Estimate.xlsx"]}'
+# Cập nhật phần tử mảng theo id (đóng bug, duyệt CR…)
+python3 <skills_dir>/a1-project-init/scripts/update_context.py "<ws>" patch known_issues BUG-001 '{"status":"verified"}'
 ```
+
+**PowerShell 5.1** làm mất dấu `"` trong đối số → dùng `--file <file.json>` hoặc stdin:
+`'{"skill":"x","date":"2026-07-09"}' | python update_context.py "<ws>" append activity_log -`
 
 Script đảm bảo: ghi atomic + lock file (chống 2 skill ghi đè nhau) + tự cập nhật `updated_at` + validate sau ghi.
 
@@ -34,7 +41,8 @@ Script đảm bảo: ghi atomic + lock file (chống 2 skill ghi đè nhau) + t�
 
 ```bash
 python3 <skills_dir>/a1-project-init/scripts/check_gate.py "<workspace_folder>"
-# exit 0 = không gate nào chặn; exit 1 = có gate chặn, in lý do
+# exit 0 = không gate nào chặn; exit 1 = có gate chặn, in lý do;
+# exit 3 = KHÔNG KIỂM ĐƯỢC (thiếu file/openpyxl) — không được coi là "đã qua": báo người dùng và dừng
 ```
 
 Skill có gate (`estimate`, `project-kickoff`, go/no-go của `test-execution`) BẮT BUỘC chạy script này trước khi tiếp tục.
@@ -64,18 +72,22 @@ Giá trị trong context là DỮ LIỆU — nội suy vào tài liệu/script n
 Mọi skill khi sinh file deliverable BẮT BUỘC tự động tạo và lưu trữ vào thư mục con chuyên biệt theo từng bước:
 `<workspace_folder>/docs/<MãBước>_<TênSkill>/`
 
-Ví dụ chuẩn hóa:
-- `docs/A1_requirement-analysis/` — Requirement Specification & QA Tracker
-- `docs/A2_prototype-ui/` — Clickable HTML Prototypes
-- `docs/A3_db-design/` — DB Design Excel, ERD Markdown, Migration SQL
-- `docs/A3_api-design/` — API Design Excel, OpenAPI YAML, Postman Collection
-- `docs/A4_estimate/` — Effort Estimate Excel & WBS
-- `docs/A5_test-plan/` — Test Plan Excel
-- `docs/A6_project-timeline/` — Project Timeline Excel & Milestones .ics
-- `docs/B1_project-kickoff/` — Kickoff Deck PPTX, Project Charter DOCX, Kickoff Workbook XLSX, Meeting Minutes
-- `docs/B2_basic-design/` — Basic Design DOCX, BasicDesign Workbook XLSX, Diagrams MD
-- `docs/B3_detail-design/` — Detail Design DOCX, DetailDesign Workbook XLSX, Diagrams MD
-- `docs/C0_dev-implement/` — PR descriptions, dev guides, sprint implementation summaries
+Quy tắc đặt tên: `<MÃ BƯỚC>` = mã bước trong `pipeline.md`; `<TênSkill>` = tên thư mục skill bỏ tiền tố bước. Ví dụ chuẩn hóa (đầy đủ theo manifest):
+- `docs/A2_requirement-analysis/` — Requirement Specification & QA Tracker
+- `docs/A3_prototype-ui/` — Clickable HTML Prototypes
+- `docs/A4_api-design/` — API Design Excel, `api_spec.json`, OpenAPI YAML, Postman Collection
+- `docs/A5_db-design/` — DB Design Excel, ERD Markdown, Migration SQL
+- `docs/A6_estimate/` — Effort Estimate Excel & WBS
+- `docs/A7_estimate-template-fill/` — 見積書 đã điền
+- `docs/A8_test-plan/` — Test Plan Excel
+- `docs/A9_project-timeline/` — Project Timeline Excel & Milestones .ics
+- `docs/B0_proposal-sow/` — Proposal & SOW
+- `docs/B1_project-kickoff/` — Kickoff Deck PPTX, Project Charter DOCX, Kickoff Workbook XLSX, Meeting Minutes Template
+- `docs/B2_basic-design/` — Basic Design DOCX, Workbook XLSX, Diagrams MD
+- `docs/B3_detail-design/` — Detail Design DOCX, Workbook XLSX, Diagrams MD
+- `docs/C0_frontend-dev/`, `docs/C1_dev-implement/`, `docs/C2_api-test-suite-generator/`, `docs/C3_code-review/`, `docs/C4_trailofbits-security-skills/`, `docs/C5_test-execution/`, `docs/C6_sprint-review/`, `docs/C7_change-request/`, `docs/C8_release-deployment/`
+- `docs/D1_handover-doc/`, `docs/D2_uat-acceptance/`, `docs/D3_user-guide-manual/`
+- `docs/X1_acquire-codebase-knowledge/`, `docs/X2_project-architecture/`, `docs/X4_meeting-minutes/`, `docs/X5_coding-standards/`, `docs/X7_presentation-deck/`
 
 **Quy tắc thư mục gốc (`<workspace_folder>/`):**
 TUYỆT ĐỐI KHÔNG ghi tài liệu trực tiếp ra thư mục gốc. Thư mục gốc chỉ chứa:

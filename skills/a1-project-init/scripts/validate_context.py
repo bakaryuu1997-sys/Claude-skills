@@ -39,6 +39,20 @@ def validate_context(ctx: dict) -> list[str]:
     wd = s.get("working_days_per_week")
     if wd is not None and not (1 <= wd <= 7):
         errs.append(f"settings.working_days_per_week={wd} ngoài [1,7]")
+    # item của các mảng object (kiểm cả khi KHÔNG có jsonschema — tránh chuỗi rác lọt vào log)
+    for arr, required in (("activity_log", ("skill", "date")), ("known_issues", ("id", "severity", "status")),
+                          ("change_requests", ("id", "status"))):
+        items = ctx.get(arr, [])
+        if not isinstance(items, list):
+            errs.append(f"{arr} phải là mảng")
+            continue
+        for i, it in enumerate(items):
+            if not isinstance(it, dict):
+                errs.append(f"{arr}[{i}] không phải object (nhận {type(it).__name__}: {str(it)[:40]!r})")
+                continue
+            miss = [k for k in required if not it.get(k)]
+            if miss:
+                errs.append(f"{arr}[{i}] thiếu {miss}")
     # jsonschema nếu có (kiểm tra sâu hơn)
     try:
         import jsonschema  # optional

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""compute_status.py — nguồn DUY NHẤT cho logic quét tài liệu + staleness + gate (v3.3.0).
+"""compute_status.py — nguồn DUY NHẤT cho logic quét tài liệu + staleness + gate (v3.17.0).
 /x3-project-status và /x2-project-architecture CÙNG dùng script này — không skill nào tự cài lại việc quét.
 
 Usage: python3 compute_status.py <workspace_folder> [<skills_dir>]
@@ -23,8 +23,8 @@ DEPS = {
     "a8-test-plan": ["a4-api-design", "a5-db-design", "a2-requirement-analysis"],
     "a9-project-timeline": ["a6-estimate", "a8-test-plan"],
     "b0-proposal-sow": ["a2-requirement-analysis", "a4-api-design", "a5-db-design", "a6-estimate", "a9-project-timeline"],
-    "b1-project-kickoff": ["a2-requirement-analysis", "a6-estimate", "a9-project-timeline"],
-    "b2-basic-design": ["a2-requirement-analysis", "a3-prototype-ui", "a4-api-design"],
+    "b1-project-kickoff": ["b0-proposal-sow", "a2-requirement-analysis", "a6-estimate", "a9-project-timeline"],
+    "b2-basic-design": ["a2-requirement-analysis", "a3-prototype-ui", "a4-api-design", "a5-db-design", "a8-test-plan"],
     "b3-detail-design": ["b2-basic-design", "a4-api-design", "a5-db-design"],
     "c1-dev-implement": ["b3-detail-design", "a4-api-design", "a5-db-design"],
     "c2-api-test-suite-generator": ["a4-api-design", "b3-detail-design"],
@@ -34,33 +34,18 @@ DEPS = {
     "c6-sprint-review": ["a9-project-timeline", "c5-test-execution"],
     "c7-change-request": ["a6-estimate", "a9-project-timeline"],
     "c8-release-deployment": ["c1-dev-implement", "c3-code-review", "c4-trailofbits-security-skills", "c5-test-execution"],
-    "d1-handover-doc": ["c8-release-deployment", "a4-api-design", "a5-db-design"],
+    "d1-handover-doc": ["c8-release-deployment", "c4-trailofbits-security-skills", "c5-test-execution", "a4-api-design", "a5-db-design"],
     "d2-uat-acceptance": ["d1-handover-doc", "a8-test-plan", "c5-test-execution"],
     "d3-user-guide-manual": ["b2-basic-design", "a3-prototype-ui", "d2-uat-acceptance"],
     "x2-project-architecture": ["a4-api-design", "a5-db-design", "b3-detail-design"],
-    # Aliases không prefix (tương thích ngược)
-    "db-design": ["api-design"],
-    "estimate": ["api-design", "db-design", "prototype-ui", "requirement-analysis"],
-    "estimate-template-fill": ["estimate"],
-    "test-plan": ["api-design", "db-design", "requirement-analysis"],
-    "project-timeline": ["estimate", "test-plan"],
-    "proposal-sow": ["requirement-analysis", "api-design", "db-design", "estimate", "project-timeline"],
-    "project-kickoff": ["requirement-analysis", "estimate", "project-timeline"],
-    "basic-design": ["requirement-analysis", "prototype-ui", "api-design"],
-    "detail-design": ["basic-design", "api-design", "db-design"],
-    "dev-implement": ["detail-design", "api-design", "db-design"],
-    "api-test-suite-generator": ["api-design", "detail-design"],
-    "code-review": ["dev-implement", "api-design", "db-design"],
-    "trailofbits-security-skills": ["dev-implement", "api-design"],
-    "test-execution": ["test-plan", "dev-implement"],
-    "sprint-review": ["project-timeline", "test-execution"],
-    "change-request": ["estimate", "project-timeline"],
-    "release-deployment": ["dev-implement", "code-review", "trailofbits-security-skills", "test-execution"],
-    "handover-doc": ["release-deployment", "api-design", "db-design"],
-    "uat-acceptance": ["handover-doc", "test-plan", "test-execution"],
-    "user-guide-manual": ["basic-design", "prototype-ui", "uat-acceptance"],
-    "project-architecture": ["api-design", "db-design", "detail-design"],
 }
+
+
+def _step_key(step) -> tuple:
+    """Sắp xếp A1<A2<…<B0<…<C0<…<X7; bước lạ xuống cuối."""
+    import re
+    m = re.match(r"^([A-Za-z]+)(\d+)", str(step or ""))
+    return (m.group(1).upper(), int(m.group(2))) if m else ("~", 0)
 
 
 def main() -> int:
@@ -90,6 +75,16 @@ def main() -> int:
         outs = []
         for pat in sk.get("outputs", []):
             g = pat.replace("[N]", "*").replace("[Phase]", "*").replace("[date]", "*")
+            stem, _, ext = g.rpartition(".")
+            if g.startswith("*_") and not stem.endswith("*") and ext in ("docx", "xlsx", "pptx", "html", "md"):
+                g = stem + "*." + ext  # nhận cả bản _v2, _v3 khi re-run
+            if "<" in g:  # pattern mô tả (vd <template-filled>) không phải glob
+                continue
+            if g.endswith("/"):  # thư mục output (vd frontend/): có tồn tại và không rỗng là đủ
+                d = ws / g.rstrip("/")
+                if d.is_dir() and any(d.iterdir()):
+                    outs.append({"file": d.name + "/", "path": g, "mtime": datetime.fromtimestamp(d.stat().st_mtime).isoformat(timespec="seconds"), "_ts": d.stat().st_mtime})
+                continue
             found = [f for f in sorted(set(list(ws.glob(g)) + list(ws.glob(f"docs/**/{g}")))) if not f.name.startswith("~$")]
             for f in found:
                 outs.append({"file": f.name,
@@ -98,9 +93,13 @@ def main() -> int:
                              "_ts": f.stat().st_mtime})
         if outs:
             newest_out[sk["name"]] = max(o["_ts"] for o in outs)
-        docs.append({"skill": sk["name"], "step": sk.get("step"),
-                     "files": outs, "status": "present" if outs else "missing"})
+        if not sk.get("outputs"):  # skill đọc-only (menu, x3, x6): không có tài liệu để quét
+            docs.append({"skill": sk["name"], "step": sk.get("step"), "files": [], "status": "n/a"})
+            continue
+        status = "present" if outs else ("optional" if sk.get("optional") else "missing")
+        docs.append({"skill": sk["name"], "step": sk.get("step"), "files": outs, "status": status})
 
+    docs.sort(key=lambda d: _step_key(d.get("step")))
     for d in docs:  # staleness: input mới hơn output → stale
         if d["status"] != "present":
             continue
@@ -113,11 +112,11 @@ def main() -> int:
         for o in d["files"]:
             o.pop("_ts", None)
 
-    gates = {"raw": "", "blocked": False}
+    gates = {"raw": "", "blocked": False, "unverifiable": False}
     try:
         r = subprocess.run([sys.executable, str(Path(__file__).parent / "check_gate.py"), str(ws)],
                            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60)
-        gates = {"raw": (r.stdout + r.stderr).strip(), "blocked": r.returncode != 0}
+        gates = {"raw": (r.stdout + r.stderr).strip(), "blocked": r.returncode == 1, "unverifiable": r.returncode == 3}
     except Exception as e:
         gates = {"raw": f"check_gate lỗi: {e}", "blocked": False}
 

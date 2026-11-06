@@ -1,9 +1,9 @@
-# EXCEL STYLE CHUNG — NGUỒN DUY NHẤT (v3.0.0)
+# EXCEL STYLE CHUNG — NGUỒN DUY NHẤT (v3.17.0)
 
 > Mọi skill sinh file Excel (api-design, db-design, estimate, test-plan, test-execution, project-timeline, sprint-review, change-request, basic-design, detail-design, project-kickoff) dùng CHUNG bộ quy tắc này — không định nghĩa lại trong từng skill. Skill chỉ ghi thêm phần màu ĐẶC THÙ của nó (nếu có).
 
 ## Chuẩn chung
-- Font: **Arial**, size 9–10. Title sheet: size 12–13.
+- Font: **Arial**, size 9–10 (file `client_facing=ja`: **Yu Gothic** — xem `i18n-policy.md`). Title sheet: size 12–13.
 - Title (row 1): nền navy `#1F4E79`, chữ trắng, bold, merged.
 - Subheader (row 2): nền `#2E75B6`, chữ trắng, size 9.
 - Header cột: nền navy `#1F4E79`, chữ trắng, bold, căn giữa.

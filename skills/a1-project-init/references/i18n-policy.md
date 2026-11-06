@@ -1,4 +1,4 @@
-# I18N POLICY — ngôn ngữ deliverable (v3.5.0)
+# I18N POLICY — ngôn ngữ deliverable (v3.17.0)
 
 > NGUỒN DUY NHẤT cho quyết định "tài liệu này viết tiếng gì". Mọi skill sinh file đọc bảng này,
 > KHÔNG tự quyết theo cảm giác — output trộn ngôn ngữ tùy hứng là lỗi.
@@ -24,10 +24,20 @@ Mặc định khi người dùng từ chối chọn: client_facing=vi, internal=
 
 | Deliverable | Skill | Key |
 |---|---|---|
-| 見積書 / báo giá gửi khách, CR sign-off, Basic Design, Kickoff deck + Charter, UAT checklist, Handover | estimate, estimate-template-fill, change-request, basic-design, project-kickoff, test-plan (UAT), handover-doc | `client_facing` |
-| Requirement analysis, QA tracker, Detail Design, Test plan/execution nội bộ, Sprint review, biên bản nội bộ, timeline | requirement-analysis, detail-design, test-plan, test-execution, sprint-review, meeting-minutes (nội bộ), project-timeline | `internal` |
-| Code, unit test, PR description, commit, README repo, migration SQL comment | dev-implement, code-review | `code` |
+| 見積書 / báo giá gửi khách, Proposal & SOW, Prototype, CR sign-off, Basic Design, Kickoff deck + Charter, UAT checklist, Release Plan (bản gửi khách), Handover, UAT Acceptance, User Manual / Admin Guide, slide gửi khách | estimate, estimate-template-fill, proposal-sow, prototype-ui, change-request, basic-design, project-kickoff, test-plan (UAT), release-deployment, handover-doc, uat-acceptance, user-guide-manual, presentation-deck | `client_facing` |
+| Requirement analysis, QA tracker, API/DB design, Detail Design, Test plan/execution nội bộ, Code review report, Security audit report, Sprint review, biên bản nội bộ, timeline, Architecture survey, ENGINEERING_STANDARDS | requirement-analysis, api-design, db-design, detail-design, test-plan, test-execution, code-review, trailofbits-security-skills, sprint-review, meeting-minutes (nội bộ), project-timeline, acquire-codebase-knowledge, coding-standards | `internal` |
+| Code, unit test, API test suite, PR description, commit, README repo, migration SQL comment, comment/label trong UI code | dev-implement, frontend-dev, api-test-suite-generator | `code` |
 | Biên bản họp VỚI KHÁCH | meeting-minutes | `client_facing` |
+
+## Font theo ngôn ngữ (docx / pptx / xlsx) — BẮT BUỘC đặt rõ, không dựa font mặc định
+
+| Ngôn ngữ chính của file | Font | Cách đặt |
+|---|---|---|
+| `ja` | **Yu Gothic** (dự phòng Meiryo) | docx: đặt `w:rFonts` cả `ascii`, `hAnsi`, `eastAsia`; pptx: `a:latin` + `a:ea` + `a:cs`; openpyxl: `Font(name="Yu Gothic")` |
+| `vi` | Arial (hoặc Calibri) | font có đủ dấu tiếng Việt, không dùng font chỉ có Latin cơ bản |
+| `en` | Arial | — |
+
+python-docx/python-pptx mặc định Calibri và KHÔNG đặt `eastAsia` → chữ Nhật rơi về font thay thế tùy máy, lệch layout. File lẫn Nhật + Việt dùng Yu Gothic cho cả hai (có glyph Latin mở rộng) và kiểm tra lại dấu sau khi render.
 
 ## Quy tắc
 

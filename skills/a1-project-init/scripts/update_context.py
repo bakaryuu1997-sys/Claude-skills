@@ -2,11 +2,17 @@
 # -*- coding: utf-8 -*-
 """update_context.py — nguồn DUY NHẤT cho việc GHI project-context.json (v3.5.0).
 MỌI skill ghi context qua script này — KHÔNG tự viết code ghi.
+Mảng object (activity_log, change_requests, known_issues) CHỈ nhận JSON object — chuỗi rác bị từ chối.
 
 Usage:
     python3 update_context.py <workspace_folder> set <key.path> <value>
     python3 update_context.py <workspace_folder> append <key.path> '<json-item>'
+    python3 update_context.py <workspace_folder> patch  <mảng> <id> '<json-object>'   # merge vào phần tử có "id" khớp
+    python3 update_context.py <workspace_folder> set|append|patch ... --file <file.json>  # đọc giá trị từ file (an toàn với PowerShell)
     python3 update_context.py <workspace_folder> restore            # khôi phục từ snapshot gần nhất
+
+POWERSHELL: PowerShell 5.1 làm mất dấu " trong đối số native → dùng --file hoặc `-` (đọc stdin):
+    '{"skill":"x","date":"2026-01-01"}' | python update_context.py <ws> append activity_log -
     python3 update_context.py <workspace_folder> restore <tên-file-snapshot>
 
 Đảm bảo:
@@ -36,6 +42,42 @@ def _parse(v: str):
         return json.loads(v)
     except (json.JSONDecodeError, ValueError):
         return v
+
+OBJECT_ARRAYS = {"activity_log", "change_requests", "known_issues"}
+
+
+def _read_value(raw: str, argv_file: str | None) -> str:
+    """Giá trị từ --file, từ stdin (raw == '-') hoặc đối số trực tiếp."""
+    if argv_file:
+        return Path(argv_file).read_text(encoding="utf-8-sig")
+    if raw == "-":
+        return sys.stdin.read()
+    return raw
+
+
+def _step(node, k: str, create: bool):
+    """Đi một bước theo khóa dict hoặc chỉ số mảng (known_issues.0.status)."""
+    if isinstance(node, list):
+        if not k.lstrip("-").isdigit():
+            raise SystemExit(f"❌ '{k}' không phải chỉ số mảng (dùng known_issues.0.status hoặc lệnh patch)")
+        i = int(k)
+        if not -len(node) <= i < len(node):
+            raise SystemExit(f"❌ chỉ số {i} ngoài phạm vi mảng (độ dài {len(node)})")
+        return node[i]
+    if not isinstance(node, dict):
+        raise SystemExit(f"❌ không đi tiếp được qua '{k}' (giá trị hiện tại không phải object/mảng)")
+    if create:
+        return node.setdefault(k, {})
+    if k not in node:
+        raise SystemExit(f"❌ không có khóa '{k}'")
+    return node[k]
+
+
+def _set_last(node, k: str, val):
+    if isinstance(node, list):
+        node[int(k)] = val
+    else:
+        node[k] = val
 
 
 def _acquire_lock(target: Path, timeout: float = 5.0, stale: float = 60.0) -> Path:
@@ -115,16 +157,35 @@ def main() -> int:
     f = ws / "project-context.json"
     if op == "restore":
         return _restore(ws, sys.argv[3] if len(sys.argv) > 3 else None)
-    if len(sys.argv) < 5:
+    argv = sys.argv[:]
+    argv_file = None
+    if "--file" in argv:
+        i = argv.index("--file")
+        if i + 1 >= len(argv):
+            print("❌ --file cần đường dẫn")
+            return 2
+        argv_file = argv[i + 1]
+        del argv[i:i + 2]
+        argv.append("")  # chỗ giữ cho <value>
+    if op == "patch":
+        if len(argv) < 6 and not (argv_file and len(argv) >= 5):
+            print(__doc__)
+            return 2
+    elif len(argv) < 5:
         print(__doc__)
         return 2
-    key, raw = sys.argv[3], sys.argv[4]
+    key = argv[3]
     if not f.exists():
         print("NO_CONTEXT: chưa có project-context.json — chạy /a1-project-init trước")
         return 1
-    if op not in ("set", "append"):
-        print(f"❌ op '{op}' không hợp lệ (set | append | restore)")
+    if op not in ("set", "append", "patch"):
+        print(f"❌ op '{op}' không hợp lệ (set | append | patch | restore)")
         return 2
+    if op == "patch":
+        item_id = argv[4]
+        raw = _read_value(argv[5] if len(argv) > 5 else "", argv_file)
+    else:
+        raw = _read_value(argv[4], argv_file)
     lock = _acquire_lock(f)
     try:
         _snapshot(f)  # N5: luôn có đường lùi trước mỗi lần ghi
@@ -132,16 +193,33 @@ def main() -> int:
         keys = key.split(".")
         tgt = ctx
         for k in keys[:-1]:
-            tgt = tgt.setdefault(k, {})
+            tgt = _step(tgt, k, create=(op != "patch"))
         val = _parse(raw)
         if op == "set":
-            tgt[keys[-1]] = val
-        else:
-            arr = tgt.setdefault(keys[-1], [])
+            _set_last(tgt, keys[-1], val)
+        elif op == "append":
+            arr = tgt.setdefault(keys[-1], []) if isinstance(tgt, dict) else _step(tgt, keys[-1], False)
             if not isinstance(arr, list):
                 print(f"❌ {key} không phải mảng — không append được")
                 return 1
+            if keys[-1] in OBJECT_ARRAYS and not isinstance(val, dict):
+                print(f"❌ {key} chỉ nhận JSON object, nhận được: {raw[:80]!r}. "
+                      f"Trên PowerShell hãy dùng --file <file.json> hoặc truyền qua stdin (-).")
+                return 2
             arr.append(val)
+        else:  # patch
+            arr = _step(tgt, keys[-1], False)
+            if not isinstance(arr, list):
+                print(f"❌ {key} không phải mảng — không patch được")
+                return 1
+            if not isinstance(val, dict):
+                print(f"❌ patch cần JSON object, nhận được: {raw[:80]!r} (PowerShell: dùng --file)")
+                return 2
+            hit = [e for e in arr if isinstance(e, dict) and str(e.get("id")) == str(item_id)]
+            if len(hit) != 1:
+                print(f"❌ tìm thấy {len(hit)} phần tử có id='{item_id}' trong {key} (cần đúng 1)")
+                return 1
+            hit[0].update(val)
         n_rot = _rotate(ctx, ws)  # N3
         ctx["updated_at"] = datetime.now().strftime("%Y-%m-%d")
         tmp = f.with_suffix(".json.tmp")

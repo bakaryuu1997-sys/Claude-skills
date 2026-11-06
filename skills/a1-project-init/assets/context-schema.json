@@ -141,6 +141,16 @@
           "md_per_sprint": {
             "type": "number",
             "minimum": 0
+          },
+          "side": {
+            "enum": [
+              "vendor",
+              "client"
+            ],
+            "description": "vendor = đội dự án; client = stakeholder phía khách (mặc định vendor)"
+          },
+          "email": {
+            "type": "string"
           }
         }
       }
@@ -195,20 +205,134 @@
               ]
             }
           }
+        },
+        "quality_gates": {
+          "type": "object",
+          "description": "Ngưỡng chất lượng dùng chung — nguồn duy nhất cho c1/c5/c8. Mặc định xem pipeline.md",
+          "properties": {
+            "ut_pass_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 95
+            },
+            "ut_coverage_line": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 80
+            },
+            "ut_coverage_branch": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 70
+            },
+            "it_pass_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 95
+            },
+            "st_pass_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 98
+            },
+            "open_critical_high_max": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          }
         }
       }
     },
     "estimates": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "total_md": {
+          "type": "number"
+        },
+        "total_sprints": {
+          "type": "integer"
+        },
+        "team_capacity_per_sprint": {
+          "type": "number"
+        },
+        "buffer_percent": {
+          "type": "number"
+        }
+      }
     },
     "links": {
-      "type": "object"
+      "type": "object",
+      "description": "Đường dẫn/URL liên quan. Khóa chuẩn: git_repo, production_url, staging_url, architecture_file, prototype_file, basic_design_doc, basic_design_approved (ngày ký YYYY-MM-DD), api_design_file, db_design_file",
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "change_requests": {
-      "type": "array"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "description": "pending | received | in analysis | negotiating | approved | rejected | deferred"
+          },
+          "impact_md": {
+            "type": "number"
+          },
+          "date": {
+            "type": "string"
+          }
+        }
+      }
     },
     "known_issues": {
-      "type": "array"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "severity",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "description": "Critical | High | Medium | Low (thang chuẩn trong pipeline.md)"
+          },
+          "status": {
+            "type": "string",
+            "description": "open | in progress | fixed | retest | verified | closed | wontfix"
+          },
+          "found_in": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          }
+        }
+      }
     },
     "activity_log": {
       "type": "array",
@@ -231,6 +355,24 @@
               "type": "string"
             }
           }
+        }
+      }
+    },
+    "release": {
+      "type": "object",
+      "description": "Ghi bởi c8-release-deployment sau khi phát hành",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        },
+        "rollback_hash": {
+          "type": "string"
         }
       }
     }

@@ -67,7 +67,7 @@
       "version": "3.8.0",
       "step": "A4",
       "phase": "prepare",
-      "parallel_with": "db-design",
+      "parallel_with": "a5-db-design",
       "summary": "Thiết kế API: Excel + Postman + OpenAPI",
       "outputs": [
         "*_api_spec.json",
@@ -88,7 +88,7 @@
       "version": "3.8.0",
       "step": "A5",
       "phase": "prepare",
-      "parallel_with": "api-design",
+      "parallel_with": "a4-api-design",
       "summary": "Thiết kế DB: Excel + Health Check + migration SQL + Mermaid ERD",
       "outputs": [
         "*_DB_Design.xlsx",
@@ -144,7 +144,7 @@
       "version": "3.8.0",
       "step": "A8",
       "phase": "prepare",
-      "summary": "Sinh test cases 17 cột + Traceability + UAT checklist + k6 plan",
+      "summary": "Sinh test cases 14 cột + Traceability + UAT checklist + k6 plan",
       "outputs": [
         "*_Test_Plan.xlsx"
       ],
@@ -221,8 +221,8 @@
       "step": "B3",
       "phase": "kickoff",
       "requires": [
-        "api-design",
-        "db-design"
+        "a4-api-design",
+        "a5-db-design"
       ],
       "summary": "詳細設計 — thiết kế internal cho dev: class, sequence, logic, CRUD, validation",
       "outputs": [
@@ -383,7 +383,7 @@
       "version": "3.8.0",
       "step": "X6",
       "phase": "meta",
-      "summary": "Linter cho chính bộ skill — 10 rule chống regression",
+      "summary": "Linter cho chính bộ skill — 12 rule chống regression",
       "outputs": [],
       "intents": [
         "kiểm tra skill",
@@ -460,7 +460,7 @@
       "phase": "cross",
       "summary": "Khảo sát kiến trúc repo 4 tầng (Router/Middleware/Service/ORM) bằng Serena LSP",
       "outputs": [
-        "docs/X1_codebase-knowledge/Architecture_Survey.md"
+        "docs/X1_acquire-codebase-knowledge/Architecture_Survey.md"
       ],
       "intents": [
         "khảo sát kiến trúc",
@@ -500,7 +500,7 @@
       "recurring": "per PR",
       "summary": "Kiểm toán bảo mật backend (Trail of Bits + OWASP API Top 10): IDOR, JWT, log leak, injection",
       "outputs": [
-        "docs/C4_security-audit/Security_Audit_Report.md"
+        "docs/C4_trailofbits-security-skills/Security_Audit_Report*.md"
       ],
       "intents": [
         "kiểm tra bảo mật",
@@ -532,7 +532,7 @@
       "name": "b0-proposal-sow",
       "version": "3.8.0",
       "step": "B0",
-      "phase": "launch",
+      "phase": "kickoff",
       "summary": "Biên soạn Proposal kỹ thuật & SOW (Statement of Work) chốt hợp đồng",
       "outputs": [
         "*_Technical_Proposal.docx",
