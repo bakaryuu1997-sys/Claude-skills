@@ -45,6 +45,8 @@
 
 Quy tắc:
 - `method` + `path` = khóa định danh endpoint (trùng với thuật toán re-run của SKILL.md).
+- `path` là đường dẫn **tương đối với `base_url`** (KHÔNG chứa `/api/v1`). URL đầy đủ trong Excel = `base_url` + `path`; khóa re-run so sánh trên `METHOD + path` đã chuẩn hóa (chữ thường, path param dạng `{param}`). Cột Excel "Endpoint URL" ghi URL đầy đủ, nên khi merge phải bỏ phần `base_url` trước khi so khóa.
+- Các cột chỉ có trong Excel (DB Tables Affected, Test Cases, Since v/Deprecated in v, Router/Package, Notes) KHÔNG nằm trong spec JSON; Excel là nguồn cho các cột đó, spec là nguồn cho Postman/OpenAPI.
 - `auth_required: true` → gen_postman tự thêm header `Authorization: Bearer {{accessToken}}`; gen_openapi áp security mặc định.
 - `auth.login_path` có giá trị → gen_postman tự tạo folder "⚙️ Setup & Auth" với test-script lưu token.
 - `body_schema` để `null` → gen_openapi tự suy schema từ `body_example` (đủ dùng; cần schema chặt hơn thì điền tay).

@@ -3,20 +3,32 @@
 """gen_postman.py — sinh Postman Collection v2.1 TỪ api_spec.json (v3.4.0).
 Dẫn xuất thuần túy — KHÔNG bao giờ viết JSON collection bằng tay; sửa spec rồi chạy lại.
 
-Usage: python3 gen_postman.py <api_spec.json> <output_collection.json>
+Usage: python gen_postman.py <api_spec.json> <output_collection.json>
 Format api_spec.json: xem a4-api-design/references/api-spec-format.md
 Tự verify: parse lại output + đếm folder/request."""
-import json, sys
+import json
+import re
+import sys
+from pathlib import Path
 
 if sys.stdout and hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 if sys.stderr and hasattr(sys.stderr, "reconfigure"):
-    sys.stderr.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
+
+def _pm_path(path):
+    # Postman dùng ':param' cho path variable; '{param}' (chuẩn OpenAPI) sẽ bị gửi nguyên văn.
+    return re.sub(r"\{(\w+)\}", r":\1", path.lstrip("/"))
 
 
 def _url(path, query=None):
-    path = path.lstrip("/")
-    u = {"raw": "{{baseUrl}}/" + path, "host": ["{{baseUrl}}"], "path": path.split("/")}
+    p = _pm_path(path)
+    u = {"raw": "{{baseUrl}}/" + p, "host": ["{{baseUrl}}"], "path": p.split("/")}
+    path_vars = re.findall(r"\{(\w+)\}", path)
+    if path_vars:
+        # giá trị thật do người dùng điền trong Postman; không bịa id mẫu
+        u["variable"] = [{"key": v, "value": "", "description": "[CẦN ĐIỀN]"} for v in path_vars]
     if query:
         u["query"] = [{"key": q["name"], "value": str(q.get("example", ""))} for q in query]
         u["raw"] += "?" + "&".join(f'{q["name"]}={q.get("example", "")}' for q in query)
@@ -80,11 +92,19 @@ def main() -> int:
     if len(sys.argv) < 3:
         print(__doc__)
         return 2
-    spec = json.loads(open(sys.argv[1], encoding="utf-8-sig").read())
+    try:
+        spec = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8-sig"))
+    except FileNotFoundError:
+        print(f"❌ không thấy file spec: {sys.argv[1]}")
+        return 2
+    except (OSError, ValueError) as e:
+        print(f"❌ api_spec.json không đọc được: {e}")
+        return 2
     out = sys.argv[2]
+    Path(out).parent.mkdir(parents=True, exist_ok=True)
     with open(out, "w", encoding="utf-8") as f:
         json.dump(build(spec), f, ensure_ascii=False, indent=2)
-    chk = json.loads(open(out, encoding="utf-8").read())  # verify
+    chk = json.loads(Path(out).read_text(encoding="utf-8"))  # verify
     n_req = sum(len(f.get("item", [])) for f in chk["item"])
     n_ep = sum(len(m.get("endpoints", [])) for m in spec.get("modules", []))
     expected = n_ep + (1 if (spec.get("auth") or {}).get("login_path") else 0)

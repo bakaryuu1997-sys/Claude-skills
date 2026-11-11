@@ -5,16 +5,22 @@
 ## JavaScript cho Prototype Chrome nâng cấp
 
 ```javascript
+// ── Ngôn ngữ & tiền tệ: lấy từ settings.languages.client_facing (xem i18n-policy.md) ──
+// Mặc định 'vi'. Đặt đúng khi sinh file; KHÔNG để lẫn ngôn ngữ trong nhãn giao diện.
+const LANG = 'vi';            // ví dụ: 'ja' | 'vi' | 'en'
+const LOCALE = { vi: 'vi-VN', ja: 'ja-JP', en: 'en-US' }[LANG] || 'en-US';
+
 // ── Screen navigation với prev/next + keyboard ───────────────────
-const SCREENS = [/* điền id theo thứ tự */];
+// Mỗi phần tử: slug (khớp Prototype id của B2 Screen_List, SCR-<NN>) + FEAT ref (FEAT-… của A2)
+const SCREENS = [/* { id: 'login', feat: 'FEAT-AUTH-01' }, … */];
 let currentIndex = 0;
 
 function go(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + id)?.classList.add('active');
-  currentIndex = SCREENS.indexOf(id);
-  document.getElementById('screen-counter').textContent =
-    `${currentIndex + 1}/${SCREENS.length}`;
+  currentIndex = SCREENS.findIndex(s => s.id === id);
+  const counter = document.getElementById('screen-counter');
+  if (counter) counter.textContent = `${currentIndex + 1}/${SCREENS.length}`;
   document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.screen === id));
   renderFeedback(id); // cập nhật feedback panel khi đổi screen
 }
@@ -27,16 +33,26 @@ document.addEventListener('keydown', e => {
 
 // ── Device toggle (Mobile / Desktop / Admin) ─────────────────────
 function setDevice(type) {
-  document.getElementById('device-area').className = 'device-' + type;
+  // Tên class PHẢI khớp CSS: .viewport-mobile / .viewport-desktop / .viewport-admin
+  document.getElementById('device-area').className = 'viewport-' + type;
   document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('btn-' + type)?.classList.add('active');
 }
 
 // ── Feedback / Annotation system ─────────────────────────────────
-const feedbackStore = {}; // { screenId: [{note, time}] }
+// Ghi chú lưu trong localStorage (try/catch: private window có thể chặn) — không mất khi tải lại
+const STORE_KEY = 'prototype-feedback-v1';
+let feedbackStore = {}; // { screenId: [{note, time}] }
+try { feedbackStore = JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch (e) { feedbackStore = {}; }
+function saveStore() { try { localStorage.setItem(STORE_KEY, JSON.stringify(feedbackStore)); } catch (e) {} }
+
+// Escape mọi nội dung người dùng nhập trước khi chèn vào innerHTML
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
 
 function getCurrentScreenId() {
-  return SCREENS[currentIndex];
+  return SCREENS[currentIndex]?.id;
 }
 function addFeedback() {
   const id = getCurrentScreenId();
@@ -44,7 +60,8 @@ function addFeedback() {
   const text = input.value.trim();
   if (!text) return;
   if (!feedbackStore[id]) feedbackStore[id] = [];
-  feedbackStore[id].push({ note: text, time: new Date().toLocaleTimeString('vi-VN') });
+  feedbackStore[id].push({ note: text, time: new Date().toLocaleTimeString(LOCALE) });
+  saveStore();
   input.value = '';
   renderFeedback(id);
 }
@@ -56,26 +73,32 @@ function renderFeedback(id) {
        <span style="background:#1F4E79;color:#fff;border-radius:50%;width:20px;height:20px;
              display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">
          ${i+1}</span>
-       <div><div style="font-size:13px;">${n.note}</div>
-       <div style="font-size:11px;color:#aaa;">${n.time}</div></div>
+       <div><div style="font-size:13px;">${esc(n.note)}</div>
+       <div style="font-size:11px;color:#aaa;">${esc(n.time)}</div></div>
      </div>`
   ).join('') || '<div style="color:#aaa;font-size:12px;">Chưa có ghi chú cho màn hình này</div>';
 }
 function exportFeedback() {
   let out = '=== PROTOTYPE FEEDBACK — [Tên dự án] ===\n\n';
-  SCREENS.forEach(sid => {
-    const notes = feedbackStore[sid] || [];
+  SCREENS.forEach(({ id }) => {
+    const notes = feedbackStore[id] || [];
     if (notes.length) {
-      out += `📱 Màn hình: ${sid}\n`;
+      out += `Màn hình: ${id}\n`;
       notes.forEach((n, i) => out += `  ${i+1}. ${n.note}\n`);
       out += '\n';
     }
   });
   if (!Object.values(feedbackStore).some(a => a.length))
     out += '(Chưa có feedback)\n';
-  navigator.clipboard.writeText(out)
-    .then(() => alert('✅ Đã copy toàn bộ feedback vào clipboard!\nPaste vào email/chat để gửi cho team.'))
-    .catch(() => { document.getElementById('export-out').value = out; });
+  const area = document.getElementById('export-out');
+  const fallback = () => { area.style.display = 'block'; area.value = out; area.select(); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(out)
+      .then(() => alert('Đã copy toàn bộ feedback vào clipboard.'))
+      .catch(fallback);   // bị chặn quyền → hiện textarea để copy tay
+  } else {
+    fallback();
+  }
 }
 ```
 

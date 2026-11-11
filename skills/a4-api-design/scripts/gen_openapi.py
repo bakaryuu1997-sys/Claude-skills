@@ -3,15 +3,16 @@
 """gen_openapi.py — sinh OpenAPI 3.0.3 YAML TỪ api_spec.json (v3.4.0).
 Dẫn xuất thuần túy — KHÔNG bao giờ viết YAML bằng tay; sửa spec rồi chạy lại.
 
-Usage: python3 gen_openapi.py <api_spec.json> <output_openapi.yaml>
+Usage: python gen_openapi.py <api_spec.json> <output_openapi.yaml>
 Thiếu pyyaml → fallback ghi JSON (JSON là YAML hợp lệ) + cảnh báo.
 Tự verify: parse lại output + đếm path."""
 import json, re, sys
+from pathlib import Path
 
 if sys.stdout and hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 if sys.stderr and hasattr(sys.stderr, "reconfigure"):
-    sys.stderr.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 
 def infer_schema(v):
@@ -71,7 +72,10 @@ def build(spec: dict) -> dict:
                 op["responses"].setdefault(str(e.get("status", 400)), {
                     "description": e.get("message", e.get("code", "Lỗi")),
                     "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}})
-            doc["paths"].setdefault(path, {})[method] = op
+            slot = doc["paths"].setdefault(path, {})
+            if method in slot:
+                raise ValueError(f"trùng khóa {ep['method']} {path} (module {mod['name']}) — mỗi method+path chỉ khai báo một lần")
+            slot[method] = op
     return doc
 
 
@@ -79,9 +83,21 @@ def main() -> int:
     if len(sys.argv) < 3:
         print(__doc__)
         return 2
-    spec = json.loads(open(sys.argv[1], encoding="utf-8-sig").read())
-    doc = build(spec)
+    try:
+        spec = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8-sig"))
+    except FileNotFoundError:
+        print(f"❌ không thấy file spec: {sys.argv[1]}")
+        return 2
+    except (OSError, ValueError) as e:
+        print(f"❌ api_spec.json không đọc được: {e}")
+        return 2
+    try:
+        doc = build(spec)
+    except (ValueError, KeyError) as e:
+        print(f"❌ api_spec.json sai cấu trúc: {e}")
+        return 1
     out = sys.argv[2]
+    Path(out).parent.mkdir(parents=True, exist_ok=True)
     try:
         import yaml
         with open(out, "w", encoding="utf-8") as f:
@@ -92,7 +108,7 @@ def main() -> int:
         with open(out, "w", encoding="utf-8") as f:
             json.dump(doc, f, ensure_ascii=False, indent=2)
         parsed = json.loads(open(out, encoding="utf-8").read())
-        mode = "JSON-as-YAML (thiếu pyyaml — `pip install pyyaml --break-system-packages` để có YAML thuần)"
+        mode = "JSON-as-YAML (thiếu pyyaml — `python -m pip install pyyaml` để có YAML thuần)"
     if len(parsed.get("paths", {})) != len(doc["paths"]):
         print("❌ verify FAIL: paths không khớp sau khi parse lại")
         return 1

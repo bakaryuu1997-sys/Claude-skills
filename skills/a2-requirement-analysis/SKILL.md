@@ -1,6 +1,6 @@
 ---
 name: a2-requirement-analysis
-version: "3.8.0"
+version: "3.17.0"
 description: >-
   Phân tích yêu cầu mơ hồ (vai BA + Solution Architect): scope draft, Q&A priority P1–P3 kèm
   tác động MD, assumptions, risks — xuất Requirement_Specification.xlsx (5 sheet: Overview/Scope/Flows/QA/Risks). Trigger: "phân tích yêu cầu",
@@ -34,6 +34,8 @@ Nguyên tắc bất biến:
 
 **Nếu có context** → tự pre-fill, không hỏi lại: tên dự án + client (đặt tên file output), `tech_stack` (định hướng câu hỏi NFR/security), `integrations` (sinh Q&A đúng cho từng integration chưa có sandbox).
 **Nếu không có** → tiếp tục bình thường (hỏi/suy luận như các bước dưới).
+
+**Ngôn ngữ:** đọc `settings.languages` theo `a1-project-init/references/i18n-policy.md`. Requirement Specification và QA Tracker là tài liệu `internal`, nhưng QA Tracker **gửi khách** trả lời → nhãn cột và câu hỏi viết theo `client_facing`. Thiếu `settings.languages` → hỏi 1 lần rồi ghi bằng `update_context.py`.
 
 ---
 
@@ -123,9 +125,9 @@ Dùng bảng cho mục 3, 8, 9, 10.
 
 ## Bàn giao deliverable
 
-**Mặc định — luôn tạo 2 file Excel chuyên biệt:**
+**Mặc định — luôn tạo 2 file Excel chuyên biệt**, lưu vào `<workspace_folder>/docs/A2_requirement-analysis/` (tên có `_v1`; bản sau `_v2`…):
 
-1. **File Đặc tả Toàn diện (Nội bộ / Quản trị dự án): `[TênDựÁn]_Requirement_Specification.xlsx`**
+1. **File Đặc tả Toàn diện (Nội bộ / Quản trị dự án): `[TênDựÁn]_Requirement_Specification_v1.xlsx`**
    Dùng `openpyxl` tạo Workbook Excel gồm 5 sheet chuyên biệt, layout chuẩn đẹp, dễ dàng filter/tra cứu và liên kết trực tiếp sang các bước sau:
    - `Overview & Context`: Tóm tắt dự án, bối cảnh, mục tiêu, tech stack, hạ tầng, ngày bàn giao và sign-off.
    - `Functional Scope`: Danh sách tính năng (ID: `FEAT-[MODULE]-[NN]`, Tên, Mô tả, Độ rõ ràng, Scope MVP/v1/v2, Mức ưu tiên) — dùng làm WBS cho `/a6-estimate` và Traceability cho `/a8-test-plan`.
@@ -133,12 +135,12 @@ Dùng bảng cho mục 3, 8, 9, 10.
    - `QA Tracker`: Bảng tổng hợp câu hỏi làm rõ P1/P2/P3.
    - `Risks & Assumptions`: Đánh giá giả định kỹ thuật và rủi ro kèm biện pháp phòng ngừa.
 
-2. **File Q&A Tracker Độc lập (Gửi trực tiếp cho Khách hàng): `[TênDựÁn]_QA_Tracker.xlsx`**
+2. **File Q&A Tracker Độc lập (Gửi trực tiếp cho Khách hàng): `[TênDựÁn]_QA_Tracker_v1.xlsx`**
    - File Excel rút gọn, chuyên dụng để gửi đính kèm email/chat cho khách hàng trả lời.
    - Có cột ô nhập màu vàng nổi bật để khách điền: `#`, `Chủ đề`, `Câu hỏi cần làm rõ`, `Priority`, `Lý do / Tác động`, `Phương án Đề xuất`, `Câu trả lời của Khách hàng`, `Người trả lời`, `Ngày`, `Trạng thái`.
    - Giúp khách hàng không bị ngợp bởi các chi tiết kỹ thuật nội bộ, tập trung phản hồi nhanh các câu hỏi P1.
 
-*(Tùy chọn bổ sung: Chỉ xuất thêm file Word `[TênDựÁn]_Requirement_Analysis.docx` khi khách hàng có yêu cầu văn bản in ấn ký duyệt hành chính riêng).*
+*(Tùy chọn bổ sung: Chỉ xuất thêm file Word `[TênDựÁn]_Requirement_Analysis_v1.docx` khi khách hàng có yêu cầu văn bản in ấn ký duyệt hành chính riêng).*
 
 **Luôn kết thúc bằng:**
 - 3 câu hỏi P1 cần hỏi khách hàng ngay hôm nay
@@ -152,7 +154,7 @@ Dùng bảng cho mục 3, 8, 9, 10.
 
 - **Bước hiện tại:** A2 — Requirement Analysis
 - **Input từ:** tài liệu trong folder Cowork (xlsx/docx/pdf/ảnh) hoặc nội dung paste
-- **Output cho:** Q&A P1 → GATE cho /a6-estimate (A6) và /b1-project-kickoff (B1) · Functional Scope → /a3-prototype-ui + /a4-api-design · Requirement Ref → Traceability của /a8-test-plan
+- **Output cho:** Q&A P1 → GATE cho /a6-estimate (A6) và /b1-project-kickoff (B1) · Functional Scope → /a3-prototype-ui + /a4-api-design · ID `FEAT-…` (sheet Functional Scope) → cột Requirement Ref và Traceability của /a8-test-plan
 - **Bước kế tiếp:** /a3-prototype-ui (song song với việc hỏi khách các câu P1)
 
 **Kết thúc response:** theo quy ước chung trong `pipeline.md` (≤ 6 dòng ✅→▶; skill tạo/sửa file append `activity_log[]` bằng `update_context.py`).
@@ -160,15 +162,6 @@ Dùng bảng cho mục 3, 8, 9, 10.
 ---
 
 ## Self-Improvement Loop
-
-Trước khi kết thúc tác vụ, hãy tự đánh giá lại quá trình thực hiện theo 3 câu hỏi:
-1. Có bước nào thất bại, gặp lỗi hoặc phải dùng cách xử lý tạm (workaround) không?
-2. Người dùng có phải đính chính, chỉnh sửa hoặc từ chối kết quả nào đáng chú ý không?
-3. Có phát hiện thêm ngữ cảnh hay quy tắc mới nào giúp các lần chạy sau làm tốt hơn không?
-
-Nếu có thay đổi thực sự giá trị, hãy đề xuất 1–2 điểm ngắn gọn để cập nhật vào skill này và chờ người dùng duyệt. Không tự ý sửa file nếu chưa có xác nhận.
-
-**Hai lưu ý quan trọng khi áp dụng:**
-- **Bắt buộc phải có bước xác nhận:** Luôn chặn quyền tự ý ghi đè file của AI. Bạn phải là người gật đầu duyệt đề xuất để tránh việc AI tự tiện làm loãng hoặc làm hỏng bộ quy tắc ban đầu.
-- **Chỉ cập nhật lỗi quy trình, bỏ qua lỗi tức thời:** Lọc kỹ xem phản hồi của bạn ở lần chạy đó là sở thích nhất thời cho một đầu việc cá biệt hay là tiêu chuẩn chung cần chuẩn hóa. Chỉ đưa vào skill những thứ mang tính hệ thống để tránh phình dung lượng prompt không cần thiết.
-
+Cuối tác vụ tự trả lời 3 câu: có lỗi/workaround không? người dùng có đính chính không? có quy tắc mới giúp lần sau không? Không có gì → im lặng.
+Có phát hiện HỆ THỐNG → in `💡 Đề xuất cải thiện` (≤ 3 dòng) rồi áp dụng theo quy trình duy nhất: `a1-project-init/references/self-improvement.md`.
+Áp dụng: 1 skill/tác vụ, ≤ 40 dòng thêm, không xóa quy tắc, chạy `scripts/skill_self_update.py`; báo skill · thay đổi · commit · `git revert <hash>`.

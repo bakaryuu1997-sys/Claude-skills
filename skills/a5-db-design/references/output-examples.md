@@ -4,7 +4,7 @@
 
 ## Output 2: SQL Migration Script
 
-Tạo file `.sql` theo chuẩn PostgreSQL, chia thành 3 phần:
+Tạo file `.sql` theo chuẩn PostgreSQL (dialect khác: `dialect-mapping.md`), chia thành 5 phần: extensions + trigger → lookup → core → indexes → seed. Toàn bộ DDL nằm trong MỘT transaction (`BEGIN … COMMIT`) để lỗi giữa chừng không để lại schema dở dang (MySQL không hỗ trợ transaction DDL — chạy từng bước và dùng file rollback).
 
 ```sql
 -- ═══════════════════════════════════════════════════════════
@@ -14,8 +14,18 @@ Tạo file `.sql` theo chuẩn PostgreSQL, chia thành 3 phần:
 -- Date: [date]
 -- ═══════════════════════════════════════════════════════════
 
--- ── EXTENSIONS ─────────────────────────────────────────────
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";  -- for gen_random_uuid()
+BEGIN;
+
+-- ── EXTENSIONS & HELPERS ───────────────────────────────────
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";  -- gen_random_uuid() (PG < 13)
+
+-- updated_at KHÔNG tự cập nhật nếu chỉ có DEFAULT NOW() → dùng trigger dưới cho MỌI bảng có updated_at
+CREATE OR REPLACE FUNCTION set_updated_at() RETURNS trigger AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
 -- ══════════════════════════════════════════════════════════
 -- PART 1: LOOKUP / ENUM TABLES (no foreign keys)
@@ -30,6 +40,9 @@ CREATE TABLE categories (
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE TRIGGER trg_categories_updated_at BEFORE UPDATE ON categories
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- ══════════════════════════════════════════════════════════
 -- PART 2: CORE TABLES (with foreign keys, ordered by dependency)
@@ -47,14 +60,16 @@ CREATE TABLE users (
     deleted_at   TIMESTAMPTZ  NULL     -- soft delete
 );
 
+CREATE TRIGGER trg_users_updated_at BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
 -- ...thêm bảng theo thứ tự dependency...
 
 -- ══════════════════════════════════════════════════════════
 -- PART 3: INDEXES
 -- ══════════════════════════════════════════════════════════
 
--- users
-CREATE INDEX idx_users_email      ON users(email);
+-- users  (email đã có index do UNIQUE — KHÔNG tạo thêm index trùng)
 CREATE INDEX idx_users_role       ON users(role) WHERE deleted_at IS NULL;
 
 -- orders
@@ -70,12 +85,29 @@ INSERT INTO categories (name, slug, sort_order) VALUES
   ('Cơm', 'com', 1),
   ('Món nước', 'mon-nuoc', 2),
   ('Đồ uống', 'do-uong', 3);
+
+COMMIT;
+```
+
+### File rollback `[TênDựÁn]_migration_down_v1.sql`
+
+DROP theo thứ tự NGƯỢC thứ tự tạo bảng (dùng `check_circular_fk.py --order` đảo ngược). Chỉ dùng trên môi trường chưa có dữ liệu thật hoặc sau khi đã backup — ghi cảnh báo này ở đầu file.
+
+```sql
+-- ROLLBACK cho [TênDựÁn]_migration_v1.sql — XÓA DỮ LIỆU. Backup trước khi chạy.
+BEGIN;
+DROP TABLE IF EXISTS order_items;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS categories;
+DROP FUNCTION IF EXISTS set_updated_at();
+COMMIT;
 ```
 
 ---
 
 
-## Output 3: Mermaid ERD (`[TênDựÁn]_ERD.md`)
+## Output 3: Mermaid ERD (`[TênDựÁn]_ERD_v1.md`)
 
 File Markdown chứa Mermaid diagram — paste vào GitHub/GitLab README, Notion, hoặc bất kỳ tool nào hỗ trợ Mermaid để render thành sơ đồ quan hệ trực quan:
 
@@ -137,9 +169,9 @@ erDiagram
 
 ## Chế độ chạy lại (re-run) — BẮT BUỘC kiểm tra trước khi sinh file
 
-Nếu `[TênDựÁn]_DB_Design.xlsx` đã tồn tại trong workspace:
+Nếu `[TênDựÁn]_DB_Design_v1.xlsx` đã tồn tại trong workspace:
 1. Load file cũ, chỉ thêm/sửa bảng thay đổi — giữ nguyên phần không đổi.
-2. Migration mới ghi thành file DELTA `[TênDựÁn]_migration_[N]_<mô-tả>.sql` — **KHÔNG ghi đè `migration.sql` cũ** (có thể đã chạy trên DB thật; ghi đè = mất khả năng trace).
-3. Chạy lại Health Check trên TOÀN schema (cũ + mới), cập nhật ERD.md.
+2. Migration mới ghi thành file DELTA `[TênDựÁn]_migration_[N]_<mô-tả>.sql` (+ `_down` tương ứng) — **KHÔNG ghi đè `migration_v1.sql` cũ** (có thể đã chạy trên DB thật; ghi đè = mất khả năng trace).
+3. Chạy lại Health Check trên TOÀN schema (cũ + mới), cập nhật ERD_v*.md.
 4. KHÔNG regenerate từ đầu trừ khi người dùng yêu cầu rõ "làm lại từ đầu".
 

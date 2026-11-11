@@ -1,6 +1,6 @@
 ---
 name: a6-estimate
-version: "3.8.0"
+version: "3.17.0"
 description: >-
   Tạo báo giá/WBS/estimate man-day: Excel 6 sheet (Assumptions/Summary/Detail/Role Breakdown/
   Out of Scope/Risks). Trigger: "báo giá", "estimate", "WBS", "tính công số", "見積", "見積書",
@@ -33,7 +33,7 @@ Tạo file estimate chi tiết, thực tế, có giả định rõ ràng — đ�
 ---
 ## Bước 0 — Đọc đầu vào
 
-Đầu vào có thể là: tài liệu yêu cầu, màn hình thiết kế, mô tả nghiệp vụ, Q&A, scope sơ bộ, hoặc ghi chú trao đổi nội bộ. Đọc hết trước khi estimate.
+Đầu vào có thể là: tài liệu yêu cầu, màn hình thiết kế, mô tả nghiệp vụ, Q&A, scope sơ bộ, hoặc ghi chú trao đổi nội bộ. Đọc hết trước khi estimate. Đơn vị gốc của Dev, số bảng, số endpoint lấy từ output của a4/a5 (không đếm lại từ trí nhớ).
 
 Nếu thông tin thiếu hoặc mơ hồ: **ngưỡng tự quyết** — tác động < 3 MD → giả định + ghi cột Assumption; tác động ≥ 3 MD hoặc đổi kiến trúc → BẮT BUỘC hỏi (AskUserQuestion).
 
@@ -48,7 +48,7 @@ Nếu trong workspace có `*_QA_Tracker.xlsx` (từ /a2-requirement-analysis): �
 
 **Cách đếm chuẩn — bằng code, không đếm tay:**
 ```bash
-python3 <skills_dir>/a1-project-init/scripts/check_gate.py "<workspace_folder>"
+python <skills_dir>/a1-project-init/scripts/check_gate.py "<workspace_folder>"
 # exit ≠ 0 → gate chặn, in lý do — DỪNG theo đúng quy tắc trên
 ```
 
@@ -172,7 +172,7 @@ Thêm dòng cuối: **Grand Total** và quy đổi sang Person-Month (÷ `settin
 
 Bảng chi tiết — đây là sheet quan trọng nhất:
 
-| No | Category | Function / Module | Task detail | Assumption | Dev | UT | BD | DD | IT | Total |
+| No | Category | Function / Module | Task detail | Assumption | Dev | UT | BD | DD | IT | Total | Role |
 
 - **No**: số thứ tự liên tục
 - **Category**: tên danh mục lớn
@@ -180,42 +180,44 @@ Bảng chi tiết — đây là sheet quan trọng nhất:
 - **Task detail**: mô tả chi tiết task nhỏ nhất có thể
 - **Assumption**: giả định riêng cho task này
 - Các cột số: man-day, 1 chữ số thập phân
-- **Total**: công thức Excel `=SUM(...)` cho từng dòng
+- **Total**: công thức Excel `=SUM(...)` cho từng dòng (cộng Dev + UT + BD + DD + IT)
+- **Role** (cột L): một trong các role của `team[].role` (ví dụ `Backend Dev`, `Mobile Dev`, `QA`, `PM`). Bắt buộc có — Role Breakdown dựa vào cột này.
+- Công việc phân tích/thiết kế/kiểm thử (Requirement, Basic Design, Detail Design, Testing) phải nằm ở cột **BD / DD / IT / UT**, KHÔNG đưa vào cột Dev. Dev chỉ chứa công số lập trình. Cùng một đầu việc không được tính hai lần ở hai cột.
 - Dòng subtotal sau mỗi category, Grand Total ở cuối
 
-### Sheet 4: Role Breakdown ← MỚI
+### Sheet 4: Role Breakdown
 
-> **Tự tổng hợp — KHÔNG tính tay.** Mỗi task ở Detail Estimate gán 1 cột `Role` (BE/Mobile/QA/PM...). Sheet này dùng công thức Excel `SUMIF` để tự cộng theo role, cập nhật tức thì khi sửa Detail:
-> `=SUMIF('Detail Estimate'!$L:$L, A2, 'Detail Estimate'!$K:$K)` (A2 = tên role; L = cột Role, K = cột Total — khi build phải dùng đúng CHỮ CÁI CỘT thực tế; TUYỆT ĐỐI không viết kiểu `$Total:$Total` — không phải cú pháp Excel; tên sheet có dấu cách phải bọc nháy đơn). Nhờ đó Role Breakdown luôn khớp Detail Estimate, không lệch do sửa tay. Nếu có `project-context.json`, đọc `team` để liệt kê sẵn đúng các role của dự án.
-Sheet tổng hợp effort theo từng role — dùng trực tiếp để lập kế hoạch nhân sự và feed vào `/a9-project-timeline`.
+> **Tự tổng hợp — KHÔNG tính tay.** Mỗi dòng ở Detail Estimate có cột `Role` (L). Sheet này cộng cột **Total** (K) theo role bằng `SUMIF`, nên luôn khớp Detail Estimate:
+> `=SUMIF('Detail Estimate'!$L:$L, A2, 'Detail Estimate'!$K:$K)` — A2 = tên role; chữ cái cột phải là cột thật (L, K); tên sheet có dấu cách bọc nháy đơn. Tham chiếu bằng tên tiêu đề cột là lỗi cú pháp Excel.
+> Danh sách role lấy từ `team[].role` của context (không tự thêm role).
 
-| Role | Total MD | % of Total | Recommended Headcount | MD/Sprint (1 person) | Sprints needed |
-|---|---|---|---|---|---|
-| Backend Dev | 97 | 34% | 1–2 người | 8 MD | 12 (1 người) / 6 (2 người) |
-| Mobile Dev | 45.5 | 16% | 1 người | 8 MD | 6 |
-| QA Engineer | 34 | 12% | 1 người | 7 MD | 5 |
-| PM | 25 | 9% | 0.5 người | 5 MD | — |
-| **Total** | **286** | **100%** | **4–5 người** | | |
+| Role | Total MD | % of Total | Số người (context) | MD/sprint/người (`team[].md_per_sprint`) | Sprint cần (1 người) | Sprint cần (team hiện tại) |
+|---|---|---|---|---|---|---|
+| (role từ context) | `=SUMIF(...)` | `=B2/B$total` | `=COUNTIF(team…)` | từ context | `=ROUNDUP(B2/E2,0)` | `=ROUNDUP(B2/(E2*D2),0)` |
+| **Total** | `=SUM(B2:B5)` | `=SUM(C2:C5)` | | | | |
 
-**Công thức tính:**
-- Total MD per role = tổng Dev từ Detail Estimate cho categories thuộc role đó
-- Recommended headcount = `ceil(total_md / (8 MD × số_sprint_dự_kiến))`
-- Sprints needed = `ceil(total_md / 8)` cho dev, `ceil(total_md / 7)` cho QA
+- `% of Total` = Total MD role ÷ Grand Total (phải = 100% ở dòng Total).
+- Dòng **Total** phải khớp Grand Total của Sheet 3 (nếu không khớp → có dòng Detail thiếu Role; sửa trước khi bàn giao).
+- Gợi ý team tối thiểu / nhanh nhất là kết luận của người lập, viết dưới bảng bằng số liệu từ bảng trên — không ghi số không có công thức.
 
-**Dưới bảng:** Ghi rõ:
+Dưới bảng ghi rõ:
 ```
-→ Paste bảng này vào /a9-project-timeline để tự động tính sprint plan
-→ Đề xuất team tối thiểu: [list roles + số người]
-→ Đề xuất team nhanh nhất: [list roles + số người để rút ngắn thời gian]
+→ Paste bảng này vào /a9-project-timeline (đọc cột Total MD theo role)
+→ Đề xuất team tối thiểu: [list roles + số người] (từ công thức trên)
+→ Đề xuất team nhanh nhất: [list roles + số người] (tăng số người ở role nút thắt)
 ```
 
 ### Sheet 5: Out of Scope
 
-Những hạng mục **không** có trong báo giá này, dạng bảng rõ ràng.
+Bảng các hạng mục **không** có trong estimate này. Cột: `No | Hạng mục | Lý do loại trừ | Ghi chú / điều kiện để đưa vào lại`.
 
 ### Sheet 6: Risks
 
-| # | Điểm cần confirm / Rủi ro | Tác động | Khả năng | Ảnh hưởng | Cách giảm thiểu |
+Cột: `# | Điểm cần confirm / Rủi ro | Tác động (MD/lịch nếu xảy ra) | Khả năng (Cao/TB/Thấp) | Cách giảm thiểu | Người chốt`. Mỗi dòng ≥ 1 điểm có nguồn (Q&A P1 chưa trả lời, API chưa có sandbox, công nghệ team chưa dùng).
+
+### Tiền và báo giá
+
+Skill này chỉ tính **công số** (man-day). KHÔNG tự nhân đơn giá, thuế hay tổng tiền trong file này. Khi cần báo giá bằng tiền: dùng `/a7-estimate-template-fill` với bảng đơn giá đã được duyệt (`--unit-price`), hoặc người lập báo giá nhân công số với đơn giá được duyệt ngoài skill.
 
 ---
 
@@ -227,17 +229,18 @@ Những hạng mục **không** có trong báo giá này, dạng bảng rõ ràn
 - Category rows: background `#2E75B6`, bold
 - Subtotal rows: background `#BDD7EE`, bold
 - Grand Total: background navy, chữ trắng, font lớn hơn
-- Role Breakdown sheet: dùng màu role riêng biệt (BE=xanh dương, Mobile=tím, QA=xanh lá, PM=vàng)
+- Role Breakdown sheet: dùng màu role riêng biệt (BE=xanh dương, Mobile=tím, QA=xanh lá, PM=vàng); role khác: màu trung tính, không dùng lại màu của role khác
 - Dùng `=SUM(...)` formula — không hardcode tổng
 
 ### ⚠️ Kỷ luật Ngôn ngữ & Khử rác Deliverable (Zero Language Leak & Anti-Vendor Branding)
+- **Ngôn ngữ**: đọc `settings.languages` theo `a1-project-init/references/i18n-policy.md` — estimate gửi khách là `client_facing`, bản nội bộ là `internal`. Một file = một ngôn ngữ chính.
 - **100% đồng nhất ngôn ngữ**: Khi `client_facing = ja`, 100% nội dung cả 6 sheet (Assumptions, Summary, Detail Estimate, Role Breakdown, Out of Scope, Risks) BẮT BUỘC bằng tiếng Nhật chuẩn. Tuyệt đối không để lẫn tiếng Việt hay tiếng Anh (trừ thuật ngữ kỹ thuật quốc tế).
 - **Tuyệt đối cấm thương hiệu bên thứ ba**: Cấm để tên các công ty/nhà thầu cũ (như `Rikkei`, `Rikkeisoft`, `リッケイ`, `FPT`...) xuất hiện trong tài liệu.
 - **Tuyệt đối cấm mã nội bộ**: Thay thế toàn bộ mã bước (`A1`, `A3`, `A5`...) bằng tên tài liệu chính thức (`要件定義書`, `画面UIプロトタイプ仕様`, `DB物理設計仕様`...).
 
 ## Lưu và trình bày
 
-Lưu file vào folder Cowork của người dùng. Present file. Kết thúc bằng:
+Lưu vào `<workspace_folder>/docs/A6_estimate/<TênDựÁn>_Estimate_v1.xlsx` (bản sau `_v2`…). Present file. Kết thúc bằng:
 - Tổng man-day (bao gồm PM + Buffer)
 - 2–3 điểm rủi ro / cần confirm quan trọng nhất
 - **Workflow Integration block** (bên dưới)
@@ -258,15 +261,6 @@ Lưu file vào folder Cowork của người dùng. Present file. Kết thúc b�
 ---
 
 ## Self-Improvement Loop
-
-Trước khi kết thúc tác vụ, hãy tự đánh giá lại quá trình thực hiện theo 3 câu hỏi:
-1. Có bước nào thất bại, gặp lỗi hoặc phải dùng cách xử lý tạm (workaround) không?
-2. Người dùng có phải đính chính, chỉnh sửa hoặc từ chối kết quả nào đáng chú ý không?
-3. Có phát hiện thêm ngữ cảnh hay quy tắc mới nào giúp các lần chạy sau làm tốt hơn không?
-
-Nếu có thay đổi thực sự giá trị, hãy đề xuất 1–2 điểm ngắn gọn để cập nhật vào skill này và chờ người dùng duyệt. Không tự ý sửa file nếu chưa có xác nhận.
-
-**Hai lưu ý quan trọng khi áp dụng:**
-- **Bắt buộc phải có bước xác nhận:** Luôn chặn quyền tự ý ghi đè file của AI. Bạn phải là người gật đầu duyệt đề xuất để tránh việc AI tự tiện làm loãng hoặc làm hỏng bộ quy tắc ban đầu.
-- **Chỉ cập nhật lỗi quy trình, bỏ qua lỗi tức thời:** Lọc kỹ xem phản hồi của bạn ở lần chạy đó là sở thích nhất thời cho một đầu việc cá biệt hay là tiêu chuẩn chung cần chuẩn hóa. Chỉ đưa vào skill những thứ mang tính hệ thống để tránh phình dung lượng prompt không cần thiết.
-
+Cuối tác vụ tự trả lời 3 câu: có lỗi/workaround không? người dùng có đính chính không? có quy tắc mới giúp lần sau không? Không có gì → im lặng.
+Có phát hiện HỆ THỐNG → in `💡 Đề xuất cải thiện` (≤ 3 dòng) rồi áp dụng theo quy trình duy nhất: `a1-project-init/references/self-improvement.md`.
+Áp dụng: 1 skill/tác vụ, ≤ 40 dòng thêm, không xóa quy tắc, chạy `scripts/skill_self_update.py`; báo skill · thay đổi · commit · `git revert <hash>`.
