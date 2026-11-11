@@ -1,3 +1,5 @@
+> Tên module trong ví dụ (contracts, invoices, payments…) chỉ là MINH HỌA — lấy từ B2 của dự án.
+
 # Chuẩn Mực Kiến Trúc Ứng Dụng Frontend Doanh Nghiệp (Enterprise Frontend Architecture Standards)
 
 Tài liệu này định nghĩa cấu trúc thư mục, quy chuẩn tách lớp, quản lý trạng thái và nguyên tắc component cho các ứng dụng Web Frontend hiện đại (Next.js 14 App Router / React 18+).
@@ -14,9 +16,7 @@ frontend/src/
 │   ├── (auth)/login/page.tsx
 │   ├── (dashboard)/
 │   │   ├── layout.tsx        # Shell layout (Sidebar + Header)
-│   │   ├── contracts/page.tsx
-│   │   ├── invoices/page.tsx
-│   │   └── payments/page.tsx
+│   │   └── <module>/page.tsx   # vd contracts, invoices… — tên module lấy từ B2 Screen_List của dự án
 ├── components/               # Generic UI Primitives (Re-usable toàn dự án)
 │   ├── ui/                   # shadcn/ui components (Button, Input, Dialog, Table...)
 │   └── shared/               # Compound layout components (PageHeader, EmptyState, Shimmer...)
@@ -31,8 +31,8 @@ frontend/src/
 │   ├── payments/
 │   └── customers/
 ├── lib/                      # Core Utilities & Infrastructure
-│   ├── api-client.ts         # Centralized Axios/Fetch Wrapper with Interceptors
-│   ├── auth-store.ts         # User session & Token store (Zustand)
+│   ├── api-client.ts         # Centralized fetch wrapper: idempotency key, single-flight refresh, ApiError
+│   ├── auth-store.ts         # User session (profile/tenant/quyền) — KHÔNG chứa token (Zustand)
 │   └── formatters.ts         # Currency, Date, Percentage formatters
 └── config/                   # Constants, Envs, Route definitions
 ```
@@ -45,7 +45,7 @@ frontend/src/
    - Chỉ chứa các phần tử UI đơn giản, không mang logic nghiệp vụ (ví dụ: `Button`, `Badge`, `Avatar`, `Input`).
    - Sử dụng Radix UI primitives hoặc Tailwind variants (`cva`).
 2. **Molecules / Features (`features/<module>/components/`):**
-   - Ghép nối các UI primitives để phục vụ một chức năng nghiệp vụ cụ thể (ví dụ: `ContractStatusBadge`, `ZenginUploadDropzone`).
+   - Ghép nối các UI primitives để phục vụ một chức năng nghiệp vụ cụ thể (ví dụ: `<Module>StatusBadge`, `<Module>UploadDropzone` — tên module lấy từ B2).
    - Có thể chứa local UI state (mở/đóng dropdown, tooltip).
 3. **Organisms / Views (`features/<module>/components/<Name>View.tsx`):**
    - Chứa bảng dữ liệu hoàn chỉnh, form nhiều bước hoặc dashboard summary cards.
@@ -59,5 +59,5 @@ frontend/src/
 
 * **Server State (Dữ liệu từ API):** 100% quản lý bằng **TanStack Query (React Query)**. Cấm sao chép dữ liệu API vào Redux/Zustand toàn cục gây lỗi Out-of-sync cache.
 * **Client UI State (Modal mở/đóng, Active tab):** Sử dụng `useState` nội bộ trong component.
-* **URL State (Trang hiện tại, Từ khóa tìm kiếm, Bộ lọc):** 100% lưu trên Query Parameters của URL (`?page=2&status=ACTIVE&search=FPT`). Giúp người dùng có thể refresh trang hoặc chia sẻ link mà không mất trạng thái tìm kiếm.
-* **Global Session State (User Profile, Access Token, Tenant ID):** Quản lý bằng Zustand hoặc Context API có persist vào Secure Cookie / Storage.
+* **URL State (Trang hiện tại, Từ khóa tìm kiếm, Bộ lọc):** 100% lưu trên Query Parameters của URL (`?page=2&status=<STATUS>&search=<từ khóa>`). Giúp người dùng có thể refresh trang hoặc chia sẻ link mà không mất trạng thái tìm kiếm.
+* **Global Session State (User Profile, Tenant ID, quyền):** lấy từ `/auth/me`, quản lý bằng Zustand hoặc Context API; chỉ lưu dữ liệu hiển thị, **không** lưu token. Access/refresh token nằm trong cookie HttpOnly (BFF) hoặc bộ nhớ — xem `live-api-wiring-protocol.md` §3.

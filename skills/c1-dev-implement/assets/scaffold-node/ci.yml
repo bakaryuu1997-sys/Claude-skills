@@ -1,0 +1,25 @@
+# Mẫu .github/workflows/ci.yml — điều chỉnh script theo package.json của dự án
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint -- --max-warnings 0
+      - run: npm run type-check
+      - run: npm test -- --coverage
+      - name: Security audit (production deps)
+        run: npm audit --omit=dev --audit-level=high

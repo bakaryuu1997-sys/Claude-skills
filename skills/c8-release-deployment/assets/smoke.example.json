@@ -1,0 +1,15 @@
+{
+  "base_url": "https://staging-api.example.com",
+  "checks": [
+    { "id": "SMK-01", "name": "Health (DB + cache)", "method": "GET", "path": "/health",
+      "expect_status": 200, "max_latency_ms": 500, "expect_json_path": { "status": "ok" } },
+    { "id": "SMK-02", "name": "Đăng nhập (tài khoản test)", "method": "POST", "path": "/auth/login",
+      "expect_status": 200, "max_latency_ms": 800,
+      "body": { "email": "smoke@example.com", "password": "${SMOKE_PASSWORD}" } },
+    { "id": "SMK-03", "name": "Danh sách có token", "method": "GET", "path": "/api/v1/contracts?page=1&pageSize=1",
+      "expect_status": 200, "max_latency_ms": 800,
+      "headers": { "Authorization": "Bearer ${SMOKE_TOKEN}" } },
+    { "id": "SMK-04", "name": "Không token → 401", "method": "GET", "path": "/api/v1/contracts",
+      "expect_status": 401 }
+  ]
+}

@@ -1,98 +1,122 @@
 # Quy Chuẩn Tích Hợp API Sống & Chống Mock Giả Lập (Live API Wiring & Anti-Mock Protocol)
 
-Tài liệu này hướng dẫn cách cấu hình API Client, xử lý Token Interceptors, phân giải Error Envelope và quản lý kết nối thật với Backend NestJS/Express.
+Hướng dẫn cấu hình API Client, xác thực, phân giải lỗi và chế độ làm việc khi Backend chưa sẵn sàng.
+Hợp đồng API (envelope thành công/lỗi, mã `ERR-<DOMAIN>-<NNN>`) **chỉ định nghĩa ở `pipeline.md` mục "Quy ước dùng chung" §2** — file này không định nghĩa lại, chỉ cách FE tiêu thụ.
 
 ---
 
-## 1. Mẫu Cấu Hình Typed API Client Chuẩn Enterprise (`src/lib/api-client.ts`)
+## 1. Hai chế độ API (`NEXT_PUBLIC_API_MODE`)
+
+| Chế độ | Khi nào | Nguồn dữ liệu | Được phép vào build production? |
+|---|---|---|---|
+| `live` (mặc định) | Backend đã chạy (dev/staging/prod) | API thật tại `API_BASE_URL` | Có — là chế độ duy nhất của production |
+| `contract-mock` | **Contract-first**: Backend (C1) chưa xong, FE cần chạy song song | Mock server sinh từ `*_api_spec.json` / OpenAPI của A4 (Prism hoặc MSW), đặt ở `<frontend>/mocks/` | **KHÔNG.** Chỉ dev/test cục bộ + CI của FE |
+
+Quy tắc contract-first (không dùng sandbox in-memory giả lập Backend):
+1. Typed Client + Zod schema sinh từ A4 (`api_spec.json`) — đổi spec thì sinh lại, không sửa tay.
+2. Mock chỉ đặt ở `frontend/mocks/` (handlers MSW / `prism mock openapi.yaml`) và `tests/`. **Cấm** để mock trong `src/` hoặc import từ `src/` sang `mocks/` (script `verify_fe_scaffold.py` bắt lỗi này).
+3. Production build phải thất bại nếu `NEXT_PUBLIC_API_MODE=contract-mock` (kiểm trong `next.config` hoặc bước CI: `test "$NEXT_PUBLIC_API_MODE" != "contract-mock"`).
+4. Mock phải trả đúng envelope/mã lỗi của pipeline §2 và các case lỗi trong cột Errors của A4 (401/403/404/409/422/429/5xx) — không chỉ happy path.
+5. Khi Backend sẵn sàng: chuyển sang `live`, chạy chế độ INTEGRATE, ghi kết quả đối soát vào `FE_IMPLEMENTATION_REPORT.md` (Live API Adherence Matrix). Màn hình nào chưa đối soát với API thật phải ghi rõ "chưa live" — không tuyên bố Zero-Mock đạt.
+
+---
+
+## 2. Typed API Client (`src/lib/api-client.ts`) — mẫu
+
+Dùng `fetch` (hoặc Axios) qua **một** module. Điểm cốt lõi: không đụng token trong JS, gắn idempotency key, chuẩn hóa lỗi giữ nguyên `code/details/requestId`, refresh single-flight.
 
 ```typescript
-import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+// src/lib/api-client.ts
+import type { ApiErrorBody } from './api-types'; // { error: { code, message, details?, requestId? } }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? '/api'; // '/api' = BFF route handlers (cùng origin)
 
-export const apiClient: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+export class ApiError extends Error {
+  constructor(
+    public readonly status: number,
+    public readonly code: string,            // ERR-<DOMAIN>-<NNN> từ backend
+    message: string,
+    public readonly details?: ApiErrorBody['error']['details'],
+    public readonly requestId?: string,
+  ) {
+    super(message);
+  }
+}
 
-// Request Interceptor: Tự động đính kèm Token và Tenant ID
-apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-    const tenantId = typeof window !== 'undefined' ? localStorage.getItem('x_tenant_id') : null;
+const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+let refreshInFlight: Promise<boolean> | null = null; // single-flight: N request 401 song song => 1 lần refresh
 
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+async function refreshSession(): Promise<boolean> {
+  refreshInFlight ??= fetch(`${API_BASE_URL}/auth/refresh`, { method: 'POST', credentials: 'include' })
+    .then((r) => r.ok)
+    .catch(() => false)
+    .finally(() => { refreshInFlight = null; });
+  return refreshInFlight;
+}
+
+export async function apiFetch<T>(path: string, init: RequestInit & { tenantId?: string } = {}, retried = false): Promise<T> {
+  const method = (init.method ?? 'GET').toUpperCase();
+  const headers = new Headers(init.headers);
+  headers.set('Accept', 'application/json');
+  if (init.body && !headers.has('Content-Type')) headers.set('Content-Type', 'application/json');
+  if (init.tenantId) headers.set('x-tenant-id', init.tenantId);               // tenant lấy từ session/route, không từ localStorage
+  if (MUTATING.has(method) && !headers.has('x-idempotency-key')) {
+    headers.set('x-idempotency-key', `idemp-${Date.now()}-${crypto.randomUUID()}`); // tạo MỖI thao tác người dùng, giữ nguyên khi retry
+  }
+
+  const res = await fetch(`${API_BASE_URL}${path}`, { ...init, method, headers, credentials: 'include' }); // cookie HttpOnly tự gắn
+
+  if (res.status === 401 && !retried && !path.startsWith('/auth/')) {
+    if (await refreshSession()) return apiFetch<T>(path, init, true);
+    if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login')) {
+      window.location.assign('/login?expired=1');
     }
-    if (tenantId && config.headers) {
-      config.headers['x-tenant-id'] = tenantId;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error),
-);
-
-// Response Interceptor: Xử lý Silent Refresh Token và Chuẩn hóa Error Envelope
-apiClient.interceptors.response.use(
-  (response) => response.data, // Tự động unwrap data envelope
-  async (error: AxiosError<{ success: boolean; error: { code: string; message: string; statusCode: number } }>) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
-
-    // Xử lý 401 Unauthorized và refresh token
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      try {
-        const refreshToken = localStorage.getItem('refresh_token');
-        if (!refreshToken) throw new Error('No refresh token available');
-
-        const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
-        localStorage.setItem('access_token', data.accessToken);
-
-        if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
-        }
-        return apiClient(originalRequest);
-      } catch (refreshErr) {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
-          window.location.href = '/login?expired=true';
-        }
-        return Promise.reject(refreshErr);
-      }
-    }
-
-    // Trích xuất error message từ backend envelope
-    const serverMessage = error.response?.data?.error?.message || error.message || 'Lỗi kết nối máy chủ';
-    return Promise.reject(new Error(serverMessage));
-  },
-);
+  }
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as ApiErrorBody | null;
+    throw new ApiError(res.status, body?.error?.code ?? 'ERR-NET-000', body?.error?.message ?? res.statusText,
+      body?.error?.details, body?.error?.requestId);
+  }
+  if (res.status === 204) return undefined as T;
+  return (await res.json()) as T; // { data, meta } — hook tự lấy .data / .meta
+}
 ```
+
+Ghi chú:
+- `x-idempotency-key`: sinh **một lần cho mỗi thao tác của người dùng** (giữ trong state của form/mutation) và gửi lại đúng key đó khi retry; không sinh key mới trong từng lần retry của cùng thao tác.
+- Lỗi form: map `error.details[].field` → `setError(field)` của React Hook Form; hiển thị `message` + `requestId` (để người dùng báo hỗ trợ).
+- `ApiError.code` dùng để rẽ nhánh UI (vd `ERR-AUTH-002` → redirect login), không so khớp theo `message`.
 
 ---
 
-## 2. Quy Chuẩn Data Fetching với TanStack Query
+## 3. Lưu trữ token — QUY TẮC BẮT BUỘC (chống XSS đánh cắp phiên)
 
-Mỗi entity nghiệp vụ (ví dụ Contract) bắt buộc có một hook query và các hooks mutation tương ứng:
+- **CẤM** lưu access/refresh token trong `localStorage` / `sessionStorage` / biến global đọc được bởi script bên thứ ba.
+- Mẫu chuẩn (BFF): Next.js Route Handler (`app/api/auth/*`) nhận đăng nhập, gọi Backend, rồi đặt **cookie `HttpOnly; Secure; SameSite=Lax` (hoặc `Strict`)** chứa session/refresh token. Trình duyệt chỉ gọi BFF cùng origin; BFF gắn `Authorization: Bearer` khi proxy sang Backend. JS phía client không bao giờ thấy token.
+- Nếu Backend cấp token qua JSON và không có BFF: access token giữ **trong bộ nhớ** (biến module), refresh token **chỉ** qua cookie HttpOnly do Backend `Set-Cookie`. Trang tải lại → gọi `/auth/refresh` để lấy lại access token.
+- Cookie phiên bắt buộc CSRF defense: `SameSite` + header tùy biến (`x-idempotency-key`/`x-requested-with`) trên mutating request, hoặc CSRF token; Backend kiểm `Origin`.
+- Bắt buộc CSP (không `unsafe-inline` script nếu khả thi), không `dangerouslySetInnerHTML` với dữ liệu người dùng chưa sanitize.
+- `tenant_id`/role hiển thị lấy từ `/auth/me` (server là nguồn sự thật); UI Guard chỉ là UX, quyền thật do Backend kiểm.
+- c3 (checklist Frontend) và c4 (Vector 2) kiểm các điểm này.
+
+---
+
+## 4. Data fetching với TanStack Query
 
 ```typescript
 // features/contracts/api/useContractsQuery.ts
 import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api-client';
-import { ContractDto, ContractFilterParams } from '../types/contract.dto';
+import { apiFetch } from '@/lib/api-client';
+import type { ContractDto, ContractFilterParams } from '../types/contract.dto';
+
+type ListResponse = { data: ContractDto[]; meta: { total: number; page: number; pageSize: number } };
 
 export function useContractsQuery(params: ContractFilterParams) {
+  const qs = new URLSearchParams(params as Record<string, string>).toString();
   return useQuery({
     queryKey: ['contracts', params],
-    queryFn: async (): Promise<{ data: ContractDto[]; total: number }> => {
-      const response = await apiClient.get('/contracts', { params });
-      return response.data;
-    },
-    staleTime: 30 * 1000, // Dữ liệu coi là mới trong 30 giây
+    queryFn: () => apiFetch<ListResponse>(`/contracts?${qs}`),
+    staleTime: 30_000,
   });
 }
 ```
@@ -100,30 +124,33 @@ export function useContractsQuery(params: ContractFilterParams) {
 ```typescript
 // features/contracts/api/useCreateContractMutation.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api-client';
-import { CreateContractDto, ContractDto } from '../types/contract.dto';
+import { useRef } from 'react';
+import { apiFetch } from '@/lib/api-client';
+import type { CreateContractDto, ContractDto } from '../types/contract.dto';
 
 export function useCreateContractMutation() {
   const queryClient = useQueryClient();
-
+  const idemKey = useRef<string>(`idemp-${Date.now()}-${crypto.randomUUID()}`); // 1 key / 1 lần mở form
   return useMutation({
-    mutationFn: async (payload: CreateContractDto): Promise<ContractDto> => {
-      const response = await apiClient.post('/contracts', payload);
-      return response.data;
-    },
+    mutationFn: (payload: CreateContractDto) =>
+      apiFetch<{ data: ContractDto }>('/contracts', {
+        method: 'POST', body: JSON.stringify(payload), headers: { 'x-idempotency-key': idemKey.current },
+      }),
     onSuccess: () => {
-      // Tự động làm mới cache danh sách hợp đồng
+      idemKey.current = `idemp-${Date.now()}-${crypto.randomUUID()}`; // thao tác kế tiếp = key mới
       queryClient.invalidateQueries({ queryKey: ['contracts'] });
     },
   });
 }
 ```
 
+Các ví dụ dùng tên thực thể `contracts` chỉ để minh họa — thay bằng thực thể trong A4/B2 của dự án.
+
 ---
 
-## 3. Quy Tắc Anti-Mock (Tuyệt Đối Cấm Dữ Liệu Tĩnh Trong Code Production)
+## 5. Quy tắc Anti-Mock (kiểm bằng `scripts/verify_fe_scaffold.py`)
 
-1. **Không tạo file `mock-data.ts` trong thư mục `src/`**: Mọi dữ liệu phải chảy từ Backend API.
-2. **Xử lý Skeleton Loader**: Khi `isLoading === true`, render bộ khung Shimmer Table/Card có số lượng dòng giả lập hiệu ứng đang tải thay vì để trắng màn hình.
-3. **Xử lý Empty State**: Khi mảng dữ liệu rỗng (`data.length === 0`), render UI thân thiện hướng dẫn người dùng tạo mới.
-4. **Xử lý Error State**: Khi `isError === true`, hiển thị Alert với thông điệp từ API và nút bấm `refetch()`.
+1. Không có file/biến mock trong `src/` (tên `mock*`, `fake*`, `dummy*`, `*fixture*`, `const mockX = [...]`). Mock hợp lệ chỉ ở `frontend/mocks/` và `tests/`.
+2. Loading: skeleton shimmer, không spinner che toàn màn hình.
+3. Empty: màn hình trống có CTA. Error: thông điệp từ `ApiError` + `requestId` + nút `refetch()`.
+4. Production build không được chứa đường dẫn `mocks/` và không chạy ở `contract-mock`.
