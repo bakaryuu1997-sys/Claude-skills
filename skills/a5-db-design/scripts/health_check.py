@@ -120,7 +120,8 @@ def evaluate(t):
         res["W07"] = ("PASS", "") if ok else ("FAIL", "thiếu UNIQUE/PK tổng hợp trên các cột FK")
 
     st = [c["name"] for c in cols if STATUS_RE.search(c.get("name", ""))
-          and base_type(c.get("type")) in ("VARCHAR", "TEXT", "CHAR") and not c.get("check")]
+          and base_type(c.get("type")) in ("VARCHAR", "TEXT", "CHAR") and not c.get("check") and not c.get("fk")]
+    # cột có fk trỏ tới bảng lookup (ví dụ leave_types.code) đã là ràng buộc miền → không cảnh báo W08
     res["W08"] = ("WARN", "chưa có CHECK/lookup: " + ", ".join(st)) if st else ("PASS", "")
 
     sc = [n for n in SORT_COLS if n in names and not index_has(t, n)]

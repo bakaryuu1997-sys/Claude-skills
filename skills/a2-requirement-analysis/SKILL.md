@@ -1,6 +1,6 @@
 ---
 name: a2-requirement-analysis
-version: "3.17.1"
+version: "3.17.3"
 description: >-
   Phân tích yêu cầu mơ hồ (vai BA + Solution Architect): scope draft, Q&A priority P1–P3 kèm
   tác động MD, assumptions, risks — xuất Requirement_Specification.xlsx (5 sheet: Overview/Scope/Flows/QA/Risks). Trigger: "phân tích yêu cầu",
@@ -149,6 +149,8 @@ Dùng bảng cho mục 3, 8, 9, 10.
 ---
 
 **Tài liệu tham chiếu bổ sung:** `references/nfr-spec.md` — Đặc tả NFR theo ISO 25010 — mỗi NFR đo được và có cách kiểm.
+
+**Dựng file Excel — BẮT BUỘC dùng bộ chung** (không tự định nghĩa style): viết spec JSON (đầu file `a1-project-init/scripts/xlsx_build.py`) → `python <skills_dir>/a1-project-init/scripts/xlsx_build.py spec.json <out>.xlsx` → kiểm `python <skills_dir>/a1-project-init/scripts/xlsx_verify.py <out>.xlsx --client-facing` (phải ĐẠT, 0 FAIL).
 
 ## 🔗 Workflow Integration
 

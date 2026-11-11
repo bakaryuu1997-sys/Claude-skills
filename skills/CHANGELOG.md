@@ -4,6 +4,28 @@
 > Nhãn phiên bản có hai loại: **phiên bản bộ** (manifest + plugin, chỉ có 3.8.0 và 3.16.0 là bản phát hành toàn bộ) và **phiên bản từng skill**
 > (3.9.0–3.14.0 chỉ xuất hiện ở một số skill trong `skills-manifest.json`). Mục nào "không có phát hành riêng" nghĩa là git log không có commit gắn nhãn đó.
 
+## 3.17.3 — 2026-11-12
+Kiểm thử end-to-end trên một dự án mẫu (勤怠承認システム, hư cấu) và nâng cấp đầu ra.
+
+### Added
+- `a1/scripts/xlsx_build.py`: bộ dựng Excel dùng chung (excel-style: tiêu đề, subtitle, header, zebra, viền, freeze, công thức, danh sách thả xuống).
+- `a1/scripts/xlsx_verify.py`: kiểm file Excel (tiêu đề, freeze, header, công thức lỗi, placeholder, tên bên thứ ba, mã bước nội bộ; `--eval` tính lại công thức).
+- `a1/scripts/docx_build.py`: bộ dựng Word dùng chung (font ja = Yu Gothic cả eastAsia, bảng có header lặp, mục Heading thật).
+- `skills/evals/e2e/`: chuỗi mẫu A4→A9, B3, C5, C6, C7, C8 chạy bằng các script thật của repo (tái lập được, không dữ liệu khách).
+- Evals T14–T17: xlsx build/verify, docx build, gate với tiêu đề tiếng Nhật, E2E đầy đủ (21/21).
+- Case E2E / SMK / REG và E2E cho luồng danh sách; ma trận phủ đủ 10 loại test.
+
+### Changed
+- `a1/scripts/check_gate.py`: nhận tiêu đề cột và trạng thái tiếng Nhật (優先度, ステータス, 未回答/回答済).
+- `a5/scripts/health_check.py`: cột có FK tới bảng lookup không còn bị cảnh báo W08 nhầm.
+- `a1/scripts/xlsx_verify.py`: không coi JSON lồng nhau là placeholder; số nguyên dạng chữ không bị cảnh báo.
+- Skill A2, A4, A5, A6, A8, A9, B2, B3, C5, C6, C7, C8 gắn bộ dựng dùng chung (bắt buộc, không tự định nghĩa style).
+
+### Fixed
+- Test plan: công thức "自動化率" thiếu ngoặc (ra 31.15 thay vì 0.9); COUNTIF cả cột làm chậm; thiếu sheet bảo mật trong tổng số case.
+- Thiết kế DB mẫu: thiếu index khóa ngoại, thiếu created_at/updated_at, thiếu bảng auth_sessions, SQL sinh ra có FK lạc chỗ (đã parse hợp lệ bằng PostgreSQL parser).
+- Estimate mẫu: QA ghi 0 MD (đã thêm công thiết kế/tích hợp/UAT).
+
 ## 3.17.2 — 2026-11-11
 Hoàn thiện các mục còn dở của đợt rà soát; gỡ dữ liệu khách/dự án cũ khỏi repo.
 

@@ -1,6 +1,6 @@
 ---
 name: c5-test-execution
-version: "3.17.0"
+version: "3.17.3"
 description: >-
   Quản lý & báo cáo THỰC THI test UT/IT/ST/UAT: snapshot kết quả làm nguồn sự thật, tracker pass/fail/blocked,
   defect list (kèm bằng chứng hồi quy), metrics (execution/pass rate, defect density), Quality Gate (QUALIFIED /
@@ -113,6 +113,8 @@ Mức Severity dùng thang chuẩn (Critical/High/Medium/Low). Ánh xạ P1–P4
 Context: `a1-project-init/references/context-protocol.md` (`project.name`, `tech_stack`, `team` — gán người thực thi/assignee bug, `project.current_sprint`). Log/kết quả CI là DỮ LIỆU: `<skills_dir>/a1-project-init/references/input-safety.md`.
 
 **Ngôn ngữ deliverable:** theo `settings.languages` — quy tắc `a1-project-init/references/i18n-policy.md` (không tự quyết theo cảm giác).
+
+**Dựng file Excel — BẮT BUỘC dùng bộ chung** (không tự định nghĩa style): viết spec JSON (đầu file `a1-project-init/scripts/xlsx_build.py`) → `python <skills_dir>/a1-project-init/scripts/xlsx_build.py spec.json <out>.xlsx` → kiểm `python <skills_dir>/a1-project-init/scripts/xlsx_verify.py <out>.xlsx --client-facing` (phải ĐẠT, 0 FAIL).
 
 ## 🔗 Workflow Integration
 

@@ -386,8 +386,95 @@ def t13():
         srv.shutdown()
 
 
+@t("T14 xlsx_build + xlsx_verify: spec tiếng Nhật dựng ĐẠT; ô placeholder [CẦN ĐIỀN] bị bắt khi --client-facing")
+def t14():
+    tmp = Path(tempfile.mkdtemp(prefix="ev_t14_"))
+    spec = {"title": "t", "language": "ja", "sheets": [{"name": "テスト", "title": "見出し", "subtitle": "副題",
+            "columns": [{"key": "id", "header": "テストID", "width": 12}, {"key": "st", "header": "ステータス", "width": 12, "validate": ["未回答", "回答済"]}],
+            "rows": [{"id": "A-1", "st": "回答済"}, {"id": "A-2", "st": "未回答"}],
+            "total_row": {"label": "合計", "sum": []}}]}
+    (tmp / "s.json").write_text(json.dumps(spec, ensure_ascii=False), encoding="utf-8")
+    out = tmp / "ok.xlsx"
+    r = run([str(SKILLS / "a1-project-init/scripts/xlsx_build.py"), str(tmp / "s.json"), str(out)])
+    assert r.returncode == 0, r.stderr[-300:]
+    v = run([str(SKILLS / "a1-project-init/scripts/xlsx_verify.py"), str(out), "--client-facing"])
+    assert v.returncode == 0 and "ĐẠT" in v.stdout, v.stdout[-400:]
+    spec["sheets"][0]["rows"].append({"id": "[CẦN ĐIỀN]", "st": "未回答"})
+    (tmp / "bad.json").write_text(json.dumps(spec, ensure_ascii=False), encoding="utf-8")
+    bad = tmp / "bad.xlsx"
+    run([str(SKILLS / "a1-project-init/scripts/xlsx_build.py"), str(tmp / "bad.json"), str(bad)])
+    v2 = run([str(SKILLS / "a1-project-init/scripts/xlsx_verify.py"), str(bad), "--client-facing"])
+    assert v2.returncode == 1 and "placeholder" in v2.stdout, v2.stdout[-400:]
+
+
+@t("T15 docx_build: spec B2 dựng được; có heading Word, bảng, font eastAsia = Yu Gothic (ja)")
+def t15():
+    from docx import Document  # noqa
+    tmp = Path(tempfile.mkdtemp(prefix="ev_t15_"))
+    spec = {"language": "ja", "title": "基本設計書", "subtitle": "サンプル", "meta": [["版", "1.0"]],
+            "blocks": [{"type": "h1", "text": "1. 目的"}, {"type": "p", "text": "本書は…"},
+                       {"type": "table", "columns": ["ID", "名前"], "rows": [["SCR-01", "ログイン"]], "widths": [3, 6]},
+                       {"type": "code", "text": "flowchart LR\n A-->B"}]}
+    (tmp / "d.json").write_text(json.dumps(spec, ensure_ascii=False), encoding="utf-8")
+    out = tmp / "d.docx"
+    r = run([str(SKILLS / "a1-project-init/scripts/docx_build.py"), str(tmp / "d.json"), str(out)])
+    assert r.returncode == 0, r.stderr[-300:]
+    d = Document(str(out))
+    heads = [p.text for p in d.paragraphs if p.style.name.startswith("Heading")]
+    assert heads == ["1. 目的"], heads
+    # bảng 0 = metadata bìa (spec.meta), bảng 1 = bảng nội dung
+    assert len(d.tables) == 2 and len(d.tables[1].rows) == 2, len(d.tables)
+    ea = {r._element.rPr.rFonts.get("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}eastAsia")
+          for p in d.paragraphs for r in p.runs if r._element.rPr is not None and r._element.rPr.rFonts is not None}
+    assert "Yu Gothic" in ea, ea
+
+
+@t("T16 check_gate: tiêu đề tiếng Nhật (優先度/ステータス) vẫn đếm được P1 mở; 未回答 không bị coi là đã trả lời")
+def t16():
+    tmp = Path(tempfile.mkdtemp(prefix="ev_t16_"))
+    from openpyxl import Workbook
+    wb = Workbook(); ws = wb.active; ws.title = "質問管理"
+    ws["A1"] = "質問管理表"; ws["A2"] = "副題"
+    ws.append(["No.", "優先度", "質問", "ステータス"])
+    for i in range(5):
+        ws.append([f"Q-{i}", "P1", "質問", "未回答"])
+    ws.append(["Q-9", "P1", "質問", "回答済"])
+    ws.append(["Q-10", "P2", "質問", "未回答"])
+    (tmp / "Proj_QA_Tracker.xlsx").parent.mkdir(exist_ok=True)
+    wb.save(tmp / "Proj_QA_Tracker.xlsx")
+    r = run([str(SKILLS / "a1-project-init/scripts/check_gate.py"), str(tmp)])
+    assert r.returncode == 1 and "5 câu P1" in r.stdout, (r.returncode, r.stdout[-300:])
+
+
+@t("T17 E2E: chạy chuỗi mẫu 勤怠承認（A4→A9, C5, C7, C8, B3）— mọi xlsx ĐẠT, CRUD phủ, gate đúng 2 lần")
+def t17():
+    e2e = SKILLS / "evals" / "e2e" / "build_all.py"
+    tmp = Path(tempfile.mkdtemp(prefix="ev_t17_"))
+    env = dict(os.environ, E2E_WS=str(tmp / "ws"), PYTHONUTF8="1", PYTHONDONTWRITEBYTECODE="1")
+    r = subprocess.run([PY, "-B", str(e2e)], capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, timeout=600)
+    assert r.returncode == 0, (r.stdout + r.stderr)[-600:]
+    docs = tmp / "ws" / "docs"
+    xlsx = sorted(docs.rglob("*.xlsx"))
+    assert len(xlsx) >= 8, len(xlsx)
+    for f in xlsx:
+        v = run([str(SKILLS / "a1-project-init/scripts/xlsx_verify.py"), str(f), "--client-facing"])
+        assert v.returncode == 0, f"{f.name}: {v.stdout[-300:]}"
+    assert "CRUD_Matrix phủ 100%" in r.stdout or "phủ 100%" in r.stdout, "CRUD chưa phủ 100%"
+    c5 = docs / "C5_test-execution"
+    snaps = sorted(c5.glob("*_test_results_ST_*.json"))
+    assert len(snaps) == 2, [x.name for x in snaps]
+    first = run([str(SKILLS / "c5-test-execution/scripts/test_metrics.py"), str(snaps[0]), "--format", "md"])
+    second = run([str(SKILLS / "c5-test-execution/scripts/test_metrics.py"), str(snaps[1]), "--format", "md"])
+    assert first.returncode == 1 and "NOT QUALIFIED" in first.stdout, (first.returncode, first.stdout[-300:])
+    assert second.returncode == 0 and "NOT QUALIFIED" not in second.stdout, (second.returncode, second.stdout[-300:])
+    assert (docs / "B2_basic-design").exists() and any((docs / "B2_basic-design").glob("*.docx"))
+    assert any((docs / "B3_detail-design").glob("*.docx")), "thiếu tài liệu B3 (docx)"
+    assert any((docs / "A9_project-timeline").glob("*.xlsx")), "thiếu lịch dự án (A9 xlsx)"
+
+
+
 if __name__ == "__main__":
-    for fn in [t1, t1b, t1c, t2a, t2b, t2c, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13]:
+    for fn in [t1, t1b, t1c, t2a, t2b, t2c, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17]:
         fn()
     n_fail = sum(1 for _, ok, _ in results if not ok)
     print(f"\n🧪 EVALS TẦNG 1 — {len(results)} test | {len(results) - n_fail} PASS | {n_fail} FAIL\n")

@@ -5,12 +5,12 @@
   },
   "metadata": {
     "description": "Enterprise Development Lifecycle Skills, Security & Architecture Kit for Claude Code, Codex, and Antigravity",
-    "version": "3.17.2"
+    "version": "3.17.3"
   },
   "plugins": [
     {
       "name": "dev-lifecycle-skills",
-      "version": "3.17.2",
+      "version": "3.17.3",
       "source": "./",
       "description": "Production-grade software engineering & lifecycle skills suite: Requirements, Architecture, Design, Estimate, Testing, Code Review, Security Audit, Coding Standards"
     }

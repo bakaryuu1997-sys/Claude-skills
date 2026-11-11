@@ -1,6 +1,6 @@
 ---
 name: a1-project-init
-version: "3.17.0"
+version: "3.17.3"
 description: >-
   Khởi tạo project-context.json (MỘT LẦN mỗi dự án): project info, tech stack, team, settings,
   links — nguồn sự thật chung mọi skill tự đọc. Kèm schema + validator + load_context.py +

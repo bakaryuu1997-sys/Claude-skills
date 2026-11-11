@@ -21,7 +21,10 @@ if hasattr(sys.stderr, "reconfigure"):
 
 HEADER_SCAN_ROWS = 10  # file theo excel-style có title (dòng 1) + subheader (dòng 2) + header (dòng 3)
 # Trạng thái ĐÃ XONG của câu hỏi Q&A (so khớp không phân biệt hoa thường, theo chuỗi con)
-ANSWERED_MARKS = ("answered", "đã trả lời", "da tra loi", "closed", "resolved", "回答済", "✅")
+# Tên cột/giá trị đa ngôn ngữ: Priority/優先度/ưu tiên · Status/ステータス/状態/trạng thái
+PRIORITY_KEYS = ("priority", "優先度", "ưu tiên", "uu tien")
+STATUS_KEYS = ("status", "ステータス", "状態", "trạng thái", "trang thai")
+ANSWERED_MARKS = ("answered", "回答済", "đã trả lời", "da tra loi", "closed", "resolved", "✅")
 # Trạng thái bug coi là CÒN MỞ (Fixed/Resolved chưa verify vẫn tính là mở — chỉ "verified/closed/wontfix" mới đóng)
 BUG_OPEN_STATES = ("open", "in progress", "retest", "fixed", "unverified", "reopened", "new", "")
 BUG_BLOCKING = ("critical", "high")
@@ -31,8 +34,8 @@ def _find_header(sheet):
     """Quét HEADER_SCAN_ROWS dòng đầu, trả (chỉ_số_dòng_header, ip, ist) hoặc None."""
     for n, row in enumerate(sheet.iter_rows(min_row=1, max_row=HEADER_SCAN_ROWS, values_only=True), start=1):
         cols = {str(c or "").strip().lower(): i for i, c in enumerate(row)}
-        ip = next((i for k, i in cols.items() if "priority" in k or "ưu tiên" in k), None)
-        ist = next((i for k, i in cols.items() if "trạng thái" in k or "status" in k), None)
+        ip = next((i for k, i in cols.items() if any(x in k for x in PRIORITY_KEYS)), None)
+        ist = next((i for k, i in cols.items() if any(x in k for x in STATUS_KEYS)), None)
         if ip is not None and ist is not None:
             return n, ip, ist
     return None
