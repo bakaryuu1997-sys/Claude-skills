@@ -6,13 +6,19 @@ Chạy sau MỖI lần sửa script/skill, cùng với skill_doctor.
 
 Usage: python3 run_evals.py [<skills_dir>]
 Exit 0 = tất cả PASS, 1 = có FAIL. Tầng 2 (golden LLM cases): xem evals/README.md."""
-import json, os, shutil, subprocess, sys, tempfile, time
+import json, os, re, shutil, subprocess, sys, tempfile, time
 from pathlib import Path
 
 if sys.stdout and hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 if sys.stderr and hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8")
+
+if sys.flags.isolated:
+    # `python -I` bỏ user-site nên KHÔNG thấy openpyxl (pip cài --user). Harness tự chạy lại KHÔNG kèm -I.
+    _rc = subprocess.run([sys.executable, "-B", os.path.abspath(__file__)] + sys.argv[1:],
+                         env=dict(os.environ, PYTHONDONTWRITEBYTECODE="1")).returncode
+    sys.exit(_rc)
 
 SKILLS = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
 PY = sys.executable
@@ -22,7 +28,8 @@ results = []  # (name, ok, msg)
 def run(cmd, **kw):
     kw.setdefault("encoding", "utf-8")
     kw.setdefault("errors", "replace")
-    return subprocess.run([PY] + cmd, capture_output=True, text=True, timeout=120, **kw)
+    kw.setdefault("env", dict(os.environ, PYTHONDONTWRITEBYTECODE="1"))
+    return subprocess.run([PY, "-B"] + cmd, capture_output=True, text=True, timeout=120, **kw)
 
 
 def t(name):
@@ -237,8 +244,53 @@ def t7():
     shutil.rmtree(tmp)
 
 
+@t("T9 đồng bộ số liệu: số skill (thư mục = AGENTS.md = README = menu) và version plugin = manifest_version")
+def t9():
+    repo = SKILLS.parent
+    folders = sorted(p.name for p in SKILLS.iterdir() if (p / "SKILL.md").is_file())
+    n = len(folders)
+    manifest = json.loads((SKILLS / "a1-project-init/assets/skills-manifest.json").read_text(encoding="utf-8"))
+    mv = manifest["manifest_version"]
+    problems = []
+    for rel in ("AGENTS.md", "rules/AGENTS.md", "README.md"):
+        fp = repo / rel
+        if not fp.exists():
+            problems.append(f"thiếu {rel}")
+            continue
+        nums = {int(x) for x in re.findall(r"(\d+)\s*skills? chuẩn", fp.read_text(encoding="utf-8"))}
+        if nums != {n}:
+            problems.append(f"{rel}: ghi {sorted(nums)} skill chuẩn, thư mục có {n}")
+    if (repo / "AGENTS.md").exists() and (repo / "rules/AGENTS.md").exists():
+        if (repo / "AGENTS.md").read_bytes() != (repo / "rules/AGENTS.md").read_bytes():
+            problems.append("rules/AGENTS.md khác AGENTS.md (gốc là nguồn duy nhất)")
+    r = run([str(SKILLS / "menu/scripts/check_menu_sync.py"), str(SKILLS)])
+    m = re.search(r"(\d+) skill folder", r.stdout)
+    if not m or int(m.group(1)) != n:
+        problems.append(f"check_menu_sync đếm {m.group(1) if m else '?'} folder, thư mục có {n}")
+    def versions(o, acc):
+        if isinstance(o, dict):
+            for k, v in o.items():
+                if k == "version" and isinstance(v, str):
+                    acc.append(v)
+                else:
+                    versions(v, acc)
+        elif isinstance(o, list):
+            for v in o:
+                versions(v, acc)
+        return acc
+    for rel in ("plugin.json", "marketplace.json", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"):
+        fp = repo / rel
+        if not fp.exists():
+            problems.append(f"thiếu {rel}")
+            continue
+        for v in versions(json.loads(fp.read_text(encoding="utf-8")), []):
+            if v != mv:
+                problems.append(f"{rel}: version {v} != manifest_version {mv}")
+    assert not problems, "\n".join(problems)
+
+
 if __name__ == "__main__":
-    for fn in [t1, t1b, t1c, t2a, t2b, t2c, t3, t4, t5, t6, t7, t8]:
+    for fn in [t1, t1b, t1c, t2a, t2b, t2c, t3, t4, t5, t6, t7, t8, t9]:
         fn()
     n_fail = sum(1 for _, ok, _ in results if not ok)
     print(f"\n🧪 EVALS TẦNG 1 — {len(results)} test | {len(results) - n_fail} PASS | {n_fail} FAIL\n")

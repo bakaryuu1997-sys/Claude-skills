@@ -40,7 +40,7 @@ Tuyệt đối cấm các hành vi viết tắt, bỏ dở code hoặc trốn tr
 
 ## 3. Bộ Nhận Diện Ý Định Tiếng Việt Tự Nhiên (Vietnamese Intent Classifier)
 
-Hệ thống tự động suy luận ngôn ngữ tự nhiên tiếng Việt (bao gồm cả từ lóng kỹ thuật, khẩu ngữ dev) để kích hoạt chính xác bộ 38 skills chuẩn của dự án:
+Hệ thống tự động suy luận ngôn ngữ tự nhiên tiếng Việt (bao gồm cả từ lóng kỹ thuật, khẩu ngữ dev) để kích hoạt chính xác bộ 35 skills chuẩn của dự án (33 skill trong manifest, gồm `/menu`, cộng `/ui-ux-pro-max` và `/product-teardown`; `/impeccable`, `/hallmark`, `ocr review` là công cụ ngoài bộ, cài riêng):
 
 ### Giai đoạn A — Khởi tạo & Thiết kế Đầu vào (A1 → A9)
 | Người dùng nói (Tiếng Việt tự nhiên) | Kỹ năng được kích hoạt |
@@ -66,7 +66,7 @@ Hệ thống tự động suy luận ngôn ngữ tự nhiên tiếng Việt (bao
 ### Giai đoạn C — Lập trình, Kiểm thử & Đóng gói (C0 → C8)
 | Người dùng nói (Tiếng Việt tự nhiên) | Kỹ năng được kích hoạt |
 |---|---|
-| *"lập trình frontend", "viết code frontend", "dựng giao diện web", "nextjs frontend", "kết nối api frontend", "scaffold frontend"* | `/c0-frontend-dev` |
+| *"lập trình frontend", "dựng giao diện web", "code Next.js/React", "kết nối API cho frontend", "scaffold frontend"* | `/c0-frontend-dev` |
 | *"code task này", "implement tính năng", "scaffold dự án", "fix bug này", "viết code theo spec"* | `/c1-dev-implement` |
 | *"sinh test suite API", "viết integration test API", "test Jest/Supertest", "test Pytest"* | `/c2-api-test-suite-generator` |
 | *"review code", "review PR", "soi lỗi pull request", "kiểm tra diff"* | `/c3-code-review` (kết hợp `ocr review`) |
@@ -107,7 +107,5 @@ Hệ thống tự động suy luận ngôn ngữ tự nhiên tiếng Việt (bao
 | *"học DNA thiết kế", "bóc tách style từ ảnh", "học mẫu từ website", "hallmark study"* | `hallmark study <screenshot/URL>` |
 | *"đổi mới diện mạo", "đập đi xây lại layout", "hallmark redesign"* | `hallmark redesign` |
 | *"soi lỗi anti-pattern giao diện", "hallmark audit"* | `hallmark audit` |
-| *"menu", "hướng dẫn", "có những skill gì", "danh sách kỹ năng"* | `/menu` |
-| *"tìm trong trí nhớ", "lần trước làm thế nào", "tra cứu memory"* | `/mem-search` |
-| *"bàn giao ca làm việc", "tạo handoff", "tóm tắt phiên để tiếp tục"* | `/handoff` |
+| *"menu", "help", "có những skill gì", "danh sách kỹ năng"* | `/menu` |
 | *"đánh giá sản phẩm", "soi tính năng", "app này thiếu gì", "product teardown", "gợi ý tính năng mới từ code", "phản biện sản phẩm", "so sánh đối thủ"* | `/product-teardown` |

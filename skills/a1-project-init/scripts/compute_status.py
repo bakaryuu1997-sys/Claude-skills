@@ -6,7 +6,7 @@
 Usage: python3 compute_status.py <workspace_folder> [<skills_dir>]
 Output: JSON {generated_at, documents[], gates{}, progress{}}
   documents[].status: present | stale | missing   (stale kèm stale_because[])"""
-import json, subprocess, sys
+import json, re, subprocess, sys
 from datetime import datetime
 from pathlib import Path
 
@@ -75,6 +75,7 @@ def main() -> int:
         outs = []
         for pat in sk.get("outputs", []):
             g = pat.replace("[N]", "*").replace("[Phase]", "*").replace("[date]", "*")
+            g = re.sub(r"\*{2,}", "*", g)  # [N]* → ** là lỗi: gộp về * (** chỉ hợp lệ là một thành phần đường dẫn)
             stem, _, ext = g.rpartition(".")
             if g.startswith("*_") and not stem.endswith("*") and ext in ("docx", "xlsx", "pptx", "html", "md"):
                 g = stem + "*." + ext  # nhận cả bản _v2, _v3 khi re-run
@@ -85,7 +86,8 @@ def main() -> int:
                 if d.is_dir() and any(d.iterdir()):
                     outs.append({"file": d.name + "/", "path": g, "mtime": datetime.fromtimestamp(d.stat().st_mtime).isoformat(timespec="seconds"), "_ts": d.stat().st_mtime})
                 continue
-            found = [f for f in sorted(set(list(ws.glob(g)) + list(ws.glob(f"docs/**/{g}")))) if not f.name.startswith("~$")]
+            globs = [g] if g.startswith("docs/") else [g, f"docs/**/{g}"]  # pattern đã có docs/ thì không ghép docs/**/
+            found = [f for f in sorted(set(f2 for pat in globs for f2 in ws.glob(pat))) if not f.name.startswith("~$")]
             for f in found:
                 outs.append({"file": f.name,
                              "path": str(f.relative_to(ws)).replace("\\", "/"),

@@ -56,7 +56,7 @@ Skill có gate (`estimate`, `project-kickoff`, go/no-go của `test-execution`) 
 - **Quyết định SQLite (đã cân nhắc, HOÃN có điều kiện):** JSON + lock + snapshot đủ cho 1 người/1 agent
   và giữ được tính human-readable. CHỈ chuyển SQLite khi một trong hai: (a) ≥ 2 agent ghi đồng thời
   thường xuyên (lock timeout xuất hiện nhiều), (b) context > 1 MB sau rotation. Khi đó viết
-  `context_store.py` bọc cùng interface set/append/restore — 23 skill không phải đổi.
+  (chưa triển khai; khi cần, viết context_store.py (chưa triển khai) bọc cùng interface set/append/restore — không skill nào phải đổi.)
 
 ## 5. Ngôn ngữ deliverable
 

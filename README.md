@@ -8,11 +8,11 @@ Kho kỹ năng (Skills) và công cụ mở rộng (MCP Servers) toàn diện ch
 1. [📊 Sơ Đồ Quy Trình Vận Hành (SDLC Architecture Flow)](#-sơ-đồ-quy-trình-vận-hành-sdlc-architecture-flow)
 2. [📦 Giai Đoạn A — Chuẩn Bị & Thiết Kế (A1 → A9)](#-giai-đoạn-a--chuẩn-bị--thiết-kế-a1--a9)
 3. [🚀 Giai Đoạn B — Khởi Động & Đặc Tả Chi Tiết (B0 → B3)](#-giai-đoạn-b--khởi-động--đặc-tả-chi-tiết-b0--b3)
-4. [🔄 Giai Đoạn C — Vận Hành, Phát Triển & Kiểm Thử (C1 → C8)](#-giai-đoạn-c--vận-hành-phát-triển--kiểm-thử-c1--c8)
+4. [🔄 Giai Đoạn C — Vận Hành, Phát Triển & Kiểm Thử (C0 → C8)](#-giai-đoạn-c--vận-hành-phát-triển--kiểm-thử-c0--c8)
 5. [🏁 Giai Đoạn D — Kết Thúc & Bàn Giao Dự Án (D1 → D3)](#-giai-đoạn-d--kết-thúc--bàn-giao-dự-án-d1--d3)
 6. [🛠️ Giai Đoạn X — Cross-Cutting & Tiêu Chuẩn Kỹ Thuật (X1 → X7)](#️-giai-đoạn-x--cross-cutting--tiêu-chuẩn-kỹ-thuật-x1--x7)
 7. [🧭 Meta — Điều Hướng Hệ Thống (/menu)](#-meta--điều-hướng-hệ-thống)
-8. [🧠 Kỹ Năng Bộ Nhớ AI & Khảo Sát Codebase (Claude-Mem Skills)](#-kỹ-năng-bộ-nhớ-ai--khảo-sát-codebase)
+8. [🔎 Phản Biện Sản Phẩm (Product Teardown)](#-phản-biện-sản-phẩm-product-teardown)
 9. [🎨 Kỹ Năng Thiết Kế Giao Diện Đẳng Cấp (UI/UX Pro Max)](#-kỹ-năng-thiết-kế-giao-diện-đẳng-cấp-uiux-pro-max)
 10. [⚡ Kỹ Năng Đặc Nhiệm & Lập Trình Tự Trị (Superpowers Skills)](#-kỹ-năng-đặc-nhiệm--lập-trình-tự-trị-superpowers)
 11. [🔌 Hệ Thống Công Cụ Mở Rộng MCP (Model Context Protocol)](#-hệ-thống-công-cụ-mở-rộng-mcp-servers)
@@ -46,19 +46,20 @@ flowchart TD
     end
 
     subgraph Phase_B["PHASE B: Đề Xuất & Thiết Kế Kỹ Thuật (B0 → B3)"]
-        A2 & A6 --> B0["B0: proposal-sow<br/>(Hợp đồng & Phạm vi SOW)"]
-        A9 & B0 --> B1["B1: project-kickoff<br/>(Charter & RACI Matrix)"]
+        A2 & A4 & A5 & A6 & A9 --> B0["B0: proposal-sow<br/>(Hợp đồng & Phạm vi SOW)"]
+        A2 & A6 & A9 & B0 --> B1["B1: project-kickoff<br/>(Charter & RACI Matrix)"]
         A2 & A3 & A4 --> B2["B2: basic-design<br/>(Thiết kế Cơ bản 基本設計)"]
         B2 & A4 & A5 --> B3["B3: detail-design<br/>(Thiết kế Chi tiết 詳細設計)"]
     end
 
-    subgraph Phase_C["PHASE C: Lập Trình, Kiểm Thử & Phát Hành (C1 → C8)"]
+    subgraph Phase_C["PHASE C: Lập Trình, Kiểm Thử & Phát Hành (C0 → C8)"]
+        B2 & A3 & A4 --> C0["C0: frontend-dev<br/>(Next.js/React, kết nối API thực)"]
         B3 --> C1["C1: dev-implement<br/>(Scaffold, Feature, Bugfix)"]
         C1 --> C2["C2: api-test-suite-generator<br/>(Jest / Pytest Suites)"]
-        C1 & C2 --> C3["C3: code-review<br/>(PR Checklist & Defect Matrix)"]
+        C0 & C1 & C2 --> C3["C3: code-review<br/>(PR Checklist & Defect Matrix)"]
         C1 --> C4["C4: trailofbits-security-skills<br/>(Audit OWASP & Auth/IDOR)"]
         C1 -. Biến động scope .-> C7["C7: change-request<br/>(Đánh giá tác động & Re-estimate)"]
-        C2 & C3 & C4 --> C5["C5: test-execution<br/>(UT/IT/ST Tracker & Metrics)"]
+        C0 & C2 & C3 & C4 --> C5["C5: test-execution<br/>(UT/IT/ST Tracker & Metrics)"]
         C5 --> C6["C6: sprint-review<br/>(Velocity & 4L Retro)"]
         C5 & C6 --> GateC{"Gate Bug Check<br/>(0 Critical Bug)"}
         GateC -- Pass --> C8["C8: release-deployment<br/>(Deploy & Rollback Plan)"]
@@ -68,6 +69,8 @@ flowchart TD
         C8 --> D1["D1: handover-doc<br/>(Runbook & Tài liệu Bàn giao)"]
         D1 --> D2["D2: uat-acceptance<br/>(Biên bản Nghiệm thu Sign-off)"]
         D2 --> D3["D3: user-guide-manual<br/>(Hướng dẫn Vận hành & HDSD)"]
+        D1 -. Runbook INC-xx .-> D3
+        B2 & A3 -.-> D3
     end
 ```
 
@@ -110,9 +113,9 @@ flowchart TD
 | Bước | Lệnh Skill | Tác dụng & Thời điểm dùng | Đầu ra chính |
 |:---:|---|---|---|
 | **A1** | `/a1-project-init` | **Khởi tạo dự án**: Tạo nguồn sự thật chung `project-context.json` (tech stack, team, settings, links). Chạy đầu tiên. | `project-context.json` |
-| **A2** | `/a2-requirement-analysis` | **Phân tích yêu cầu**: Bóc tách scope, phân loại yêu cầu chức năng/phi chức năng, lập bảng Q&A P1–P3 kèm tác động rủi ro. | `*_Requirement_Specification.xlsx`<br>`*_QA_Tracker.xlsx` |
+| **A2** | `/a2-requirement-analysis` | **Phân tích yêu cầu**: Bóc tách scope, phân loại yêu cầu chức năng/phi chức năng, lập bảng Q&A P1–P3 kèm tác động rủi ro. | `*_Requirement_Specification.xlsx`<br>`*_QA_Tracker.xlsx`<br>`*_Requirement_Analysis.docx` (tùy chọn) |
 | **A3** | `/a3-prototype-ui` | **Dựng prototype UI click được**: Tạo file HTML tự vận hành (self-contained) tương tác trực quan để khách nghiệm thu giao diện sớm. | `*_Prototype_v[N].html` |
-| **A4** | `/a4-api-design` | **Thiết kế API**: Đặc tả endpoints, method, request/response, middleware, lỗi, xuất Excel, Postman Collection và OpenAPI YAML. | `*_API_Design.xlsx`<br>`*_Postman_Collection.json`<br>`*_openapi.yaml` |
+| **A4** | `/a4-api-design` | **Thiết kế API**: Đặc tả endpoints, method, request/response, middleware, lỗi, xuất Excel, Postman Collection và OpenAPI YAML. | `*_api_spec.json`<br>`*_API_Design.xlsx`<br>`*_Postman_Collection.json`<br>`*_openapi.yaml` |
 | **A5** | `/a5-db-design` | **Thiết kế Database**: Data dictionary, kiểm tra 10 quy tắc DB Health Check, sinh migration SQL và sơ đồ Mermaid ERD. | `*_DB_Design.xlsx`<br>`*_migration.sql`<br>`*_ERD.md` |
 | **A6** | `/a6-estimate` | **Báo giá & WBS man-day**: Bóc tách công số chi tiết theo role (Excel 6 sheet). Có Gate chặn: >3 câu P1 chưa trả lời → cảnh báo dừng. | `*_Estimate.xlsx` |
 | **A7** | `/a7-estimate-template-fill` | **Điền báo giá vào mẫu có sẵn**: Điền task và công số dev trực tiếp vào file template 見積書 có sẵn của khách hàng Nhật. | `<template-filled>.xlsx` |
@@ -127,9 +130,9 @@ flowchart TD
 | Bước | Lệnh Skill | Tác dụng & Thời điểm dùng | Đầu ra chính |
 |:---:|---|---|---|
 | **B0** | `/b0-proposal-sow` | **Biên soạn Proposal & SOW**: Đề xuất giải pháp kỹ thuật, phạm vi In/Out scope, cam kết SLA, mốc nghiệm thu và điều khoản thanh toán để khách hàng ký chốt hợp đồng. | `*_Technical_Proposal.docx`<br>`*_Statement_Of_Work.docx`<br>`*_SOW_Scope_Matrix.xlsx` |
-| **B1** | `/b1-project-kickoff` | **Họp khởi động**: Chuẩn bị kickoff deck (pptx), Project Charter (docx), ma trận RACI, kế hoạch truyền thông, tiêu chuẩn DoR/DoD. | `*_Kickoff_Deck.pptx`<br>`*_Project_Charter.docx`<br>`*_Kickoff_Workbook.xlsx` |
-| **B2** | `/b2-basic-design` | **Thiết kế cơ bản (基本設計)**: Screen list, sơ đồ chuyển màn hình (screen flow), đặc tả I/O UI để khách hàng ký duyệt. | `*_Basic_Design.docx`<br>`*_BasicDesign_Workbook.xlsx` |
-| **B3** | `/b3-detail-design` | **Thiết kế chi tiết (詳細設計)**: Sequence diagrams, class/module design, CRUD matrix, logic xử lý nội bộ cho dev code. | `*_Detail_Design.docx`<br>`*_DetailDesign_Workbook.xlsx` |
+| **B1** | `/b1-project-kickoff` | **Họp khởi động**: Chuẩn bị kickoff deck (pptx), Project Charter (docx), ma trận RACI, kế hoạch truyền thông, tiêu chuẩn DoR/DoD. | `*_Kickoff_Deck.pptx`<br>`*_Project_Charter.docx`<br>`*_Kickoff_Workbook.xlsx`<br>`*_Meeting_Minutes_Template.docx` |
+| **B2** | `/b2-basic-design` | **Thiết kế cơ bản (基本設計)**: Screen list, sơ đồ chuyển màn hình (screen flow), đặc tả I/O UI để khách hàng ký duyệt. | `*_Basic_Design.docx`<br>`*_BasicDesign_Workbook.xlsx`<br>`*_BasicDesign_Diagrams.md` |
+| **B3** | `/b3-detail-design` | **Thiết kế chi tiết (詳細設計)**: Sequence diagrams, class/module design, CRUD matrix, logic xử lý nội bộ cho dev code. | `*_Detail_Design.docx`<br>`*_DetailDesign_Workbook.xlsx`<br>`*_DetailDesign_Diagrams.md` |
 
 ---
 
@@ -138,11 +141,11 @@ flowchart TD
 
 | Bước | Lệnh Skill | Tác dụng & Thời điểm dùng | Đầu ra chính |
 |:---:|---|---|---|
-| **C0** | `/c0-frontend-dev` | **Lập trình Web Frontend production** (Next.js/React/Tailwind/shadcn/Zod): sinh Typed API Client từ A4, dựng UI theo B2/A3, kết nối API thực, Auth JWT/Tenant, E2E Playwright. | Code frontend `src/`<br>Typed API Client |
+| **C0** | `/c0-frontend-dev` | **Lập trình Web Frontend production** (Next.js/React/Tailwind/shadcn/Zod): sinh Typed API Client từ A4, dựng UI theo B2/A3, kết nối API thực, Auth JWT/Tenant, E2E Playwright. | Code frontend `frontend/` (Typed API Client trong `src/lib/`)<br>`docs/C0_frontend-dev/FE_IMPLEMENTATION_REPORT.md` |
 | **C1** | `/c1-dev-implement` | **Lập trình viên viết code**: 3 chế độ (SCAFFOLD khởi tạo repo/Docker/CI, FEATURE code tính năng theo spec, BUGFIX sửa lỗi). | Code `src/`, `tests/`<br>`docs/C1_dev-implement/PR_*.md` |
 | **C2** | `/c2-api-test-suite-generator` | **Tự động sinh test suite API**: Sinh mã integration test thực thi được (Jest/Supertest/Pytest) bao phủ 8 mã HTTP + mock DB fixtures. | `tests/api/*_api.test.ts`<br>`tests/fixtures/*_fixture.ts`<br>`docs/C2_api-test-suite-generator/*.md` |
 | **C3** | `/c3-code-review` | **Review code & PR**: Đối chiếu spec api/db design, kiểm tra chuẩn kỹ thuật, xuất báo cáo checklist Excel 5 sheet và Markdown (hỗ trợ companion CLI `ocr review` từ Alibaba). | `docs/C3_code-review/*_Code_Review_Report.xlsx`<br>`docs/C3_code-review/*_Code_Review_Report.md` |
-| **C4** | `/c4-trailofbits-security-skills` | **Kiểm toán bảo mật (Security Audit)**: Rà soát 7 vector lỗ hổng nghiêm trọng (IDOR, JWT flaws, bypass schema, rò rỉ credential/log, SQLi, ReDoS). | `docs/C4_security-audit/Security_Audit_Report.md` |
+| **C4** | `/c4-trailofbits-security-skills` | **Kiểm toán bảo mật (Security Audit)**: Rà soát 7 vector lỗ hổng nghiêm trọng (IDOR, JWT flaws, bypass schema, rò rỉ credential/log, SQLi, ReDoS). | `docs/C4_trailofbits-security-skills/Security_Audit_Report*.md` |
 | **C5** | `/c5-test-execution` | **Quản lý thực thi kiểm thử**: Theo dõi kết quả UT/IT/ST/UAT, danh sách defect, tính tỷ lệ pass/fail theo viewpoint, xuất báo cáo nghiệm thu. | `docs/C5_test-execution/*_Execution.xlsx`<br>`*_Report.docx` |
 | **C6** | `/c6-sprint-review` | **Tổng kết Sprint & Retrospective**: Đối chiếu Planned vs Actual, đo đạc velocity trend, phân tích bug health, retro 4L và ghi Sprint Log tích lũy. | `docs/C6_sprint-review/*_Review.xlsx`<br>`*_Sprint_Log.xlsx` |
 | **C7** | `/c7-change-request` | **Quản lý yêu cầu thay đổi (CR)**: Phân tích phạm vi ảnh hưởng (Impact Analysis), tính toán lại công số man-day khi scope thay đổi sau khi chốt. | `*_CR[N]_Change_Request.xlsx`<br>`*_Impact_Summary.md` |
@@ -154,13 +157,13 @@ flowchart TD
 ---
 
 ## 🏁 GIAI ĐOẠN D — KẾT THÚC & BÀN GIAO DỰ ÁN (D1 → D3)
-*Thực hiện khi dự án hoàn thành nghiệm thu UAT và chuẩn bị bàn giao vận hành.*
+*Thứ tự chốt (theo `pipeline.md`): kiểm thử UAT ở C5 → phát hành C8 → D1 bàn giao hồ sơ vận hành → D2 nghiệm thu chính thức (検収) → D3 tài liệu người dùng.*
 
 | Bước | Lệnh Skill | Tác dụng & Thời điểm dùng | Đầu ra chính |
 |:---:|---|---|---|
-| **D1** | `/d1-handover-doc` | **Tài liệu bàn giao toàn diện**: Biên soạn Handover 12 mục Docx + Workbook Excel 7 sheet (Tech stack, Envs, DB, APIs, Runbook, Known issues) + Runbook.md. | `*_Handover.docx`<br>`*_Handover_Workbook.xlsx`<br>`*_Runbook.md` |
-| **D2** | `/d2-uat-acceptance` | **Quản lý nghiệm thu UAT**: Kiểm tra tiêu chuẩn chấp nhận (Acceptance Criteria), biên bản bàn giao ký duyệt (Acceptance Certificate) để khách hàng giải ngân thanh toán, punch list bảo hành. | `*_UAT_Acceptance_Certificate.docx`<br>`*_UAT_SignOff_Workbook.xlsx` |
-| **D3** | `/d3-user-guide-manual` | **Sổ tay hướng dẫn sử dụng (User Manual) & Admin Guide**: Hướng dẫn thao tác từng bước cho người dùng cuối và quản trị viên kèm ảnh chụp màn hình UI và FAQ xử lý sự cố. | `*_User_Manual_EndUser.docx`<br>`*_Admin_Guide.docx`<br>`*_Quick_Start_Guide.md` |
+| **D1** | `/d1-handover-doc` | **Tài liệu bàn giao vận hành**: Handover 12 mục Docx + Workbook Excel 7 sheet (Tech stack & Envs, DB, APIs, Runbook với mã sự cố `INC-xx`, Known issues, Contacts & SLA) + Runbook.md; kèm SLO/SLI, RPO/RTO, on-call, DR/BCP, postmortem, hypercare. | `*_Handover.docx`<br>`*_Handover_Workbook.xlsx`<br>`*_Runbook.md` |
+| **D2** | `/d2-uat-acceptance` | **Nghiệm thu chính thức (検収)**: quy trình kiểm tra/từ chối/tái nghiệm thu/từng phần/mặc nhiên (nếu SOW cho phép), truy vết SOW-UAT, Acceptance Certificate, Punch List (sheet trong workbook), phạm vi bảo hành theo SOW; chặn ký khi còn bug Critical/High (`check_gate.py`). | `*_UAT_Acceptance_Certificate.docx`<br>`*_UAT_SignOff_Workbook.xlsx` |
+| **D3** | `/d3-user-guide-manual` | **User Manual, Admin Guide & Quick Start**: hướng dẫn từng bước với UI Cue và ảnh chụp màn hình (đã che dữ liệu nhạy cảm), FAQ bắt buộc, cây quyết định sự cố liên kết `INC-xx` của Runbook, lịch sử thay đổi; Quick Start không chứa tài khoản mặc định. | `*_User_Manual_EndUser.docx`<br>`*_Admin_Guide.docx`<br>`*_Quick_Start_Guide.md` |
 
 ---
 
@@ -169,13 +172,13 @@ flowchart TD
 
 | Bước | Lệnh Skill | Tác dụng & Thời điểm dùng | Đầu ra chính |
 |:---:|---|---|---|
-| **X1** | `/x1-acquire-codebase-knowledge` | **Khảo sát kiến trúc repo 4 tầng**: Phân tích Router → Middleware → Service → Repository bằng AST Serena LSP siêu tiết kiệm token trước khi code/sửa lỗi. | `docs/X1_codebase-knowledge/Architecture_Survey.md` |
+| **X1** | `/x1-acquire-codebase-knowledge` | **Khảo sát kiến trúc repo 4 tầng**: Phân tích Router → Middleware → Service → Repository bằng AST Serena LSP siêu tiết kiệm token trước khi code/sửa lỗi. | `docs/X1_acquire-codebase-knowledge/Architecture_Survey.md` |
 | **X2** | `/x2-project-architecture` | **Trực quan hóa kiến trúc hệ thống**: Tạo trang HTML self-contained vẽ toàn bộ kiến trúc module, API map, ERD và tiến độ bằng sơ đồ Code-Backed (Archify). | `*_Architecture_v[N].html` |
 | **X3** | `/x3-project-status` | **Dashboard hiện trạng dự án**: Hiển thị nhanh ngay trong chat vị trí hiện tại trong pipeline, tài liệu đã có / còn thiếu, gate nào đang chặn. | *(Trực tiếp trong chat)* |
 | **X4** | `/x4-meeting-minutes` | **Biên bản cuộc họp**: Chuyển transcript/notes họp thành biên bản Docx ký duyệt + Excel 4 sheet; tự động đẩy câu hỏi mở vào QA Tracker. | `*_Minutes_[date].docx`<br>`*_Minutes_[date].xlsx` |
 | **X5** | `/x5-coding-standards` | **Hiến pháp kỹ thuật nội bộ**: Ép chuẩn Strict TypeScript, Prisma Transactions, Git Conventional Commits, checklist PR 7 mục & Self-Improvement Loop. | `docs/X5_coding-standards/ENGINEERING_STANDARDS.md` |
-| **X6** | `/x6-skill-doctor` | **Linter kiểm định chính bộ skill**: Quét 12 quy tắc chống regression, kiểm tra frontmatter, độ dài mô tả, anti-pattern công thức Excel và tính đồng bộ manifest. | *(Trực tiếp trong chat)* |
-| **X7** | `/x7-presentation-deck` | **Tạo slide thuyết trình chuyên nghiệp**: Xuất slide PowerPoint (`.pptx`) 16:9 thiết kế dạng thẻ hiện đại + file HTML interactive slide tự chạy theo kiến trúc Slidev / Bento visual (Dark mode, live code blocks, phím tắt full screen) cho pitch, demo, kickoff, sprint review. | `*_Presentation_Deck.pptx`<br>`*_Slide_Deck.html` |
+| **X6** | `/x6-skill-doctor` | **Linter kiểm định chính bộ skill**: Quét 17 quy tắc chống regression (đối chiếu số liệu README/AGENTS/menu với thư mục thật, đồng bộ version plugin ↔ manifest), kiểm tra frontmatter, độ dài mô tả, anti-pattern công thức Excel và tính đồng bộ manifest. | *(Trực tiếp trong chat)* |
+| **X7** | `/x7-presentation-deck` | **Tạo slide thuyết trình chuyên nghiệp**: Xuất slide PowerPoint (`.pptx`) 16:9 thiết kế dạng thẻ hiện đại (engine PPTX duy nhất) tự chạy theo kiến trúc Slidev / Bento visual (Dark mode, live code blocks, phím tắt full screen) cho pitch, demo, kickoff, sprint review. | `*_Presentation_Deck.pptx`<br>`*_Slide_Deck.html` |
 
 ---
 
@@ -186,16 +189,14 @@ flowchart TD
 
 ---
 
-## 🧠 KỸ NĂNG BỘ NHỚ AI & KHẢO SÁT CODEBASE
-*Bộ kỹ năng tối ưu ngữ cảnh, lưu trữ ký ức làm việc dài hạn xuyên session kết hợp với Claude-Mem MCP.*
+## 🔎 PHẢN BIỆN SẢN PHẨM (PRODUCT TEARDOWN)
+*Kỹ năng độc lập, dùng cho mọi repo ở mọi thời điểm, không phụ thuộc pipeline dự án.*
 
-| Lệnh Skill | Tác dụng & Trường hợp sử dụng | Cơ chế hoạt động |
+| Lệnh Skill | Tác dụng & Trường hợp sử dụng | Đầu ra |
 |---|---|---|
-| `/handoff` | **Bàn giao phiên làm việc khi context dài**: Tạo file `HANDOFF.md` tóm tắt mục tiêu, tiến độ, những phương án đã thử thất bại và bước kế tiếp để mở session mới mượt mà. | Đóng gói context sang session kế tiếp mà không làm giảm sút chất lượng suy luận. |
-| `/learn-codebase` | **Đọc hiểu sâu toàn bộ mã nguồn**: Yêu cầu AI đọc và phân tích cấu trúc từng file source code để nắm vững logic nền tảng của dự án mới. | Xây dựng corpus kiến thức nền cho toàn bộ dự án. |
-| `/mem-search` | **Tìm kiếm ký ức các phiên trước**: Tra cứu xem những bài toán, lỗi hoặc quyết định kỹ thuật nào đã từng được giải quyết trong các phiên làm việc cũ. | Truy vấn database bộ nhớ persistent của `claude-mem`. |
-| `/smart-explore` | **Khám phá mã nguồn theo cấu trúc AST**: Thay vì đọc toàn bộ file tốn token, skill sử dụng Tree-sitter AST để đọc outline, chữ ký hàm và cấu trúc lớp. | Tiết kiệm đến 80% token khi tìm hiểu luồng code phức tạp. |
-| `/timeline-report` | **Xuất báo cáo hành trình phát triển**: Tạo bài phân tích tường thuật (narrative analysis) toàn bộ lịch sử xây dựng và cải tiến dự án từ timeline bộ nhớ. | Trích xuất báo cáo từ timeline của `claude-mem`. |
+| `/product-teardown` | **Cố vấn sản phẩm & phản biện tính năng**: quét mã nguồn thực tế (API, trang UI, CSDL) hoặc ý tưởng, đối chiếu với các sản phẩm tiêu biểu (Stripe, Linear, Notion, Duolingo, Shopify), chỉ ra điểm yếu UX, tính năng làm dở và đề xuất 3 tầng (Quick Wins, Strategic, Killer Moats). Kết quả của scanner là heuristic — cần xác minh trước khi hành động. | Báo cáo trong chat |
+
+> Các skill bộ nhớ phiên làm việc đã được gỡ khỏi bộ này vì trùng plugin **claude-mem** cài riêng; nếu cần, cài plugin đó và dùng các lệnh `claude-mem:*`.
 
 ---
 
@@ -226,6 +227,8 @@ flowchart TD
 
 ### 🔌 HỆ THỐNG CÔNG CỤ MỞ RỘNG MCP (SERVERS)
 *Bộ 7 máy chủ Model Context Protocol (MCP Servers) chuẩn Enterprise cung cấp siêu năng lực tương tác sâu với hệ thống, cơ sở dữ liệu, trình duyệt, git và hạ tầng container.*
+
+> **Lưu ý phạm vi:** bộ 7 MCP dưới đây là cấu hình riêng cho **Antigravity** (`mcp_config.json`). Plugin cho **Claude Code** (`.claude-plugin/plugin.json`) chỉ khai báo MCP `serena`; `playwright` và `claude-mem` đã được gỡ khỏi plugin. `plugin.json` ở thư mục gốc cũng dành cho Antigravity (schema riêng); Claude Code đọc `.claude-plugin/plugin.json` và `.claude-plugin/marketplace.json`.
 
 ```
 ┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -294,7 +297,7 @@ Hệ thống được trang bị bộ quy tắc toàn cục [`AGENTS.md`](./AGEN
 
 1. **Bộ Phân Loại Ý Định Tiếng Việt Tự Nhiên (Vietnamese Intent Classifier)**:
    - Giao tiếp bằng tiếng Việt đời thường hoặc từ lóng dev (*"soi bug"*, *"trau chuốt UI"*, *"soạn báo giá"*, *"review PR"*...).
-   - Hệ thống tự động ánh xạ chính xác vào **40 skills chuẩn** của dự án mà không cần nhớ cú pháp tiếng Anh.
+   - Hệ thống tự động ánh xạ chính xác vào **35 skills chuẩn** (33 skill trong manifest, gồm `/menu`, cộng `/ui-ux-pro-max` và `/product-teardown`) của dự án mà không cần nhớ cú pháp tiếng Anh.
 2. **Kỷ Luật Viết Code Đầy Đủ (Anti-Lazy & Full-Output Enforcement)**:
    - Cấm tuyệt đối code tắt, cấm comment kiểu `// TODO: tự code tiếp`, `/* rest of code unchanged */` hoặc placeholder rỗng.
    - Bắt buộc sinh mã nguồn hoàn chỉnh có thể chạy được, xử lý triệt để nguyên nhân gốc rễ (Root-Cause First).
@@ -303,7 +306,7 @@ Hệ thống được trang bị bộ quy tắc toàn cục [`AGENTS.md`](./AGEN
 
 ---
 
-## ⚙️ HƯỚNG DẪN CÀI ĐẶT & ĐỒNG BỘ TỰ ĐỘNG (BƯỚC 13)
+## ⚙️ HƯỚNG DẪN CÀI ĐẶT & ĐỒNG BỘ TỰ ĐỘNG
 
 ### 1. Cài đặt trên máy khác (Claude Code / Codex / Antigravity)
 * Mở menu Plugin trên công cụ làm việc → **Marketplaces** → **Add Marketplace** → Dán link:

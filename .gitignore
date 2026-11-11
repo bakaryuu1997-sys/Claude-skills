@@ -22,3 +22,13 @@ scratch/
 docs/presentations/SenseiHub_*
 
 .playwright-mcp/
+
+# Runtime state & secrets (project-context là dữ liệu dự án, không commit)
+project-context.json
+project-context.archive.jsonl
+*.archive.jsonl
+.context-history/
+.env
+.env.*
+*.pem
+*.key

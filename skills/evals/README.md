@@ -5,11 +5,14 @@ Hai tầng. Chạy TẦNG 1 sau mỗi lần sửa script/skill (cùng skill_doct
 ## Tầng 1 — Tự động (không cần LLM)
 
 ```bash
-python3 <skills_dir>/evals/run_evals.py <skills_dir>
+python skills/evals/run_evals.py skills
 # Exit 0 = PASS hết. Kiểm: update_context (atomic/lock/validate), check_gate (3 kịch bản),
 # compute_status (staleness), check_circular_fk, gen_postman + gen_openapi (golden spec),
-# skill_doctor (0 FAIL), và tự kiểm checker check_xlsx.
+# skill_doctor (0 FAIL), tự kiểm checker check_xlsx, và T9 đồng bộ số liệu
+# (số skill thư mục = AGENTS.md = rules/AGENTS.md = README = menu; version 4 file plugin/marketplace = manifest_version).
 ```
+
+**Yêu cầu:** `openpyxl` (`pip install openpyxl`). Harness tự chạy lại tiến trình con KHÔNG kèm `-I`, nên gọi `python -I` vẫn chạy đủ (`python -I` bỏ user-site nên không thấy openpyxl nếu cài bằng `pip --user`; harness xử lý việc này). Console Windows mặc định cp932: harness đã `reconfigure` UTF-8.
 
 ## Tầng 2 — Golden cases (LLM-in-loop)
 
@@ -19,7 +22,7 @@ và `expected_structure.json` (spec cấu trúc cho checker).
 Quy trình khi sửa prompt một skill:
 1. Mở `golden/<skill>/brief.md`, chạy skill với đúng prompt đó trong workspace sạch.
 2. Chạy checker trên file sinh ra:
-   `python3 evals/checkers/check_xlsx.py <output.xlsx> golden/<skill>/expected_structure.json`
+   `python evals/checkers/check_xlsx.py <output.xlsx> golden/<skill>/expected_structure.json`
 3. Kiểm tay các mục "Kỳ vọng hành vi" trong brief (thường 3 mục — hỏi đúng chỗ, gate đúng, tất định).
 4. PASS cả 3 bước → được commit thay đổi prompt. FAIL → prompt mới gây regression, sửa lại.
 

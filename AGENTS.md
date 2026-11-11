@@ -10,6 +10,9 @@
 - **Tiêu chuẩn phản hồi**: Ngắn gọn, chuẩn xác, đi thẳng vào giải pháp và mã nguồn. Không vòng vo giải thích lý thuyết thừa.
 - **Fail-Fast & Root-Cause First**: Luôn tìm nguyên nhân gốc của lỗi (log, stack trace, boundary conditions); cấm dùng `try/catch` rỗng hoặc ép kiểu `any` để che giấu lỗi.
 - **Kỷ luật ngữ cảnh & Guardrails (Context Discipline & Guardrails)**: Tiết kiệm token, nén ngữ cảnh chủ động (chuẩn ECC), cấm đọc tràn lan file lớn khi chỉ cần trích xuất một phần, nạp dữ liệu web sạch không rác (Clean Ingestion). Sau mỗi lần sửa lỗi phức tạp, tự động đúc rút 1 câu bài học (Reflection Loop chuẩn Hindsight) lưu vào bộ nhớ dự án.
+- **Kỷ luật tài liệu & Cấm lộ mã bước nội bộ (Professional Client-Facing Output & Anti-Internal-Code Leak)**: TUYỆT ĐỐI CẤM đưa các ký hiệu mã bước nội bộ của pipeline AI (như `A1`, `A2`, `A3`, `A4`, `A5`, `A6`, `B1`, `C1`, `D1`...) vào nội dung deliverables, tài liệu Excel (cột Assumption, Task Detail, Notes, Scope, Header), Word, Markdown, comments mà khách hàng hoặc thành viên dự án đọc. Khách hàng và các thành viên khác sẽ không hiểu các ký hiệu này. Luôn dùng tên gọi nghiệp vụ/tài liệu chính thức rõ ràng (ví dụ: thay `A5設計書準拠` bằng `データベース物理設計書準拠`, thay `A3プロトタイプ` bằng `画面UIプロトタイプ仕様`, thay `A4設計書` bằng `API設計仕様書`, thay `D1` bằng `運用保守引継書・Runbook`).
+- **Kỷ luật ngôn ngữ 100% đồng nhất (Strict Language Consistency & Zero Language Leak)**: Khi dự án yêu cầu một ngôn ngữ cụ thể (ví dụ tiếng Nhật: `client_facing = ja`), thì **100% nội dung** trong deliverables, tài liệu Excel (tất cả các sheet, header, comment, điều khoản, mẫu template, các block con như `手順書作成`, `結合テスト`, `前提条件`...), Word, Markdown, source code comments... **BẮT BUỘC phải là ngôn ngữ đó**. TUYỆT ĐỐI CẤM để sót tiếng Việt (hoặc ngôn ngữ khác) từ template mẫu, ghi chú cũ, hay dữ liệu nháp lọt vào deliverable gửi cho khách hàng. Mọi template có sẵn phải được quét sạch và bản địa hóa 100% trước khi xuất.
+- **Cấm rò rỉ thương hiệu bên thứ ba & Metadata rác từ template cũ (Anti-Vendor-Branding & Legacy Template Cleansing)**: TUYỆT ĐỐI CẤM để xuất hiện tên các công ty, thương hiệu outsource cũ (như `Rikkei`, `Rikkeisoft`, `リッケイ`, `FPT`, `CMC`, hay bất kỳ bên thứ ba nào không liên quan đến dự án) trong deliverables, sheet `表紙`, `見積書`, headers, footers hay comments. Mọi deliverable phải sử dụng chính xác tên khách hàng (`client`) và đơn vị phát triển từ `project-context.json` (hoặc để tên trung tính như `システム開発チーム` / `プロジェクト開発チーム`).
 
 ---
 
@@ -37,7 +40,7 @@ Tuyệt đối cấm các hành vi viết tắt, bỏ dở code hoặc trốn tr
 
 ## 3. Bộ Nhận Diện Ý Định Tiếng Việt Tự Nhiên (Vietnamese Intent Classifier)
 
-Hệ thống tự động suy luận ngôn ngữ tự nhiên tiếng Việt (bao gồm cả từ lóng kỹ thuật, khẩu ngữ dev) để kích hoạt chính xác bộ 40 skills chuẩn của dự án:
+Hệ thống tự động suy luận ngôn ngữ tự nhiên tiếng Việt (bao gồm cả từ lóng kỹ thuật, khẩu ngữ dev) để kích hoạt chính xác bộ 35 skills chuẩn của dự án (33 skill trong manifest, gồm `/menu`, cộng `/ui-ux-pro-max` và `/product-teardown`; `/impeccable`, `/hallmark`, `ocr review` là công cụ ngoài bộ, cài riêng):
 
 ### Giai đoạn A — Khởi tạo & Thiết kế Đầu vào (A1 → A9)
 | Người dùng nói (Tiếng Việt tự nhiên) | Kỹ năng được kích hoạt |
@@ -104,7 +107,5 @@ Hệ thống tự động suy luận ngôn ngữ tự nhiên tiếng Việt (bao
 | *"học DNA thiết kế", "bóc tách style từ ảnh", "học mẫu từ website", "hallmark study"* | `hallmark study <screenshot/URL>` |
 | *"đổi mới diện mạo", "đập đi xây lại layout", "hallmark redesign"* | `hallmark redesign` |
 | *"soi lỗi anti-pattern giao diện", "hallmark audit"* | `hallmark audit` |
-| *"menu", "hướng dẫn", "có những skill gì", "danh sách kỹ năng"* | `/menu` |
-| *"tìm trong trí nhớ", "lần trước làm thế nào", "tra cứu memory"* | `/mem-search` |
-| *"bàn giao ca làm việc", "tạo handoff", "tóm tắt phiên để tiếp tục"* | `/handoff` |
+| *"menu", "help", "có những skill gì", "danh sách kỹ năng"* | `/menu` |
 | *"đánh giá sản phẩm", "soi tính năng", "app này thiếu gì", "product teardown", "gợi ý tính năng mới từ code", "phản biện sản phẩm", "so sánh đối thủ"* | `/product-teardown` |

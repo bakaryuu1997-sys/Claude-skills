@@ -47,7 +47,7 @@ GIAI ĐOẠN X — CROSS-CUTTING (chạy bất kỳ lúc nào, không thuộc ch
   X4  /x4-meeting-minutes         ← biên bản họp + đổ ngược: câu hỏi mở → QA_Tracker, scope đổi → /c7-change-request
   X5  /x5-coding-standards        ← quy chuẩn kỹ thuật nội bộ, conventional commits, PR & self-improvement
   X6  /x6-skill-doctor            ← meta: lint chính bộ skill (cho người bảo trì, không thuộc pipeline dự án)
-  X7  /x7-presentation-deck       ← tạo slide thuyết trình chuyên nghiệp (PowerPoint pptx / HTML Marp)
+  X7  /x7-presentation-deck       ← tạo slide thuyết trình chuyên nghiệp (PowerPoint pptx 16:9)
 ```
 
 Ánh xạ số cũ sang chuẩn mới: A0→A1, A1→A2, A2→A3, A3(api)→A4, A3(db)→A5, A4→A6, A4b→A7, A5→A8, A6→A9, C0→C1, C0b→C2, C1→C3, C1b→C4, C2→C5, C3→C6, C4→C7, X0→X1, X1→X2, X2→X3, X3→X6.
@@ -92,10 +92,10 @@ Excel: `excel-style.md` (màu, font, freeze, công thức thay cho số cứng).
 | Skill | Input chính (từ đâu) | Output chính (cho ai) |
 |---|---|---|
 | project-init | người dùng | project-context.json → MỌI skill |
-| requirement-analysis | tài liệu khách / folder | *_Requirement_Specification.xlsx (5 sheet, có Functional Scope với ID `FEAT-…`), *_QA_Tracker.xlsx (+ `*_Requirement_Analysis.docx` tùy chọn) → A3, A4, A8, B2, gate A6/B1 |
+| requirement-analysis | tài liệu khách / folder | *_Requirement_Specification.xlsx (5 sheet, có Functional Scope với ID `FEAT-…`), *_QA_Tracker.xlsx (+ `*_Requirement_Analysis*.docx` tùy chọn) → A3, A4, A8, B2, gate A6/B1 |
 | prototype-ui | Functional Scope (mục 3 của A2) | *_Prototype_v[N].html → B2, A4, A6 |
-| api-design | scope + roles (A2), screens (A3) | *_API_Design.xlsx (cột DB Tables Affected → db-design; Test Cases/Errors → test-plan), *_api_spec.json, Postman, OpenAPI → B3 THAM CHIẾU |
-| db-design | DB Tables Affected (api-design) | *_DB_Design.xlsx, *_migration.sql, *_ERD.md → B3, A8 |
+| api-design | scope + roles (A2), screens (A3) | *_API_Design*.xlsx (cột DB Tables Affected → db-design; Test Cases/Errors → test-plan), *_api_spec.json, Postman, OpenAPI → B3 THAM CHIẾU |
+| db-design | DB Tables Affected (api-design) | *_DB_Design*.xlsx, *_migration.sql, *_ERD.md → B3, A8 |
 | estimate | A4 outputs + A5 outputs + A3 screens | *_Estimate.xlsx (Role Breakdown → A9); ghi estimates.* vào context |
 | estimate-template-fill | cột Dev của estimate | file 見積書 đã điền → gửi khách |
 | test-plan | api-design (Test Cases/Errors), db-design (schema), A2 (Q&A ref) | *_Test_Plan.xlsx → C5, A9 |
@@ -122,7 +122,7 @@ Excel: `excel-style.md` (màu, font, freeze, công thức thay cho số cứng).
 | meeting-minutes | notes/transcript họp | biên bản Minutes.docx + Minutes.xlsx + md; câu hỏi mở → QA_Tracker; scope change → cảnh báo /c7-change-request |
 | coding-standards | project-context.json (tech_stack) | ENGINEERING_STANDARDS.md → mọi skill thực thi |
 | skill-doctor | thư mục skills + manifest | báo cáo lint PASS/WARN/FAIL trong chat |
-| presentation-deck | bất kỳ tài liệu nào cần trình chiếu (số liệu PHẢI trích từ file thật) | Deck.pptx (16:9) hoặc HTML slide → khách hàng, BOD, team |
+| presentation-deck | bất kỳ tài liệu nào cần trình chiếu (số liệu PHẢI trích từ file thật) | Deck.pptx (16:9) → khách hàng, BOD, team |
 
 ## Hằng số chung — NGUỒN DUY NHẤT là `project-context.json → settings`
 
@@ -155,6 +155,12 @@ Excel: `excel-style.md` (màu, font, freeze, công thức thay cho số cứng).
 | `evals/run_evals.py` + `evals/checkers/*` | eval harness 2 tầng (xem evals/README.md) | người bảo trì skill |
 | `a7-estimate-template-fill/scripts/fill_dev_estimate.py` | điền block 開発 template 見積書 | estimate-template-fill |
 | `x6-skill-doctor/scripts/skill_doctor.py` + `menu/scripts/*` | lint bộ skill, sinh/kiểm menu | skill-doctor, menu |
+| `c3-code-review/scripts/coverage_summary.py` | tóm tắt coverage (JSON/lcov) + LOC thay đổi từ git | code-review |
+| `c4-trailofbits-security-skills/scripts/parse_npm_audit.py` | đọc `npm audit --json`, cổng `--fail-on` | trailofbits-security-skills |
+| `c5-test-execution/scripts/test_metrics.py` | tính pass/coverage/gate QUALIFIED hay NOT QUALIFIED | test-execution |
+| `c6-sprint-review/scripts/sprint_metrics.py` | completion, health, drag, dự phóng từ sprint log | sprint-review |
+| `c7-change-request/scripts/cr_impact.py` | impact CR: NEW/REWORK/REGRESSION + buffer từ settings | change-request |
+| `c8-release-deployment/scripts/smoke_test_runner.py` | smoke test GO/NO-GO (stdlib, chạy đa nền tảng) | release-deployment |
 
 ## Quy ước kết thúc response (mọi skill — nguồn duy nhất)
 

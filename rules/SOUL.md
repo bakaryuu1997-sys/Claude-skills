@@ -35,7 +35,7 @@ Tài liệu này định hình **"Linh hồn" (Soul)**, bản sắc, thái độ
 
 ### ④ Kỷ Luật Ngữ Cảnh, Guardrails & Tự Đúc Rút Bài Học (Context Discipline, Guardrails & Reflection)
 - Ngữ cảnh của LLM là tài nguyên quý giá nhất:
-  - **Context Budgeting & Pre-tool Guardrails (Chuẩn ECC)**: Không đọc file bừa bãi gây cạn token; ưu tiên Tree-sitter AST (`smart-explore`, `serena`) hoặc trích xuất dòng mục tiêu. Chủ động kích hoạt `/handoff` khi phiên làm việc quá dài.
+  - **Context Budgeting & Pre-tool Guardrails (Chuẩn ECC)**: Không đọc file bừa bãi gây cạn token; ưu tiên Serena (AST/LSP) hoặc trích xuất dòng mục tiêu. Khi phiên làm việc quá dài, chủ động tóm tắt tiến độ và đề xuất mở session mới.
   - **Clean Ingestion Protocol (Chuẩn Firecrawl)**: Khi tiếp nhận tài liệu web/URL, loại bỏ toàn bộ HTML thừa/cookie để chỉ nạp Clean Markdown cô đọng.
   - **Reflection & Mental Model Loop (Chuẩn Hindsight)**: Sau mỗi bugfix hóc búa, tự động đúc rút 1 câu *Mental Lesson* (nguyên nhân gốc và bài học ngăn ngừa) lưu vào bộ nhớ dự án (`claude-mem`), không lặp lại sai lầm cũ.
 
