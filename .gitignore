@@ -32,3 +32,7 @@ project-context.archive.jsonl
 .env.*
 *.pem
 *.key
+
+# Template 見積書 của dự án/khách: không đưa vào repo (giữ cục bộ, truyền bằng --template)
+skills/a7-estimate-template-fill/assets/*見積書*.xlsx
+skills/a7-estimate-template-fill/assets/*_template.xlsx

@@ -55,6 +55,8 @@ except ImportError:
     sys.exit(2)
 
 HERE = Path(__file__).resolve().parent
+# Template 見積書 KHÔNG đóng gói trong repo (chứa tên/đơn giá của dự án cũ).
+# Truyền --template <file.xlsx> của dự án; bản mặc định chỉ dùng khi bạn tự giữ file cục bộ.
 DEFAULT_TEMPLATE = HERE.parent / "assets" / "MPL-H12 App_IOS_見積書_template.xlsx"
 DEFAULT_MAP = HERE.parent / "assets" / "sanitize-map-mpl-template.json"
 NEUTRAL_VENDOR = "システム開発受託チーム"
@@ -85,7 +87,7 @@ def parse_args(argv):
     p.add_argument("--unit", choices=["md", "mh"], default="md")
     p.add_argument("--md-per-pm", type=float, default=22.0)
     p.add_argument("--hours-per-md", type=float, default=7.0)
-    p.add_argument("--template", default=str(DEFAULT_TEMPLATE))
+    p.add_argument("--template", default=None, help="file 見積書 (bắt buộc nếu không có bản mặc định cục bộ)")
     p.add_argument("--sheet", default="見積明細書")
     p.add_argument("--project-name")
     p.add_argument("--date", help="YYYY-MM-DD hoặc YYYY/MM/DD (ngày lập 表紙)")
@@ -102,6 +104,10 @@ def parse_args(argv):
     p.add_argument("--allow-leak", action="store_true")
     p.add_argument("--strict", action="store_true")
     a = p.parse_args(argv)
+    if a.template is None:
+        if not DEFAULT_TEMPLATE.exists():
+            p.error("thiếu template 見積書: truyền --template <file.xlsx> (file mặc định không có trong repo)")
+        a.template = str(DEFAULT_TEMPLATE)
     if a.md_per_pm <= 0 or a.hours_per_md <= 0:
         p.error("--md-per-pm và --hours-per-md phải > 0")
     return a

@@ -289,8 +289,105 @@ def t9():
     assert not problems, "\n".join(problems)
 
 
+def _json_out(cmd_args):
+    r = run(cmd_args)
+    return r.returncode, r.stdout, r.stderr
+
+
+@t("T10 test_metrics (c5): UT đạt → QUALIFIED exit 0; có test fail → NOT QUALIFIED exit 1")
+def t10():
+    tmp = Path(tempfile.mkdtemp(prefix="ev_t10_"))
+    ok = {"phase": "UT", "tests": [{"id": "T-1", "result": "pass", "viewpoint": "Functional"},
+                                   {"id": "T-2", "result": "pass", "viewpoint": "Security"}],
+          "defects": [], "coverage": {"line": 90, "branch": 85}}
+    bad = dict(ok, tests=[{"id": "T-1", "result": "pass"}, {"id": "T-2", "result": "fail"}])
+    (tmp / "ok.json").write_text(json.dumps(ok), encoding="utf-8")
+    (tmp / "bad.json").write_text(json.dumps(bad), encoding="utf-8")
+    r1 = run([str(SKILLS / "c5-test-execution/scripts/test_metrics.py"), str(tmp / "ok.json")])
+    assert r1.returncode == 0 and "QUALIFIED" in r1.stdout and "NOT QUALIFIED" not in r1.stdout, (r1.returncode, r1.stdout[-300:])
+    r2 = run([str(SKILLS / "c5-test-execution/scripts/test_metrics.py"), str(tmp / "bad.json")])
+    assert r2.returncode == 1 and "NOT QUALIFIED" in r2.stdout, (r2.returncode, r2.stdout[-300:])
+
+
+@t("T11 cr_impact (c7): 10 new + 2 regression, buffer 15% trên new → 13.5 MD, 0.614 PM (tính tay)")
+def t11():
+    tmp = Path(tempfile.mkdtemp(prefix="ev_t11_"))
+    cr = {"cr_id": "CR-001", "cr_type": "ADDITION", "title": "t",
+          "items": [{"task": "A", "kind": "new", "dev": 10}, {"task": "B", "kind": "regression", "dev": 2}],
+          "settings": {"md_per_person_month": 22, "buffer_percent": 15, "sprint_duration_weeks": 2},
+          "capacity_md": 10, "original_total_md": 100}
+    (tmp / "cr.json").write_text(json.dumps(cr), encoding="utf-8")
+    r = run([str(SKILLS / "c7-change-request/scripts/cr_impact.py"), str(tmp / "cr.json"), "--format", "json"])
+    assert r.returncode == 0, r.stderr[-300:]
+    d = json.loads(r.stdout)
+    assert d["total_cr_md"] == 13.5, d["total_cr_md"]
+    assert d["person_month"] == 0.614, d["person_month"]
+    # thiếu md_per_person_month phải DỪNG (không tự đặt số 22)
+    bad = dict(cr, settings={"buffer_percent": 15})
+    (tmp / "bad.json").write_text(json.dumps(bad), encoding="utf-8")
+    r2 = run([str(SKILLS / "c7-change-request/scripts/cr_impact.py"), str(tmp / "bad.json")])
+    assert r2.returncode != 0, "thiếu md_per_person_month mà vẫn chạy — vi phạm quy tắc một nguồn"
+
+
+@t("T12 timeline_calc (a9): 329 MD / 23 MD sprint → 17 sprint; 6 VEVENT có UID; cảnh báo trễ go-live")
+def t12():
+    tmp = Path(tempfile.mkdtemp(prefix="ev_t12_"))
+    ws = tmp / "ws"; ws.mkdir()
+    ctx = {"version": "3.17.0", "project": {"name": "T", "type": "web_app", "start_date": "2026-07-01", "go_live_target": "2026-10-15"},
+           "tech_stack": {}, "team": [{"id": "be1", "role": "BE", "md_per_sprint": 8, "allocation": 1},
+                                      {"id": "fe1", "role": "FE", "md_per_sprint": 8, "allocation": 1},
+                                      {"id": "qa1", "role": "QA", "md_per_sprint": 7, "allocation": 1}],
+           "settings": {"sprint_duration_weeks": 2, "working_days_per_week": 5, "md_per_person_month": 22, "buffer_percent": 15},
+           "estimates": {"total_md": 329}}
+    (ws / "project-context.json").write_text(json.dumps(ctx), encoding="utf-8")
+    out = tmp / "tl.json"; ics = tmp / "tl.ics"
+    r = run([str(SKILLS / "a9-project-timeline/scripts/timeline_calc.py"), str(ws), "--json", str(out), "--ics", str(ics)])
+    assert r.returncode == 0, r.stdout[-300:] + r.stderr[-300:]
+    d = json.loads(out.read_text(encoding="utf-8"))
+    assert d["total_sprints"] == 17, d["total_sprints"]
+    ms = [m["id"] for m in d["milestones"]]
+    assert ms == ["M1", "M2", "M3", "M4", "M5", "M6"], ms
+    assert any("trễ" in w for w in d["warnings"]), d["warnings"]
+    text = ics.read_text(encoding="utf-8")
+    assert text.count("BEGIN:VEVENT") == 6 and text.count("\r\nUID:") + text.count("UID:") >= 6, "ICS thiếu UID"
+
+
+@t("T13 smoke_test_runner (c8): endpoint 200 + JSON đúng → GO exit 0; endpoint 500 → NO-GO exit 1; không check → exit 2")
+def t13():
+    import http.server, threading
+    class H(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            if self.path.startswith("/ok"):
+                body = b'{"status":"ok"}'; code = 200
+            else:
+                body = b'{"error":"boom"}'; code = 500
+            self.send_response(code); self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body))); self.end_headers(); self.wfile.write(body)
+        def log_message(self, *a):
+            pass
+    srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), H)
+    th = threading.Thread(target=srv.serve_forever, daemon=True); th.start()
+    try:
+        base = f"http://127.0.0.1:{srv.server_address[1]}"
+        tmp = Path(tempfile.mkdtemp(prefix="ev_t13_"))
+        good = {"base_url": base, "checks": [{"id": "S1", "name": "health", "method": "GET", "path": "/ok",
+                                              "expect_status": 200, "expect_json_path": {"status": "ok"}}]}
+        badc = {"base_url": base, "checks": [{"id": "S2", "name": "down", "method": "GET", "path": "/down", "expect_status": 200}]}
+        empty = {"base_url": base, "checks": []}
+        for name, obj in (("good", good), ("bad", badc), ("empty", empty)):
+            (tmp / f"{name}.json").write_text(json.dumps(obj), encoding="utf-8")
+        r1 = run([str(SKILLS / "c8-release-deployment/scripts/smoke_test_runner.py"), str(tmp / "good.json")])
+        assert r1.returncode == 0 and "GO" in r1.stdout and "NO-GO" not in r1.stdout, (r1.returncode, r1.stdout[-300:])
+        r2 = run([str(SKILLS / "c8-release-deployment/scripts/smoke_test_runner.py"), str(tmp / "bad.json")])
+        assert r2.returncode == 1 and "NO-GO" in r2.stdout, (r2.returncode, r2.stdout[-300:])
+        r3 = run([str(SKILLS / "c8-release-deployment/scripts/smoke_test_runner.py"), str(tmp / "empty.json")])
+        assert r3.returncode == 2, r3.returncode
+    finally:
+        srv.shutdown()
+
+
 if __name__ == "__main__":
-    for fn in [t1, t1b, t1c, t2a, t2b, t2c, t3, t4, t5, t6, t7, t8, t9]:
+    for fn in [t1, t1b, t1c, t2a, t2b, t2c, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13]:
         fn()
     n_fail = sum(1 for _, ok, _ in results if not ok)
     print(f"\n🧪 EVALS TẦNG 1 — {len(results)} test | {len(results) - n_fail} PASS | {n_fail} FAIL\n")

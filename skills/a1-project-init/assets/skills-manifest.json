@@ -1,5 +1,5 @@
 {
-  "manifest_version": "3.17.1",
+  "manifest_version": "3.17.2",
   "updated_at": "2026-11-11",
   "pipeline_source": "a1-project-init/references/pipeline.md",
   "shared": {
@@ -124,7 +124,7 @@
     },
     {
       "name": "a7-estimate-template-fill",
-      "version": "3.17.0",
+      "version": "3.17.2",
       "step": "A7",
       "phase": "prepare",
       "optional": true,
@@ -393,7 +393,7 @@
     },
     {
       "name": "c0-frontend-dev",
-      "version": "3.17.0",
+      "version": "3.17.2",
       "step": "C0",
       "phase": "run",
       "recurring": "per feature/sprint",
@@ -472,7 +472,7 @@
     },
     {
       "name": "c2-api-test-suite-generator",
-      "version": "3.17.0",
+      "version": "3.17.2",
       "step": "C2",
       "phase": "run",
       "recurring": "per task",

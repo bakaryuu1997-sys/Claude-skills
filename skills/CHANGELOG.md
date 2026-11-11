@@ -4,6 +4,21 @@
 > Nhãn phiên bản có hai loại: **phiên bản bộ** (manifest + plugin, chỉ có 3.8.0 và 3.16.0 là bản phát hành toàn bộ) và **phiên bản từng skill**
 > (3.9.0–3.14.0 chỉ xuất hiện ở một số skill trong `skills-manifest.json`). Mục nào "không có phát hành riêng" nghĩa là git log không có commit gắn nhãn đó.
 
+## 3.17.2 — 2026-11-11
+Hoàn thiện các mục còn dở của đợt rà soát; gỡ dữ liệu khách/dự án cũ khỏi repo.
+
+### Removed
+- Template 見積書 `MPL-H12 App_IOS_見積書_template.xlsx` không còn được theo dõi bởi git (chứa tên, ngày, đơn giá của dự án cũ). Giữ bản cục bộ; truyền bằng `--template`.
+- Email cá nhân trong `author`/`owner` của `plugin.json`, `marketplace.json`.
+
+### Added
+- `evals` T10–T13: golden tier-1 cho `test_metrics`, `cr_impact` (13.5 MD / 0.614 PM tính tay), `timeline_calc` (17 sprint, 6 VEVENT có UID), `smoke_test_runner` (GO/NO-GO với server HTTP cục bộ). Tổng 17 test.
+- `c0/assets/theme-provider.tsx` và `c0/assets/command-palette.tsx` (đã kiểm cú pháp TypeScript).
+- `c2/references/zengin-record-layout.md`: bố cục 120 byte, ghi rõ 1-based/0-based và mức xác minh từng trường.
+
+### Changed
+- `a7/fill_dev_estimate.py`: nếu không có template thì dừng với hướng dẫn `--template`, không dùng file mặc định trong repo.
+
 ## 3.17.1 — 2026-11-11
 Bổ sung tài liệu chuẩn công ty lớn (Giai đoạn 2), không đổi hành vi script.
 

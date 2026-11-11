@@ -1,6 +1,6 @@
 ---
 name: a7-estimate-template-fill
-version: "3.17.0"
+version: "3.17.2"
 description: >-
   Điền task + công số dev vào template báo giá 見積書 CÓ SẴN (block 開発 của 見積明細書),
   giữ nguyên công thức/logo/block khác. Trigger: "điền báo giá vào template", "fill estimate
@@ -78,7 +78,7 @@ Divisor `/140` cứng của template được thay ở MỌI ô 人月 (không c
 
 ## Template đi kèm
 
-Skill có sẵn template tại `assets/MPL-H12 App_IOS_見積書_template.xlsx` (khung của một dự án mẫu cũ, còn dữ liệu mẫu) với các sheet:
+**Template 見積書 KHÔNG nằm trong repo** (file mẫu cũ có tên/đơn giá của dự án khác). Luôn lấy file 見積書 của dự án/khách từ workspace và truyền `--template <đường dẫn.xlsx>`; thiếu → script dừng với exit 2. Cấu trúc template mong đợi (sheet và ô):
 - 表紙 (trang bìa) — tên hệ thống, ngày, bên nhận thầu
 - 前提条件 (giả định) — còn nội dung/ngày mẫu, phải rà thủ công
 - 見積書 (báo giá tổng) — đơn giá 単価, thuế 10%
