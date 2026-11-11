@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "punch_list_warranty_backlog",
+  "description": "Backlog bảo hành sinh từ sheet Punch_List_Minor_Defects bằng scripts/punch_list_to_backlog.py. Mỗi phần tử trong known_issues tương thích mảng known_issues[] của project-context.json.",
+  "type": "object",
+  "required": ["generated_at", "source_workbook", "project", "items"],
+  "properties": {
+    "generated_at": {"type": "string"},
+    "source_workbook": {"type": "string"},
+    "project": {"type": "string"},
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "severity", "status"],
+        "properties": {
+          "id": {"type": "string", "description": "PUNCH-NN"},
+          "title": {"type": "string"},
+          "severity": {"enum": ["Medium", "Low"], "description": "Critical/High không được có trong Punch List"},
+          "status": {"type": "string", "description": "open | in progress | fixed | retest | verified | closed | wontfix"},
+          "impact": {"type": "string"},
+          "plan": {"type": "string"},
+          "owner": {"type": "string"},
+          "due": {"type": "string", "description": "YYYY-MM-DD"},
+          "ref_bug": {"type": "string", "description": "BUG-<NNN> nếu đã có trong known_issues[]"},
+          "found_in": {"type": "string"},
+          "date": {"type": "string"}
+        }
+      }
+    }
+  }
+}

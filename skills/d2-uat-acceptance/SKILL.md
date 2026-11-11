@@ -1,97 +1,100 @@
 ---
 name: d2-uat-acceptance
-version: "3.9.0"
+version: "3.17.0"
 description: >-
-  Quản lý nghiệm thu UAT với khách hàng: kiểm tra tiêu chuẩn nghiệm thu (Acceptance Criteria),
-  truy vết 2 chiều SOW-UAT, biên bản bàn giao tính năng ký duyệt (Sign-Off), danh mục punch list bảo hành
-  kèm tự động chuyển đổi backlog bảo hành (punch_list_warranty_backlog.json). Trigger: "nghiệm thu",
-  "uat acceptance", "biên bản nghiệm thu", "sign-off", "acceptance criteria", "bàn giao thanh toán". Bước D2 — sau handover D1.
+  Nghiệm thu chính thức (検収) với khách hàng: quy trình nghiệm thu (thời hạn kiểm tra, từ chối/tái nghiệm thu,
+  từng phần, mặc nhiên nếu SOW cho phép), truy vết SOW-UAT, Acceptance Certificate/検収書, Punch List, phạm vi
+  bảo hành (nguồn SOW); chặn ký khi còn bug Critical/High (check_gate.py). Trigger: "nghiệm thu", "uat acceptance",
+  "biên bản nghiệm thu", "検収", "sign-off", "acceptance criteria", "bàn giao thanh toán". Bước D2 — sau D1.
 ---
 
 # UAT Acceptance — Quản Lý Nghiệm Thu & Ký Duyệt Bàn Giao Khách Hàng
 
-> ⚠️ **Mọi tên riêng trong ví dụ của skill này (FPT, F-Pay, canteen…) chỉ là VÍ DỤ MINH HỌA** — khi làm dự án thực phải thay bằng dữ liệu của dự án đó.
+> ⚠️ **Mọi giá trị cụ thể trong skill và `references/` (số ngày, tên mốc, tên người ký) là KHUNG MINH HỌA** — khi làm dự án thực phải lấy từ SOW, context và tài liệu của dự án đó; thiếu thì `[CẦN ĐIỀN]`, không tự đặt.
 
 ## Mục tiêu
 
-Quản lý và thực hiện thủ tục **Nghiệm thu chấp nhận người dùng (User Acceptance Testing - UAT)** và ký kết **Biên bản nghiệm thu bàn giao (Acceptance Certificate)** với đại diện khách hàng. Đây là căn cứ pháp lý quyết định việc giải ngân, thanh lý hợp đồng hoặc chuyển sang giai đoạn bảo hành, bảo trì định kỳ.
+Quản lý **nghiệm thu chấp nhận (UAT) và nghiệm thu chính thức (検収)**, lập **Biên bản nghiệm thu (Acceptance Certificate / 検収書)** với đại diện có thẩm quyền của khách — căn cứ để mở mốc thanh toán, thanh lý hợp đồng hoặc chuyển sang bảo hành. Thứ tự theo pipeline: C5 chạy UAT → C8 phát hành → D1 bàn giao hồ sơ → **D2 nghiệm thu chính thức** → D3 tài liệu người dùng.
 
-Nguyên tắc nghiệm thu:
-- **Tiêu chí định lượng rõ ràng:** Mọi hạng mục nghiệm thu phải căn cứ trên bản đặc tả yêu cầu (/a2-requirement-analysis) và kế hoạch kiểm thử chấp nhận UAT (/a8-test-plan).
-- **Phân loại lỗi tồn đọng rõ ràng (Punch List):** Tuyệt đối không còn lỗi Severity 1 (Blocker/Critical) và Severity 2 (Major). Các lỗi nhỏ Severity 3/4 không ảnh hưởng luồng chính được ghi nhận vào Punch List cam kết khắc phục trong thời gian bảo hành.
-- **Có chữ ký đại diện thẩm quyền:** Biên bản nghiệm thu phải có đầy đủ thông tin, chức danh và chữ ký của đại diện hai bên (Project Sponsor, PM, QA Lead).
-- **Đồng nhất ngôn ngữ 100% (Zero Language Leak):** Nếu nghiệm thu với khách Nhật (`client_facing = ja`), toàn bộ biên bản (Certificate, Sign-off sheet, Punch List) phải 100% bằng tiếng Nhật chuẩn, không lẫn tiếng Việt từ template cũ.
-- **Cấm rò rỉ thương hiệu bên thứ ba & mã bước:** Tuyệt đối không để tên bên thầu cũ (`Rikkei`, `Rikkeisoft`, `FPT`...) hay mã bước nội bộ (`A1`, `D2`...) xuất hiện trong tài liệu nghiệm thu.
+Nguyên tắc:
+- **Tiêu chí định lượng, có căn cứ**: mọi hạng mục nghiệm thu truy về SOW (mốc `M1..MN`, `In_Scope`), yêu cầu (`FEAT-…` của Requirement Specification) và Test ID của Test Plan (`<MODULE>-<TYPE>-<NNN>`); không dùng ID tự chế.
+- **Cổng chất lượng bằng code**: còn bug Critical/High mở ⇒ KHÔNG ký "Đạt" (xem Bước 1). Thang severity chuẩn Critical/High/Medium/Low (`pipeline.md`; UAT Sev1→Critical, Sev2→High, Sev3→Medium, Sev4→Low). Punch List chỉ chứa Medium/Low không ảnh hưởng luồng chính.
+- **Quy trình nghiệm thu rõ ràng**: thời hạn kiểm tra, từ chối/tái nghiệm thu, nghiệm thu từng phần, nghiệm thu mặc nhiên (chỉ khi SOW cho phép) — `references/acceptance-process.md`.
+- **Chữ ký thẩm quyền**: đại diện hai bên có họ tên, chức danh, ngày.
+- **Một nguồn cho bảo hành/SLA**: SOW. D2 chép đúng vào `Warranty_Scope`; D1 và D3 chỉ dẫn chiếu.
+- **Ngôn ngữ & thương hiệu**: ngôn ngữ/font theo `settings.languages.client_facing` (`i18n-policy.md`; `ja` ⇒ 100% tiếng Nhật, dùng 検収書). Không lộ mã bước nội bộ (`A1`…`D3`) hay tên nhà thầu cũ trong tài liệu gửi khách.
+
+Thư mục xuất: `<workspace_folder>/docs/D2_uat-acceptance/`. Tên có `_v1` ngay từ bản đầu; Certificate đã ký không bị ghi đè — mỗi lần nộp/tái nghiệm thu sinh `_v2`, `_v3`.
 
 ---
 
 ## Bước -1 — Đọc Project Context (nếu có)
 
-> **Giao thức chuẩn — chi tiết: `a1-project-init/references/context-protocol.md`** (KHÔNG chép lại vào skill):
-> đọc bằng `load_context.py` + `cget()`; ghi bằng `update_context.py`; gate bằng `check_gate.py`.
-> `NO_CONTEXT` → chạy chế độ hỏi/suy luận thủ công.
+> **Giao thức chuẩn: `a1-project-init/references/context-protocol.md`** (KHÔNG chép lại): đọc bằng `load_context.py` + `cget()`; ghi bằng `update_context.py`; gate bằng `check_gate.py`. `NO_CONTEXT` → chạy chế độ hỏi/suy luận thủ công.
 
-**Nếu có context** → tự động trích xuất:
-- `project.name`, `client`, `go_live_target` (thông tin dự án).
-- `team.client_stakeholders`, `team.project_manager` (đại diện ký biên bản).
-- `deliverables` (danh mục sản phẩm bàn giao cần nghiệm thu).
+Có context → tự trích: `project.name`, `project.client`, `project.go_live_target`, `release{}` (version, date); người ký phía khách = các phần tử `team[]` có `side=client` (`name`, `role`, `email`), phía đội dự án = `team[]` có `side=vendor` (PM, QA lead); `known_issues[]`; `settings.quality_gates`; `settings.languages`. Danh mục sản phẩm cần nghiệm thu KHÔNG có khóa riêng trong context — lấy từ SOW (`In_Scope`, `Milestone_Deliverables`). Thiếu người ký phía khách → hỏi người dùng, không bịa.
 
----
+## Bước 0 — Thu thập đầu vào
 
-## Bước 0 — Thu thập thông tin đầu vào
+1. `*_Statement_Of_Work*.docx` + `*_SOW_Scope_Matrix*.xlsx` (B0): mốc `M1..MN`, tiêu chí nghiệm thu, % thanh toán, thời hạn kiểm tra, điều khoản bảo hành/nghiệm thu mặc nhiên/契約不適合.
+2. `*_Requirement_Specification*.xlsx` (A2): `FEAT-…` để truy vết hai chiều.
+3. `*_Test_Plan*.xlsx` (A8): UAT Checklist + Test ID.
+4. `*_Test_Execution*.xlsx` và `*_Test_Report_*.docx` (C5): kết quả UAT thực tế, defect.
+5. `*_Handover*.docx`, `*_Runbook*.md` (D1) và phát hành (`release{}`): hồ sơ bàn giao.
 
-Đọc kết quả từ các bước trước:
-1. `*_Statement_Of_Work.docx` (từ /b0-proposal-sow) & `*_Requirement_Specification.xlsx` (từ /a2-requirement-analysis) → Tiêu chí nghiệm thu đã cam kết trong hợp đồng.
-2. `*_Test_Plan.xlsx` (từ /a8-test-plan) → UAT Checklist và kịch bản người dùng.
-3. `*_Test_Execution.xlsx` (từ /c5-test-execution) → Kết quả chạy test UAT thực tế của khách hàng.
-4. `*_Handover.docx` & `*_Runbook.md` (từ /d1-handover-doc) → Hồ sơ bàn giao kỹ thuật.
+## Bước 1 — Gate trước khi lập Certificate
 
----
+```bash
+python <skills_dir>/a1-project-init/scripts/check_gate.py "<workspace_folder>"
+```
 
-## Tiêu chí Chất lượng & Chống Sơ sài (Anti-Superficiality Checklist)
+- **exit 0**: được lập Certificate "Đạt" / "Đạt có điều kiện".
+- **exit 1**: còn Critical/High mở. Không lập "Đạt". Lập báo cáo "Chưa đạt" liệt kê `BUG-…` chặn. Chỉ khi khách chấp nhận bằng văn bản từng bug (ghi trong `Acceptance_Log` và mục 3 Certificate) mới được "Đạt có điều kiện".
+- **exit 3**: không kiểm được gate — báo người dùng, KHÔNG coi là đã qua.
 
-Bộ hồ sơ nghiệm thu bắt buộc gồm **2 file chính thức**:
-
-| STT | File Deliverable | Định dạng | Tiêu chuẩn chất lượng tối thiểu |
-|---|---|---|---|
-| 1 | `[TênDựÁn]_UAT_Acceptance_Certificate.docx` | Word Document | Biên bản nghiệm thu chính thức gồm **6 mục chuẩn**: Căn cứ hợp đồng & phạm vi nghiệm thu, Danh mục sản phẩm đã bàn giao, Kết quả đánh giá UAT, Cam kết bảo hành & hỗ trợ kỹ thuật, Xác nhận giải ngân thanh toán, Khối chữ ký thẩm quyền 2 bên |
-| 2 | `[TênDựÁn]_UAT_SignOff_Workbook.xlsx` | Excel Workbook | Đủ **4 sheets**: `Acceptance_Summary`, `UAT_Criteria_Verification`, `Punch_List_Minor_Defects`, `Warranty_Scope` |
+Đối chiếu thêm với `settings.quality_gates` và exit criteria của báo cáo test UAT.
 
 ---
 
-## Cấu trúc file Excel (4 sheets)
+## Bộ hồ sơ nghiệm thu (2 file chính thức)
+
+| STT | File | Tiêu chuẩn tối thiểu |
+|---|---|---|
+| 1 | `[TênDựÁn]_UAT_Acceptance_Certificate_v1.docx` | **6 mục**: (1) Căn cứ hợp đồng & phạm vi (số SOW, mốc `M<n>`); (2) Danh mục sản phẩm đã bàn giao; (3) Kết quả đánh giá UAT (số liệu từ báo cáo test, kết quả gate, bug mở được khách chấp nhận); (4) Cam kết bảo hành & hỗ trợ (chép từ SOW / `Warranty_Scope`); (5) Xác nhận mốc thanh toán (% từ SOW, không tự đặt); (6) Khối chữ ký 2 bên (họ tên, chức danh, ngày) |
+| 2 | `[TênDựÁn]_UAT_SignOff_Workbook_v1.xlsx` | **5 sheet** bên dưới. Punch List là một sheet trong workbook, không phải file riêng |
+
+Excel theo `a1-project-init/references/excel-style.md`; tổng/tỷ lệ bằng công thức, không số cứng. Thư viện: openpyxl (kiểm `ImportError`).
+
+## Cấu trúc file Excel (5 sheets)
 
 ### Sheet 1: Acceptance_Summary
-- Cột A: STT
-- Cột B: Hạng mục nghiệm thu tổng quát (Giao diện người dùng, Cơ sở dữ liệu, API, Bảo mật, Hiệu năng)
-- Cột C: Tình trạng (Đạt / Đạt có điều kiện / Chưa đạt)
-- Cột D: Đại diện nghiệm thu phía khách hàng
-- Cột E: Ngày ký xác nhận
+Cột: STT · Hạng mục (theo SOW `In_Scope`: giao diện, API, CSDL, bảo mật, hiệu năng…) · Mốc `M<n>` · Tình trạng (`Đạt` / `Đạt có điều kiện` / `Nghiệm thu từng phần` / `Chưa đạt`) · Đại diện khách (từ `team[]` `side=client`) · Ngày ký · % thanh toán của mốc (từ SOW). Dòng tổng: % thanh toán tích lũy của các mốc `Đạt` bằng `SUMIFS`.
 
 ### Sheet 2: UAT_Criteria_Verification
-- Cột A: Mã tiêu chí (`UAT-CRIT-01` ..)
-- Cột B: Mô tả tiêu chí chấp nhận
-- Cột C: Căn cứ tài liệu & Truy vết 2 chiều (Mục SOW `SOW-SEC-xx`, Use Case SRS, và Test Case ID `UAT-TC-xx`)
-- Cột D: Bằng chứng kiểm thử (Screenshot / Log / Test case ID)
-- Cột E: Đánh giá khách hàng (Accepted / Rejected)
-- Cột F: Ghi chú phản hồi của khách hàng
-- *Cổng kiểm soát phạm vi hợp đồng (Contractual Scope Coverage Gate)*: Đảm bảo 100% điều khoản trong phạm vi (In-Scope) của SOW đều được đối soát và nghiệm thu.
+Cột: Mã `UAT-CRIT-NN` · Mô tả tiêu chí · Mốc `M<n>` · `FEAT-…` (A2) · Test ID (A8) · Bằng chứng (Test ID/kết quả C5, file ảnh/log) · Đánh giá khách (`Accepted` / `Rejected` / `Partial`) · Ghi chú phản hồi · Ngày phản hồi.
+**Cổng phạm vi hợp đồng**: mọi dòng `In_Scope` của SOW có ít nhất một `UAT-CRIT`; ô kiểm tra bằng `COUNTIF`/`COUNTIFS` (phủ 100% hay còn thiếu bao nhiêu) — thiếu ⇒ tô đỏ, không ký.
 
 ### Sheet 3: Punch_List_Minor_Defects
-- Cột A: Mã defect (`PUNCH-01` ..)
-- Cột B: Mô tả lỗi tồn đọng mức độ thấp
-- Cột C: Mức độ nghiêm trọng (Minor / Cosmetic)
-- Cột D: Ảnh hưởng đến vận hành (Không ảnh hưởng luồng chính)
-- Cột E: Kế hoạch khắc phục & Người chịu trách nhiệm (Fix Owner)
-- Cột F: Hạn hoàn thành cam kết (SLA ngày hoàn thành)
-- *Tự động xuất Backlog Bảo hành*: Tự động chuyển đổi các mục trong Sheet này thành tệp backlog có cấu trúc (`punch_list_warranty_backlog.json`) tương thích issue tracker để nạp thẳng vào chu kỳ bảo hành (Warranty Sprint Patch) đầu tiên.
+Cột: Mã `PUNCH-NN` · Mô tả · Severity (`Medium` / `Low` — Critical/High không được xuất hiện) · Ảnh hưởng vận hành · Kế hoạch khắc phục · Fix owner · Hạn (ngày) · Tham chiếu `BUG-<NNN>` (nếu có) · Trạng thái.
+**Xuất backlog bảo hành**: `python <skills_dir>/d2-uat-acceptance/scripts/punch_list_to_backlog.py <workbook.xlsx> --project "<tên>" [--append-context "<workspace_folder>"]` sinh `punch_list_warranty_backlog.json` (schema `references/backlog-schema.json`) và, khi có `--append-context`, nạp từng mục vào `known_issues[]` qua `update_context.py`. Script từ chối (exit 1) nếu thấy Critical/High hoặc trùng mã.
 
 ### Sheet 4: Warranty_Scope
-- Cột A: Thời gian bảo hành (Bắt đầu — Kết thúc)
-- Cột B: Phạm vi bảo hành miễn phí (Sửa lỗi phát sinh so với đặc tả)
-- Cột C: Trường hợp tính phí bổ sung (Yêu cầu thêm tính năng mới / thay đổi logic)
-- Cột D: Kênh tiếp nhận sự cố khẩn cấp (Hotline / Email / Ticket portal)
-- Cột E: Cam kết thời gian phản hồi theo mức độ (SLA SEV-1 đến SEV-3)
+Nguồn duy nhất: SOW. Cột: Thời hạn bảo hành (bắt đầu = ngày ký Certificate; kéo dài theo SOW) · Phạm vi miễn phí (lỗi so với đặc tả đã nghiệm thu) · Trường hợp tính phí (tính năng mới/đổi logic ⇒ quy trình Change Request) · Kênh tiếp nhận sự cố (hotline/email/ticket portal, giờ phủ) · Thời gian phản hồi và khắc phục theo severity Critical/High/Medium/Low · Điều khoản trách nhiệm đối với sản phẩm không phù hợp hợp đồng (契約不適合責任) và thời hạn thông báo — chép từ SOW/hợp đồng, nếu chưa có ghi `[CẦN ĐIỀN]` để pháp chế xác nhận.
+
+### Sheet 5: Acceptance_Log
+Cột: Lần nộp (#) · Mốc · Ngày nộp · Hạn kiểm tra (`WORKDAY(ngày nộp, số ngày theo SOW)`) · Ngày phản hồi · Kết quả (`Accepted` / `Conditional` / `Rejected` / `Không phản hồi`) · Người phản hồi · Căn cứ (mã tiêu chí bị trượt, điều khoản mặc nhiên nếu có) · Ghi chú. Quy trình chi tiết: `references/acceptance-process.md`.
+
+---
+
+## Quy trình thực hiện
+
+1. Đọc context + đầu vào; hỏi phần còn thiếu (người ký phía khách, số ngày kiểm tra nếu SOW không nêu).
+2. Chạy gate (Bước 1).
+3. Dựng `UAT_Criteria_Verification` từ SOW × A2 × A8 × C5; tính cổng phạm vi.
+4. Lập Punch List (Medium/Low), chạy `punch_list_to_backlog.py`.
+5. Lập `Warranty_Scope`, `Acceptance_Summary`, `Acceptance_Log`; sinh Certificate (6 mục).
+6. Quét ngôn ngữ/mã bước/tên nhà thầu cũ/`[CẦN ĐIỀN]` còn sót; lưu `docs/D2_uat-acceptance/`.
+7. Ghi context: `append activity_log`; khi Certificate đã ký, `patch`/`set` ngày nghiệm thu nếu người dùng yêu cầu.
 
 ---
 
@@ -99,18 +102,16 @@ Bộ hồ sơ nghiệm thu bắt buộc gồm **2 file chính thức**:
 
 **Nguồn sự thật pipeline: `<skills_dir>/a1-project-init/references/pipeline.md`** — KHÔNG vẽ lại pipeline trong response; nếu nơi khác mô tả thứ tự lệch, pipeline.md thắng.
 
-- **Bước hiện tại:** D2 — UAT Acceptance (Khách hàng nghiệm thu & ký duyệt bàn giao)
-- **Input từ:** /d1-handover-doc (hồ sơ bàn giao) · /a8-test-plan (kịch bản UAT) · /c5-test-execution (kết quả test)
-- **Output cho:** Biên bản nghiệm thu chính thức ký kết → /d3-user-guide-manual
-- **Bước kế tiếp:** /d3-user-guide-manual (Sổ tay hướng dẫn người dùng cuối và quản trị viên)
+- **Bước hiện tại:** D2 — UAT Acceptance (nghiệm thu chính thức & ký Certificate)
+- **Input từ:** D1 (hồ sơ bàn giao) · A8 (UAT Checklist) · C5 (kết quả test, `known_issues[]`) · B0 (SOW, mốc, bảo hành)
+- **Output cho:** Certificate + SignOff Workbook (khách ký) → mở mốc thanh toán/bảo hành; Punch List + `Warranty_Scope` → /d3-user-guide-manual (giới hạn đã biết, kênh hỗ trợ)
+- **Bước kế tiếp:** /d3-user-guide-manual (Sổ tay người dùng cuối và quản trị viên)
 
 **Kết thúc response:** theo quy ước chung trong `pipeline.md` (≤ 6 dòng ✅→▶; skill tạo/sửa file append `activity_log[]` bằng `update_context.py`).
 
 ---
 
 ## Self-Improvement Loop
-
-Trước khi kết thúc tác vụ, hãy tự đánh giá lại quá trình thực hiện theo 3 câu hỏi:
-1. Có bước nào thất bại, gặp lỗi hoặc phải dùng cách xử lý tạm (workaround) không?
-2. Người dùng có phải đính chính, chỉnh sửa hoặc từ chối kết quả nào đáng chú ý không?
-3. Có phát hiện thêm ngữ cảnh hay quy tắc mới nào giúp các lần chạy sau làm tốt hơn không?
+Cuối tác vụ tự trả lời 3 câu: có lỗi/workaround không? người dùng có đính chính không? có quy tắc mới giúp lần sau không? Không có gì → im lặng.
+Có phát hiện HỆ THỐNG → in `💡 Đề xuất cải thiện` (≤ 3 dòng) rồi áp dụng theo quy trình duy nhất: `a1-project-init/references/self-improvement.md`.
+Áp dụng: 1 skill/tác vụ, ≤ 40 dòng thêm, không xóa quy tắc, chạy `scripts/skill_self_update.py`; báo skill · thay đổi · commit · `git revert <hash>`.
