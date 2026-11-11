@@ -4,6 +4,18 @@
 > Nhãn phiên bản có hai loại: **phiên bản bộ** (manifest + plugin, chỉ có 3.8.0 và 3.16.0 là bản phát hành toàn bộ) và **phiên bản từng skill**
 > (3.9.0–3.14.0 chỉ xuất hiện ở một số skill trong `skills-manifest.json`). Mục nào "không có phát hành riêng" nghĩa là git log không có commit gắn nhãn đó.
 
+## 3.17.1 — 2026-11-11
+Bổ sung tài liệu chuẩn công ty lớn (Giai đoạn 2), không đổi hành vi script.
+
+### Added
+- `c4/references/threat-model.md` — STRIDE + ASVS, nối vào NFR và test bảo mật.
+- `x2/references/adr-template.md` — ADR với vòng đời Proposed → Accepted → Superseded.
+- `a4/references/api-versioning.md` — phân loại breaking change, chính sách Sunset/Deprecation.
+- `x1/references/onboarding-guide.md` — mẫu onboarding 12 mục, chạy được trong 30 phút.
+- `c8/references/cicd-spec.md` — stage, cổng theo `quality_gates`, DORA metrics.
+- `b1/references/raid-log.md` — cột RAID, quy tắc phân loại, điểm rủi ro.
+- `a2/references/nfr-spec.md` — NFR theo ISO 25010, cách kiểm, tiêu chí trước khi sang thiết kế.
+
 ## 3.17.0 — 2026-11-11
 Phiên bản bộ 3.17.0: sửa toàn bộ lỗi của đợt rà soát 2026-11-06 (168 phát hiện gốc, gộp 44 nhóm nguyên nhân). Danh sách ID nằm ở `docs/audit/2026-11-06-phase1-findings.md`.
 

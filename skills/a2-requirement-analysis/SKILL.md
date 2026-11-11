@@ -1,6 +1,6 @@
 ---
 name: a2-requirement-analysis
-version: "3.17.0"
+version: "3.17.1"
 description: >-
   Phân tích yêu cầu mơ hồ (vai BA + Solution Architect): scope draft, Q&A priority P1–P3 kèm
   tác động MD, assumptions, risks — xuất Requirement_Specification.xlsx (5 sheet: Overview/Scope/Flows/QA/Risks). Trigger: "phân tích yêu cầu",
@@ -147,6 +147,8 @@ Dùng bảng cho mục 3, 8, 9, 10.
 - Cảnh báo nếu > 3 P1 chưa trả lời: **"Đừng chạy /a6-estimate hay /a4-api-design cho đến khi có câu trả lời cho các câu P1 này — estimate sẽ sai > 40%"**
 
 ---
+
+**Tài liệu tham chiếu bổ sung:** `references/nfr-spec.md` — Đặc tả NFR theo ISO 25010 — mỗi NFR đo được và có cách kiểm.
 
 ## 🔗 Workflow Integration
 

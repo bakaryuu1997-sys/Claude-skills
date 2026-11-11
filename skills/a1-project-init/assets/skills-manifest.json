@@ -1,5 +1,5 @@
 {
-  "manifest_version": "3.17.0",
+  "manifest_version": "3.17.1",
   "updated_at": "2026-11-11",
   "pipeline_source": "a1-project-init/references/pipeline.md",
   "shared": {
@@ -27,7 +27,7 @@
     },
     {
       "name": "a2-requirement-analysis",
-      "version": "3.17.0",
+      "version": "3.17.1",
       "step": "A2",
       "phase": "prepare",
       "summary": "Phân tích yêu cầu mơ hồ: scope, Q&A P1-P3, assumptions, risks",
@@ -64,7 +64,7 @@
     },
     {
       "name": "a4-api-design",
-      "version": "3.17.0",
+      "version": "3.17.1",
       "step": "A4",
       "phase": "prepare",
       "parallel_with": "a5-db-design",
@@ -177,7 +177,7 @@
     },
     {
       "name": "b1-project-kickoff",
-      "version": "3.17.0",
+      "version": "3.17.1",
       "step": "B1",
       "phase": "kickoff",
       "gate": ">3 câu P1 mở → hoãn kickoff",
@@ -348,7 +348,7 @@
     },
     {
       "name": "x2-project-architecture",
-      "version": "3.17.0",
+      "version": "3.17.1",
       "step": "X2",
       "phase": "cross",
       "summary": "HTML self-contained trực quan hóa kiến trúc + module/API/DB + trạng thái tài liệu",
@@ -454,7 +454,7 @@
     },
     {
       "name": "x1-acquire-codebase-knowledge",
-      "version": "3.17.0",
+      "version": "3.17.1",
       "step": "X1",
       "phase": "cross",
       "summary": "Khảo sát kiến trúc repo 4 tầng (Router/Middleware/Service/ORM) bằng Serena LSP",
@@ -493,7 +493,7 @@
     },
     {
       "name": "c4-trailofbits-security-skills",
-      "version": "3.17.0",
+      "version": "3.17.1",
       "step": "C4",
       "phase": "run",
       "recurring": "per PR",
@@ -550,7 +550,7 @@
     },
     {
       "name": "c8-release-deployment",
-      "version": "3.17.0",
+      "version": "3.17.1",
       "step": "C8",
       "phase": "run",
       "recurring": "per release",
