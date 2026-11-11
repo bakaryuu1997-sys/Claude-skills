@@ -72,16 +72,16 @@ nfr = [
 APIS = [
     # (module, no, method, path, desc, auth, middleware, input, output, status, tables, errors, tests, since, notes)
     ("AUTH", 1, "POST", "/api/v1/auth/login", "社員番号とパスワードでログインし、アクセストークンを発行する。", "N", "RateLimit(5/10min)",
-     "body: employeeId(string,6桁), password(string,12文字以上)", "data: {accessToken, refreshToken, expiresIn, role}", 200,
+     "body: employeeId(string,6桁), password(string,12文字以上)", "data: {accessToken(string), refreshToken(string), expiresIn(number), role(enum: employee|manager|hr)}", 200,
      "READ: users · WRITE: auth_sessions", "400 形式不正 · 401 認証失敗 · 423 ロック中", "✓ 正常 → 200 · ✗ 誤パス → 401 · ✗ 5回失敗 → 423 · ✗ 形式不正 → 400", "v1.0", "ロック解除は人事のみ（別API）"),
     ("LEAVE", 1, "POST", "/api/v1/leave-requests", "休暇・残業の申請を作成する（下書きまたは提出）。", "Y", "Auth, RateLimit(30/min)",
-     "body: type(enum), dateFrom(date), dateTo(date), hours(number,任意), reason(string,500字以内), submit(boolean)", "data: {id, status, createdAt}", 201,
+     "body: type(enum), dateFrom(date), dateTo(date), hours(number,任意), reason(string,500字以内), submit(boolean)", "data: {id(uuid), status(enum), createdAt(datetime)}", 201,
      "WRITE: leave_requests, approval_steps", "400 入力不正 · 401 · 409 期間重複 · 422 残業の事前承認なし", "✓ 下書き → 201 · ✓ 提出 → 201 status=submitted · ✗ 期間逆転 → 400 · ✗ 重複 → 409 · ✗ 事前承認なし残業 → 422", "v1.0", "Q-02 により残業は事前承認必須"),
     ("LEAVE", 2, "GET", "/api/v1/leave-requests", "自分の申請を状態・期間で絞り込み一覧表示する。", "Y", "Auth, RateLimit(60/min)",
-     "query: status(enum,任意), from(date,任意), to(date,任意), page(int≥1), pageSize(int 1–100)", "data: {items[], total}", 200,
+     "query: status(enum,任意), from(date,任意), to(date,任意), page(int≥1), pageSize(int 1–100)", "data: {items(array), total(number)}", 200,
      "READ: leave_requests", "400 クエリ不正 · 401", "✓ 既定 → 200 · ✓ 絞込 → 200 · ✗ pageSize=101 → 400 · ✗ 未認証 → 401", "v1.0", "既定の並びは申請日降順（Q-07）"),
     ("LEAVE", 3, "GET", "/api/v1/leave-requests/{id}", "申請の詳細と承認履歴を返す。本人または承認者のみ。", "Y", "Auth, Ownership",
-     "params: id(uuid)", "data: {id, type, dateFrom, dateTo, hours, reason, status, steps[]}", 200,
+     "params: id(uuid)", "data: {id(uuid), type(enum), dateFrom(date), dateTo(date), hours(number), reason(string), status(enum), steps(array)}", 200,
      "READ: leave_requests, approval_steps, users", "401 · 403 他人の申請 · 404 不存在", "✓ 本人 → 200 · ✓ 承認者 → 200 · ✗ 他人 → 403 · ✗ 存在しないID → 404", "v1.0", "NFR-SEC-02"),
     ("APPR", 1, "POST", "/api/v1/leave-requests/{id}/approve", "承認者が申請を承認する。承認済みは監査ログに記録。", "Y", "Auth, Role(manager), Ownership(approver)",
      "params: id(uuid); body: comment(string,任意)", "data: {id, status}", 200,
@@ -90,13 +90,13 @@ APIS = [
      "params: id(uuid); body: reason(string,1–500字)", "data: {id, status}", 200,
      "WRITE: approval_steps, leave_requests, audit_logs", "400 理由なし · 401 · 403 · 409", "✓ 差戻し → 200 · ✗ 理由なし → 400 · ✗ 権限なし → 403", "v1.0", ""),
     ("APPR", 3, "PUT", "/api/v1/approver-delegations", "代理承認者を期限付きで設定する（上限30日）。", "Y", "Auth, Role(manager), RateLimit(10/min)",
-     "body: delegateId(uuid), validFrom(date), validTo(date)", "data: {id, delegateId, validFrom, validTo}", 200,
+     "body: delegateId(uuid), validFrom(date), validTo(date)", "data: {id(uuid), delegateId(uuid), validFrom(date), validTo(date)}", 200,
      "WRITE: approver_delegations, audit_logs", "400 期間が31日以上 · 401 · 403 · 404 代理者不存在", "✓ 設定 → 200 · ✗ 31日 → 400 · ✗ 過去日 → 400 · ✗ 役割外 → 403", "v1.0", "Q-01: 最長30日"),
     ("REPORT", 1, "GET", "/api/v1/reports/monthly-attendance.csv", "部門と月を指定し、承認済み申請を集計したCSVを返す。", "Y", "Auth, Role(hr), RateLimit(5/min)",
      "query: departmentId(uuid), yearMonth(YYYY-MM)", "text/csv (Shift_JIS, CRLF)", 200,
      "READ: leave_requests, users, departments", "400 年月不正 · 401 · 403 · 404 部門なし", "✓ 集計 → 200 CSV · ✗ 年月 2027-13 → 400 · ✗ 人事以外 → 403", "v1.0", "Q-04 は未決（文字コード・列順）"),
     ("AUTH", 2, "POST", "/api/v1/auth/refresh", "refreshトークンでアクセストークンを再発行する。", "N", "RateLimit(20/min)",
-     "body: refreshToken(string)", "data: {accessToken, expiresIn}", 200,
+     "body: refreshToken(string)", "data: {accessToken(string), expiresIn(number)}", 200,
      "READ: auth_sessions · WRITE: auth_sessions", "401 無効・期限切れ", "✓ 有効 → 200 · ✗ 失効済み → 401", "v1.0", "refreshは1回使い切り（ローテーション）"),
 ]
 
@@ -259,6 +259,10 @@ TASKS = [
     ("REPORT", "CSV出力画面", "FE", 0.25, 0.25, 1, 0.5, 0.25),
     ("ALL", "DB設計・migration・シード", "BE", 0.5, 1.5, 2, 0.5, 0.5),
     ("ALL", "CI/CD・Docker・監視の初期構築", "BE", 0, 0.5, 3, 0, 0.5),
+    ("ALL", "UAT対応（指摘の修正・再試験の支援）", "BE", 0, 0.5, 8, 1, 0),
+    ("ALL", "リリース準備（移行手順・本番設定・リハーサル）", "BE", 0, 1, 5, 0, 2),
+    ("ALL", "UAT・リリース判定の運営（顧客会議・議事）", "PM", 0, 0, 0, 0, 0),
+    ("ALL", "リリース後の一次対応（2週間・ハイパーケア）", "QA", 0, 0, 0, 1, 4),
     ("ALL", "結合試験（QA主担当）", "QA", 0, 0, 0, 0, 0),
 ]
 QA_TASKS = [

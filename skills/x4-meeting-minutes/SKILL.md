@@ -1,6 +1,6 @@
 ---
 name: x4-meeting-minutes
-version: "3.17.0"
+version: "3.17.4"
 description: >-
   Chuyển notes/transcript cuộc họp thành biên bản chuẩn (Minutes.docx ký duyệt + Minutes.xlsx 4 sheet
   tác nghiệp + bản md gửi nhanh) với quyết định đánh số, action items có owner/deadline, câu hỏi mở — tự đổ
@@ -99,6 +99,10 @@ Sau khi tạo biên bản, tự động rà và thực hiện:
 | Action items | Nhắc đưa vào sprint backlog; action từ retro → tracker của /c6-sprint-review |
 
 ---
+
+**Dựng file Excel — BẮT BUỘC dùng bộ chung** (không tự định nghĩa style): viết spec JSON (đầu file `a1-project-init/scripts/xlsx_build.py`) → `python <skills_dir>/a1-project-init/scripts/xlsx_build.py spec.json <out>.xlsx` → kiểm `python <skills_dir>/a1-project-init/scripts/xlsx_verify.py <out>.xlsx --client-facing` (phải ĐẠT, 0 FAIL).
+
+**Dựng file Word — BẮT BUỘC dùng bộ chung:** spec JSON (đầu file `a1-project-init/scripts/docx_build.py`) → `python <skills_dir>/a1-project-init/scripts/docx_build.py spec.json <out>.docx`. Font ja = Yu Gothic (đã đặt eastAsia).
 
 ## 🔗 Workflow Integration
 

@@ -4,6 +4,29 @@
 > Nhãn phiên bản có hai loại: **phiên bản bộ** (manifest + plugin, chỉ có 3.8.0 và 3.16.0 là bản phát hành toàn bộ) và **phiên bản từng skill**
 > (3.9.0–3.14.0 chỉ xuất hiện ở một số skill trong `skills-manifest.json`). Mục nào "không có phát hành riêng" nghĩa là git log không có commit gắn nhãn đó.
 
+## 3.17.4 — 2026-11-12
+Mở rộng chuỗi E2E sang B0, B1, D1–D3, X1–X7 và các khoảng trống còn lại.
+
+### Added
+- B0: Đề xuất kỹ thuật (docx), SOW 16 điều (docx), SOW_Scope_Matrix (xlsx: In/Out Scope, mốc & % thanh toán = 100%, phụ thuộc phía khách).
+- B1: Deck kickoff (pptx 9 slide, số liệu có nguồn), Project Charter (docx), Kickoff Workbook (RACI có kiểm 1 chữ A, RAID, Truyền thông, DoR/DoD, Action Items), mẫu biên bản.
+- D1: Handover (docx, 12 mục + phụ lục postmortem), Handover_Workbook (Runbook_Matrix INC-01..06, SLO, Known_Issues), Runbook.md.
+- D2: Chứng thư nghiệm thu (docx), UAT_SignOff_Workbook (sheet Punch_List_Minor_Defects), backlog JSON qua punch_list_to_backlog.py.
+- D3: Hướng dẫn người dùng, hướng dẫn quản trị (docx), Quick Start (md).
+- X1 onboarding (md), X2 kiến trúc (html, không CDN), X3 snapshot tiến độ (md, từ compute_status), X4 biên bản (docx + xlsx 4 sheet có lưới), X5 tiêu chuẩn kỹ thuật (md), X7 deck tiến độ (pptx).
+- A4: sheet API詳細 (tham số, body, header, phản hồi kèm kiểu).
+- C5–C8: báo cáo chuyển sang docx; báo cáo CR-001 bản tiếng Nhật cho khách.
+- xlsx_build: tùy chọn "gridlines" (X4 yêu cầu lưới).
+
+### Changed
+- Kế hoạch mẫu có thêm công việc UAT và chuẩn bị release → 5 sprint (không còn M5/M6 trùng sprint cuối).
+- B0, B1, D1, D2, D3, X4, X5 gắn bộ dựng dùng chung (bắt buộc).
+
+### Fixed
+- Ma trận RACI có dòng không có chữ A (phát hiện bởi kiểm 検算); đã sửa.
+- Slide tiến độ ghi số case sai (38 thay vì số thực tế).
+- Tài liệu API: kiểu dữ liệu phản hồi trống.
+
 ## 3.17.3 — 2026-11-12
 Kiểm thử end-to-end trên một dự án mẫu (勤怠承認システム, hư cấu) và nâng cấp đầu ra.
 

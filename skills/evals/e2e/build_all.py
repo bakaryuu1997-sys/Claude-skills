@@ -146,6 +146,8 @@ for mod, rows in apis_by_mod.items():
                   "mw": r[6], "inp": r[7], "out": r[8], "st": r[9], "tbl": r[10], "err": r[11], "tc": r[12], "since": r[13], "note": r[14]}
                  for r in rows],
     })
+import phase2_ops  # noqa: E402
+api_sheets.append(phase2_ops.api_detail_for_build(S.APIS))
 save_xlsx({"title": "API Design", "language": "ja", "sheets": api_sheets}, "A4_api-design", f"{P}_API_Design.xlsx")
 
 # api_spec.json (nguồn cho gen_postman / gen_openapi) — path tương đối với base_url
@@ -949,3 +951,10 @@ b3_out = dbuild({"language": "ja", "title": "詳細設計書", "subtitle": S.ctx
                 DOCS / "B3_detail-design" / f"{P}_Detail_Design_v1.docx")
 print("docx B3 →", b3_out)
 
+
+# ================================================================ Giai đoạn 2 (B0, B1, X1, X4)
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import phase2_business  # noqa: E402
+_p2 = phase2_business.run(S, DOCS, REPO, P, sh)
+print("phase2 business:", _p2)
+print("phase2 ops:", phase2_ops.run(S, DOCS, REPO, P, sh))

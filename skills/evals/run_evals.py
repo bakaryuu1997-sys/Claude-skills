@@ -470,6 +470,33 @@ def t17():
     assert (docs / "B2_basic-design").exists() and any((docs / "B2_basic-design").glob("*.docx"))
     assert any((docs / "B3_detail-design").glob("*.docx")), "thiếu tài liệu B3 (docx)"
     assert any((docs / "A9_project-timeline").glob("*.xlsx")), "thiếu lịch dự án (A9 xlsx)"
+    # Giai đoạn 2: B0/B1/D/X — mỗi loại phải có file đúng định dạng
+    need = {"B0_proposal-sow": ["*Statement_Of_Work.docx", "*Technical_Proposal*.docx", "*SOW_Scope_Matrix.xlsx"],
+            "B1_project-kickoff": ["*Kickoff_Deck.pptx", "*Project_Charter.docx", "*Kickoff_Workbook.xlsx", "*Meeting_Minutes_Template.docx"],
+            "D1_handover-doc": ["*Handover.docx", "*Handover_Workbook.xlsx", "*Runbook.md"],
+            "D2_uat-acceptance": ["*UAT_Acceptance_Certificate.docx", "*UAT_SignOff_Workbook.xlsx", "punch_list_warranty_backlog.json"],
+            "D3_user-guide-manual": ["*User_Manual_EndUser.docx", "*Admin_Guide.docx", "*Quick_Start_Guide.md"],
+            "X1_acquire-codebase-knowledge": ["*Onboarding_Guide.md"], "X2_project-architecture": ["*.html"],
+            "X3_project-status": ["*Status_Snapshot.md"], "X4_meeting-minutes": ["*Minutes*.docx", "*Minutes*.xlsx"],
+            "X5_coding-standards": ["*ENGINEERING_STANDARDS.md"], "X7_presentation-deck": ["*Progress_Deck*.pptx"]}
+    for folder, pats in need.items():
+        for pat in pats:
+            assert list((docs / folder).glob(pat)), f"thiếu {folder}/{pat}"
+    # API詳細 phải có trong API design
+    from openpyxl import load_workbook as _lw
+    _ws = _lw(next((docs / "A4_api-design").glob("*API_Design.xlsx")))
+    assert "API詳細" in _ws.sheetnames, "thiếu sheet API詳細"
+    # Ma trận RACI: mỗi dòng đúng 1 chữ A (kiểm bằng công thức cột 検算)
+    _raci = _lw(next((docs / "B1_project-kickoff").glob("*Kickoff_Workbook.xlsx")))["RACI"]
+    for _r in range(4, _raci.max_row + 1):
+        _row = [_raci.cell(row=_r, column=_c).value for _c in range(2, 9)]
+        if any(_row):
+            assert _row.count("A") == 1, f"RACI dòng {_r}: phải có đúng 1 chữ A, thấy {_row.count('A')}"
+    # Báo cáo CR gửi khách phải là tiếng Nhật (không có nhãn tiếng Việt của script)
+    _cr = next((docs / "C7_change-request").glob("*CR-001_Change_Request_JA.docx"))
+    from docx import Document as _D
+    _txt = " ".join(x.text for x in _D(str(_cr)).paragraphs)
+    assert "Sprint delay" not in _txt and "tối thiểu" not in _txt, "CR gửi khách còn tiếng Việt"
 
 
 

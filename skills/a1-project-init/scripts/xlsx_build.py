@@ -26,7 +26,8 @@ Spec JSON:
       "section_rows": {"5": "Nhóm: API"},                      // (tùy chọn) dòng tiêu đề nhóm, chỉ số dòng dữ liệu (0-based)
       "freeze": "auto",                                        // "auto" = ngay dưới header; hoặc ô cụ thể
       "autofilter": true,
-      "landscape": true
+      "landscape": true,
+      "gridlines": false                                       // true khi skill yêu cầu hiện lưới (ví dụ X4)
     }
   ]
 }
@@ -215,7 +216,7 @@ def _build_sheet(wb: Workbook, spec: dict, language: str, idx: int):
     ws.freeze_panes = f"A{hdr_row + 1}" if freeze == "auto" else freeze
     if spec.get("autofilter", True) and last_data_row > hdr_row:
         ws.auto_filter.ref = f"A{hdr_row}:{last}{last_data_row}"
-    ws.sheet_view.showGridLines = False
+    ws.sheet_view.showGridLines = bool(spec.get("gridlines", False))  # X4 yêu cầu lưới: đặt "gridlines": true trong spec
     ws.page_setup.orientation = "landscape" if spec.get("landscape", True) else "portrait"
     ws.page_setup.fitToWidth = 1
     ws.page_setup.fitToHeight = 0

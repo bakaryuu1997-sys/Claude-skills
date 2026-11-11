@@ -1,5 +1,5 @@
 {
-  "manifest_version": "3.17.3",
+  "manifest_version": "3.17.4",
   "updated_at": "2026-11-12",
   "pipeline_source": "a1-project-init/references/pipeline.md",
   "shared": {
@@ -11,7 +11,7 @@
   "skills": [
     {
       "name": "a1-project-init",
-      "version": "3.17.3",
+      "version": "3.17.4",
       "step": "A1",
       "phase": "prepare",
       "summary": "Tạo project-context.json — nguồn sự thật chung",
@@ -177,7 +177,7 @@
     },
     {
       "name": "b1-project-kickoff",
-      "version": "3.17.1",
+      "version": "3.17.4",
       "step": "B1",
       "phase": "kickoff",
       "gate": ">3 câu P1 mở → hoãn kickoff",
@@ -315,7 +315,7 @@
     },
     {
       "name": "d1-handover-doc",
-      "version": "3.17.0",
+      "version": "3.17.4",
       "step": "D1",
       "phase": "close",
       "summary": "Tài liệu bàn giao 12 mục Docx + Workbook Excel 7 sheet + Runbook",
@@ -435,7 +435,7 @@
     },
     {
       "name": "x4-meeting-minutes",
-      "version": "3.17.0",
+      "version": "3.17.4",
       "step": "X4",
       "phase": "cross",
       "summary": "Biên bản họp Docx + Workbook Excel 4 sheet + md, đổ ngược Q&A/scope vào pipeline",
@@ -512,7 +512,7 @@
     },
     {
       "name": "x5-coding-standards",
-      "version": "3.17.0",
+      "version": "3.17.4",
       "step": "X5",
       "phase": "cross",
       "summary": "Hiến pháp kỹ thuật nội bộ: strict TS, Git Conventional Commits, PR 7 mục & Self-Improvement Loop",
@@ -529,7 +529,7 @@
     },
     {
       "name": "b0-proposal-sow",
-      "version": "3.17.0",
+      "version": "3.17.4",
       "step": "B0",
       "phase": "kickoff",
       "summary": "Biên soạn Proposal kỹ thuật & SOW (Statement of Work) chốt hợp đồng",
@@ -572,7 +572,7 @@
     },
     {
       "name": "d2-uat-acceptance",
-      "version": "3.17.0",
+      "version": "3.17.4",
       "step": "D2",
       "phase": "close",
       "summary": "Nghiệm thu UAT với khách hàng, biên bản bàn giao tính năng ký duyệt (Sign-Off)",
@@ -592,7 +592,7 @@
     },
     {
       "name": "d3-user-guide-manual",
-      "version": "3.17.0",
+      "version": "3.17.4",
       "step": "D3",
       "phase": "close",
       "summary": "Sổ tay hướng dẫn sử dụng (User Manual) và Admin Guide chuyên nghiệp kèm FAQ",

@@ -1,6 +1,6 @@
 ---
 name: d3-user-guide-manual
-version: "3.17.0"
+version: "3.17.4"
 description: >-
   Biên soạn User Manual (người dùng cuối), Admin Guide và Quick Start: thao tác từng bước kèm UI Cue và
   ảnh chụp màn hình (đã che dữ liệu nhạy cảm), FAQ bắt buộc, lịch sử thay đổi, cây quyết định xử lý sự cố
@@ -64,6 +64,8 @@ Khung nội dung từng tài liệu: **`references/manual-templates.md`**. Cây 
 5. Lưu `docs/D3_user-guide-manual/`; `append activity_log` bằng `update_context.py`.
 
 ---
+
+**Dựng file Word — BẮT BUỘC dùng bộ chung:** spec JSON (đầu file `a1-project-init/scripts/docx_build.py`) → `python <skills_dir>/a1-project-init/scripts/docx_build.py spec.json <out>.docx`. Font ja = Yu Gothic (đã đặt eastAsia).
 
 ## 🔗 Workflow Integration
 

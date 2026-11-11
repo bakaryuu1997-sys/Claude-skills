@@ -1,6 +1,6 @@
 ---
 name: d2-uat-acceptance
-version: "3.17.0"
+version: "3.17.4"
 description: >-
   Nghiệm thu chính thức (検収) với khách hàng: quy trình nghiệm thu (thời hạn kiểm tra, từ chối/tái nghiệm thu,
   từng phần, mặc nhiên nếu SOW cho phép), truy vết SOW-UAT, Acceptance Certificate/検収書, Punch List, phạm vi
@@ -97,6 +97,10 @@ Cột: Lần nộp (#) · Mốc · Ngày nộp · Hạn kiểm tra (`WORKDAY(ng�
 7. Ghi context: `append activity_log`; khi Certificate đã ký, `patch`/`set` ngày nghiệm thu nếu người dùng yêu cầu.
 
 ---
+
+**Dựng file Excel — BẮT BUỘC dùng bộ chung** (không tự định nghĩa style): viết spec JSON (đầu file `a1-project-init/scripts/xlsx_build.py`) → `python <skills_dir>/a1-project-init/scripts/xlsx_build.py spec.json <out>.xlsx` → kiểm `python <skills_dir>/a1-project-init/scripts/xlsx_verify.py <out>.xlsx --client-facing` (phải ĐẠT, 0 FAIL).
+
+**Dựng file Word — BẮT BUỘC dùng bộ chung:** spec JSON (đầu file `a1-project-init/scripts/docx_build.py`) → `python <skills_dir>/a1-project-init/scripts/docx_build.py spec.json <out>.docx`. Font ja = Yu Gothic (đã đặt eastAsia).
 
 ## 🔗 Workflow Integration
 
