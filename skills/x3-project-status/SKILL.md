@@ -1,6 +1,6 @@
 ---
 name: x3-project-status
-version: "3.8.0"
+version: "3.17.0"
 description: >-
   Dashboard hiện trạng dự án NGAY TRONG CHAT (không tạo file): đang ở bước nào trong pipeline,
   tài liệu nào có/thiếu/lỗi thời, gate nào đang chặn, velocity & go-live projection, bước kế tiếp
@@ -36,7 +36,7 @@ Trả lời 4 câu hỏi của PM trong MỘT lần chạy, **ngay trong chat, k
 Chạy script chung — logic quét/staleness/gate nằm MỘT chỗ, dùng chung với /x2-project-architecture (KHÔNG tự quét lại bằng tay):
 
 ```bash
-python3 <skills_dir>/a1-project-init/scripts/compute_status.py "<workspace_folder>" <skills_dir>
+python <skills_dir>/a1-project-init/scripts/compute_status.py "<workspace_folder>" <skills_dir>
 ```
 
 Script trả JSON: `documents[]` (skill, step, files, status: present/stale/missing + stale_because), `gates` (P1 mở / bug Critical / CR pending — từ check_gate.py), `progress` (sprint, go-live, activity_log). Render đúng format bên dưới TỪ JSON này.
@@ -91,15 +91,6 @@ Skill này KHÔNG ghi gì vào context (đọc-only) và KHÔNG tạo file.
 ---
 
 ## Self-Improvement Loop
-
-Trước khi kết thúc tác vụ, hãy tự đánh giá lại quá trình thực hiện theo 3 câu hỏi:
-1. Có bước nào thất bại, gặp lỗi hoặc phải dùng cách xử lý tạm (workaround) không?
-2. Người dùng có phải đính chính, chỉnh sửa hoặc từ chối kết quả nào đáng chú ý không?
-3. Có phát hiện thêm ngữ cảnh hay quy tắc mới nào giúp các lần chạy sau làm tốt hơn không?
-
-Nếu có thay đổi thực sự giá trị, hãy đề xuất 1–2 điểm ngắn gọn để cập nhật vào skill này và chờ người dùng duyệt. Không tự ý sửa file nếu chưa có xác nhận.
-
-**Hai lưu ý quan trọng khi áp dụng:**
-- **Bắt buộc phải có bước xác nhận:** Luôn chặn quyền tự ý ghi đè file của AI. Bạn phải là người gật đầu duyệt đề xuất để tránh việc AI tự tiện làm loãng hoặc làm hỏng bộ quy tắc ban đầu.
-- **Chỉ cập nhật lỗi quy trình, bỏ qua lỗi tức thời:** Lọc kỹ xem phản hồi của bạn ở lần chạy đó là sở thích nhất thời cho một đầu việc cá biệt hay là tiêu chuẩn chung cần chuẩn hóa. Chỉ đưa vào skill những thứ mang tính hệ thống để tránh phình dung lượng prompt không cần thiết.
-
+Cuối tác vụ tự trả lời 3 câu: có lỗi/workaround không? người dùng có đính chính không? có quy tắc mới giúp lần sau không? Không có gì → im lặng.
+Có phát hiện HỆ THỐNG → in `💡 Đề xuất cải thiện` (≤ 3 dòng) rồi áp dụng theo quy trình duy nhất: `a1-project-init/references/self-improvement.md`.
+Áp dụng: 1 skill/tác vụ, ≤ 40 dòng thêm, không xóa quy tắc, chạy `scripts/skill_self_update.py`; báo skill · thay đổi · commit · `git revert <hash>`.

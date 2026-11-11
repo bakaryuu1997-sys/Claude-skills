@@ -22,12 +22,18 @@ import re
 import sys
 import io
 import tempfile
+import os as _os
+sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))  # cho phép chạy với python -I
 from datetime import datetime
 from pathlib import Path
 from core import search, DATA_DIR
 from reasoning_contract import apply_decision_rules, parse_decision_rules
 
 # Force UTF-8 for stdout/stderr to handle emojis/box-drawing chars on Windows (cp1252 default)
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 if sys.stderr.encoding and sys.stderr.encoding.lower() != 'utf-8':

@@ -1,59 +1,62 @@
-import json
-from pathlib import Path
-import re
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""gen_menu_table.py — bảng menu sinh từ manifest + frontmatter các skill ngoài manifest (v3.17).
+Nhãn giai đoạn lấy từ pipeline.md, khoảng bước (A1 → A9, C0 → C8…) tính từ manifest — không hardcode.
+Usage: python gen_menu_table.py [skills_dir]"""
 import sys
+from pathlib import Path
 
-if hasattr(sys.stdout, "reconfigure"):
-  sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-if hasattr(sys.stderr, "reconfigure"):
-  sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import menu_common as mc  # noqa: E402
 
-root = (
-    Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[2]
-)
-manifest_path = root / "a1-project-init" / "assets" / "skills-manifest.json"
-if not manifest_path.exists():
-  manifest_path = root / "project-init" / "assets" / "skills-manifest.json"
+mc.setup_utf8()
 
-if not manifest_path.exists():
-  print(f"❌ Không tìm thấy manifest tại: {manifest_path}")
-  sys.exit(1)
+skills_dir = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[2]
+try:
+    entries, manifest = mc.load_entries(skills_dir)
+except FileNotFoundError as e:
+    print(f"❌ {e}")
+    sys.exit(1)
 
-manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-
-
-def step_key(entry):
-  step = entry.get("step", "-")
-  if step == "-":
-    return (99, 99, "Z")
-  prefix = step[0]
-  num_part = re.sub(r"\D", "", step)
-  num = int(num_part) if num_part else 0
-  phase_order = {"A": 1, "B": 2, "C": 3, "D": 4, "X": 5}
-  return (phase_order.get(prefix, 90), num, step)
+labels = mc.phase_labels(skills_dir, entries)
+pipeline = [e for e in entries if not e["extra"]]
+extras = [e for e in entries if e["extra"]]
 
 
-sorted_skills = sorted(manifest.get("skills", []), key=step_key)
+def group_of(e):
+    if e.get("phase") == "meta" or e.get("step", "-") == "-":
+        return "-"
+    return e["step"][0]
 
-phase_names = {
-    "A": "📦 GIAI ĐOẠN A — CHUẨN BỊ & THIẾT KẾ (A1 → A9)",
-    "B": "🚀 GIAI ĐOẠN B — KHỞI ĐỘNG & ĐẶC TẢ CHI TIẾT (B0 → B3)",
-    "C": "🔄 GIAI ĐOẠN C — VẬN HÀNH, PHÁT TRIỂN & KIỂM THỬ (C1 → C8)",
-    "D": "🏁 GIAI ĐOẠN D — KẾT THÚC & BÀN GIAO (D1 → D3)",
-    "X": "🛠️ GIAI ĐOẠN X — CROSS-CUTTING & KIẾN TRÚC (X1 → X7)",
-    "-": "🧭 META — ĐIỀU HƯỚNG & KIỂM ĐỊNH (menu, x6-skill-doctor)",
-}
 
-current_prefix = None
-for s in sorted_skills:
-  step = s.get("step", "-")
-  prefix = step[0] if step != "-" else "-"
-  if prefix != current_prefix:
-    current_prefix = prefix
-    print(f"\n### {phase_names.get(prefix, prefix)}")
-    print("| Bước | Lệnh | Tóm tắt | Đầu ra chính |")
-    print("|---|---|---|---|")
-  outs = ", ".join(s.get("outputs", [])) or "—"
-  print(f"| **{step}** | `/{s['name']}` | {s.get('summary')} | {outs} |")
+def row(e):
+    outs = ", ".join(e.get("outputs", [])) or "—"
+    step = e.get("step", "-")
+    opt = " *(tùy chọn)*" if e.get("optional") else ""
+    return f"| **{step}** | `/{e['name']}`{opt} | {e.get('summary', '')} | {outs} |"
 
-print(f"\nTổng: {len(sorted_skills)} skill trong hệ thống")
+
+HEAD = ["| Bước | Lệnh | Tóm tắt | Đầu ra chính |", "|---|---|---|---|"]
+groups = {}
+for e in sorted(pipeline, key=lambda x: mc.step_key(x.get("step", "-"))):
+    groups.setdefault(group_of(e), []).append(e)
+
+for g in sorted(k for k in groups if k != "-"):
+    print(f"\n### {labels.get(g, 'GIAI ĐOẠN ' + g)}")
+    print("\n".join(HEAD))
+    for e in groups[g]:
+        print(row(e))
+if "-" in groups:
+    names = ", ".join(e["name"] for e in groups["-"])
+    print(f"\n### META — ĐIỀU HƯỚNG & KIỂM ĐỊNH ({names})")
+    print("\n".join(HEAD))
+    for e in groups["-"]:
+        print(row(e))
+if extras:
+    print("\n### BỔ TRỢ — NGOÀI PIPELINE (dùng độc lập, không có bước)")
+    print("| Lệnh | Tóm tắt | Đầu ra chính |")
+    print("|---|---|---|")
+    for e in extras:
+        print(f"| `/{e['name']}` | {e.get('summary', '')} | {', '.join(e.get('outputs', [])) or '—'} |")
+
+print(f"\nTổng: {len(entries)} skill ({len(pipeline)} trong pipeline + {len(extras)} bổ trợ ngoài manifest)")

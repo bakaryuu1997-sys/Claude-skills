@@ -1,0 +1,39 @@
+{
+  "title": "[MINH HỌA] Tên dự án",
+  "subtitle": "[MINH HỌA] Khách hàng · ngày",
+  "slides": [
+    {
+      "type": "bullets",
+      "title": "Phạm vi",
+      "points": [
+        "Đặt món và thanh toán",
+        "Quản lý đơn hàng",
+        "Báo cáo doanh thu"
+      ],
+      "source": "Demo_Requirement_Specification_v1.xlsx"
+    },
+    {
+      "type": "metrics",
+      "title": "Quy mô (minh họa)",
+      "metrics": [
+        {
+          "value": "2",
+          "label": "module API",
+          "source": "Demo_API_Design_v1.xlsx › Overview"
+        },
+        {
+          "value": "1",
+          "label": "bảng dữ liệu",
+          "source": "Demo_DB_Design_v1.xlsx"
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "title": "Ảnh",
+      "image": "missing.png",
+      "caption": "Chú thích",
+      "source": "screenshot"
+    }
+  ]
+}

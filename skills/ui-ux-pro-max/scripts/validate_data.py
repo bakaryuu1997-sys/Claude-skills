@@ -22,12 +22,18 @@ import hashlib
 import json
 import math
 import re
-import statistics
 import sys
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+import statistics
 from datetime import date
 from pathlib import Path
 from urllib.parse import parse_qs, quote_plus, urlsplit
 
+import os as _os
+sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))  # cho phép chạy với python -I
 from core import (CSV_CONFIG, STACK_CONFIG, STACK_CURRENT_APPLICABILITY,
                   _STACK_COLS, DATA_DIR)
 from reasoning_contract import parse_decision_rules

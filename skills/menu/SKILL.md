@@ -1,6 +1,6 @@
 ---
 name: menu
-version: "3.8.0"
+version: "3.17.0"
 description: >-
   Menu điều hướng toàn bộ skill — sinh ĐỘNG từ skills-manifest.json + frontmatter thực tế
   (không hardcode, không bao giờ lỗi thời). Trigger: "/menu", "menu", "có những skill gì",
@@ -9,70 +9,65 @@ description: >-
 
 # Menu — Master Navigation (sinh động, không hardcode)
 
-Khi skill này được kích hoạt, hiển thị menu **ngay trong chat** (không tạo file). Danh sách skill SINH TỰ ĐỘNG mỗi lần chạy từ script + manifest. Decision tree cũng sinh từ manifest (`intents[]` + `match_intent.py`) — trong file này KHÔNG còn nội dung hardcode nào.
+Khi skill này được kích hoạt, hiển thị menu **ngay trong chat** (không tạo file). Danh sách skill, nhãn giai đoạn và khoảng bước (A1 → A9, C0 → C8…) SINH TỰ ĐỘNG mỗi lần chạy từ manifest + `pipeline.md` + frontmatter — trong file này KHÔNG có nội dung hardcode.
+
+## Nguồn dữ liệu
+
+| Nguồn | Dùng cho |
+|---|---|
+| `a1-project-init/assets/skills-manifest.json` | skill trong pipeline: bước, phase, summary, outputs, `intents[]` |
+| `a1-project-init/references/pipeline.md` | tiêu đề các GIAI ĐOẠN (dòng `GIAI ĐOẠN X — …`) |
+| folder skill NGOÀI manifest (vd `ui-ux-pro-max`, `product-teardown`) | "Skill bổ trợ": tên + description lấy từ frontmatter |
+| `menu/assets/extras.json` | summary/outputs/intents cho skill bổ trợ (khai khi thêm skill ngoài manifest) |
+| `menu/assets/intent_aliases.json` | cụm từ tiếng Việt bổ sung cho bất kỳ skill nào (không cần sửa manifest) |
 
 ## Quy trình hiển thị (4 bước)
 
 ### 1. Lấy danh sách skill THỰC TẾ
 
 ```bash
-# Bảng tổng quan sinh từ frontmatter của mọi skill folder đang tồn tại:
-python3 <skills_dir>/menu/scripts/gen_menu_table.py <skills_dir>
+# Bảng tổng quan: pipeline theo giai đoạn + META + skill bổ trợ ngoài manifest:
+python <skills_dir>/menu/scripts/gen_menu_table.py <skills_dir>
 
-# Kiểm tra đồng bộ (skill nào có folder mà thiếu mô tả, hoặc ngược lại):
-python3 <skills_dir>/menu/scripts/check_menu_sync.py <skills_dir>
+# Kiểm tra đồng bộ (folder ↔ manifest, skill bổ trợ có description, assets không trỏ skill ma):
+python <skills_dir>/menu/scripts/check_menu_sync.py <skills_dir>
 ```
 
-Đọc thêm `<skills_dir>/a1-project-init/assets/skills-manifest.json` để lấy bước pipeline (A1–D3), phase, gate của từng skill.
+### 2. Trình bày theo giai đoạn vòng đời
 
-### 2. Trình bày theo các giai đoạn vòng đời (thứ tự từ `a1-project-init/references/pipeline.md`)
-
-```
-📦 GIAI ĐOẠN A — CHUẨN BỊ & THIẾT KẾ     (A1 → A9, chạy một lần)
-🚀 GIAI ĐOẠN B — KHỞI ĐỘNG & ĐẶC TẢ      (B0 → B3, sau khi ký hợp đồng)
-🔄 GIAI ĐOẠN C — VẬN HÀNH & PHÁT TRIỂN   (C1 → C8, lặp lại mỗi task/PR/sprint)
-🏁 GIAI ĐOẠN D — KẾT THÚC & BÀN GIAO     (D1 → D3, sau go-live)
-🛠️ GIAI ĐOẠN X — CROSS-CUTTING          (X1 → X7, chạy bất kỳ lúc nào)
-🧭 META — ĐIỀU HƯỚNG & KIỂM ĐỊNH         (/menu, /x6-skill-doctor)
-```
-
-Mỗi skill hiển thị 3 dòng: `Bước + /tên-lệnh` · "Dùng khi" (1 câu, lấy từ description) · 1 ví dụ gõ được ngay (tự sinh ví dụ ngắn phù hợp description — KHÔNG bịa tham số phức tạp).
+Dùng đúng thứ tự và nhãn script in ra (A → B → C → D → X → META → BỔ TRỢ). Mỗi skill hiển thị 3 dòng: `Bước + /tên-lệnh` · "Dùng khi" (1 câu từ summary/description) · 1 ví dụ gõ được ngay (KHÔNG bịa tham số phức tạp). Skill `optional` ghi "tùy chọn".
 
 ### 3. Plugin ngoài bộ (Figma, Engineering, Product Management…)
 
-**CHỈ liệt kê plugin/skill đang thật sự tồn tại trong môi trường hiện tại** — kiểm tra danh sách available skills trước khi in. KHÔNG in từ trí nhớ, KHÔNG liệt kê plugin đã gỡ (in lệnh chết = người dùng gõ theo sẽ thất bại). Nếu người dùng hỏi về loại plugin chưa cài → gợi ý tìm qua marketplace thay vì giả vờ nó có sẵn.
+**CHỈ liệt kê plugin/skill đang thật sự tồn tại trong môi trường hiện tại** — kiểm tra danh sách available skills trước khi in. KHÔNG in từ trí nhớ, KHÔNG liệt kê plugin đã gỡ (in lệnh chết = người dùng gõ theo sẽ thất bại). Người dùng hỏi về loại plugin chưa cài → gợi ý tìm qua marketplace thay vì giả vờ nó có sẵn.
 
 ### 4. Decision tree (khi người dùng mô tả task thay vì hỏi danh sách)
 
-Decision tree SINH TỪ MANIFEST — mỗi skill khai `intents[]` trong `skills-manifest.json`; thêm skill mới chỉ cần khai intents ở đó, KHÔNG sửa file này:
-
 ```bash
-python3 <skills_dir>/menu/scripts/match_intent.py <skills_dir> "<mô tả task của người dùng>"
-# In top 3 skill khớp (điểm + bước + lý do). Không khớp → script nói rõ, KHÔNG đoán bừa.
+python <skills_dir>/menu/scripts/match_intent.py <skills_dir> "<mô tả task của người dùng>"
+# top 3 skill khớp (điểm, bước, cụm intent). Không khớp → script nói rõ, KHÔNG đoán bừa.
 ```
 
-Trả lời người dùng: skill đứng đầu + tại sao + 1 ví dụ lệnh gõ được ngay. Điểm top 1 và top 2 sát nhau (chênh < 2) → nêu cả hai kèm điểm khác biệt (vd /a8-test-plan sinh case ≠ /c5-test-execution chạy & báo cáo).
+Chấm điểm: cụm intent khớp nguyên văn > đủ token (mọi thứ tự) > token hiếm (IDF, bỏ stopword "tôi/muốn/làm/cho…") > bigram. Trả lời người dùng: skill đứng đầu + lý do + 1 ví dụ lệnh. Top 1 và top 2 chênh < 2 điểm → nêu cả hai kèm điểm khác biệt (vd /a8-test-plan sinh case ≠ /c5-test-execution chạy & báo cáo).
+
+**Thêm skill mới:** trong pipeline → khai `intents[]` ở manifest. Ngoài pipeline → thêm mục vào `menu/assets/extras.json`. Cụm tiếng Việt khẩu ngữ → `menu/assets/intent_aliases.json`. KHÔNG sửa file này.
+
+**Test hồi quy định tuyến** (sau khi sửa intents/aliases hoặc bảng trong AGENTS.md):
+
+```bash
+python <skills_dir>/menu/scripts/test_intents.py <skills_dir>   # parse bảng AGENTS.md, báo tỉ lệ top-1; exit 1 nếu < 95%
+```
 
 ## Quy tắc thực thi
 
-- **Không tạo file** — in trực tiếp trong chat.
-- **Không hardcode** — mọi tên skill/mô tả lấy từ script + manifest lúc chạy. Không sao chép output cũ từ lần chạy trước.
-- Thêm/xóa skill → chỉ cần cập nhật `skills-manifest.json` + `pipeline.md` (trong /a1-project-init); menu tự phản ánh, KHÔNG sửa file này.
+- **Không tạo file** — in trực tiếp trong chat. Menu là skill đọc-only: KHÔNG ghi `project-context.json`.
+- **Không hardcode** — mọi tên skill/mô tả/số lượng lấy từ script lúc chạy. Không sao chép output cũ.
 - Người dùng hỏi sâu về 1 skill → đọc SKILL.md của skill đó và tóm tắt (mục tiêu, input, output, ví dụ).
 - Kết thúc menu bằng 1 dòng: `💡 Gõ /menu bất cứ lúc nào · Pipeline đầy đủ: a1-project-init/references/pipeline.md`.
 
 ---
 
 ## Self-Improvement Loop
-
-Trước khi kết thúc tác vụ, hãy tự đánh giá lại quá trình thực hiện theo 3 câu hỏi:
-1. Có bước nào thất bại, gặp lỗi hoặc phải dùng cách xử lý tạm (workaround) không?
-2. Người dùng có phải đính chính, chỉnh sửa hoặc từ chối kết quả nào đáng chú ý không?
-3. Có phát hiện thêm ngữ cảnh hay quy tắc mới nào giúp các lần chạy sau làm tốt hơn không?
-
-Nếu có thay đổi thực sự giá trị, hãy đề xuất 1–2 điểm ngắn gọn để cập nhật vào skill này và chờ người dùng duyệt. Không tự ý sửa file nếu chưa có xác nhận.
-
-**Hai lưu ý quan trọng khi áp dụng:**
-- **Bắt buộc phải có bước xác nhận:** Luôn chặn quyền tự ý ghi đè file của AI. Bạn phải là người gật đầu duyệt đề xuất để tránh việc AI tự tiện làm loãng hoặc làm hỏng bộ quy tắc ban đầu.
-- **Chỉ cập nhật lỗi quy trình, bỏ qua lỗi tức thời:** Lọc kỹ xem phản hồi của bạn ở lần chạy đó là sở thích nhất thời cho một đầu việc cá biệt hay là tiêu chuẩn chung cần chuẩn hóa. Chỉ đưa vào skill những thứ mang tính hệ thống để tránh phình dung lượng prompt không cần thiết.
-
+Cuối tác vụ tự trả lời 3 câu: có lỗi/workaround không? người dùng có đính chính không? có quy tắc mới giúp lần sau không? Không có gì → im lặng.
+Có phát hiện HỆ THỐNG → in `💡 Đề xuất cải thiện` (≤ 3 dòng) rồi áp dụng theo quy trình duy nhất: `a1-project-init/references/self-improvement.md`.
+Áp dụng: 1 skill/tác vụ, ≤ 40 dòng thêm, không xóa quy tắc, chạy `scripts/skill_self_update.py`; báo skill · thay đổi · commit · `git revert <hash>`.

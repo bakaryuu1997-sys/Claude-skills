@@ -7,6 +7,13 @@ import sys
 import re
 from pathlib import Path
 
+for _s in (sys.stdout, sys.stderr):
+    if hasattr(_s, "reconfigure"):
+        _s.reconfigure(encoding="utf-8", errors="replace")
+
+# Dấu hiệu nhận diện file do Archify sinh ra. Không có dấu hiệu nào → KHÔNG vá (tránh làm hỏng file khác).
+ARCHIFY_MARKERS = ("focus-chip", "relationship-lens", "archify-source-evidence-data", "semantic-passport")
+
 CUSTOM_LEGIBILITY_CSS = """
   <!-- CUSTOM LEGIBILITY & CONTRAST ENHANCEMENT OVERRIDE -->
   <style id="custom-legibility-enhancement">
@@ -179,31 +186,40 @@ CUSTOM_LEGIBILITY_CSS = """
   </style>
 """
 
+def is_archify_file(content: str) -> bool:
+    return any(m in content for m in ARCHIFY_MARKERS)
+
+
 def patch_file(target_path: Path) -> bool:
     if not target_path.exists():
         print(f"[-] Không tìm thấy file: {target_path}")
         return False
     try:
         content = target_path.read_text(encoding="utf-8")
+        if not is_archify_file(content):
+            print(f"[-] Bỏ qua (không phải sơ đồ Archify — thiếu marker {ARCHIFY_MARKERS[0]}…): {target_path.name}")
+            return False
         if "custom-legibility-enhancement" in content:
-            # Thay thế block CSS hiện tại bằng bản mới nhất
             updated = re.sub(
-                r'<!-- CUSTOM LEGIBILITY.*?<\/style>',
-                CUSTOM_LEGIBILITY_CSS.strip(),
+                r'\s*<!-- CUSTOM LEGIBILITY.*?</style>',
+                "\n" + CUSTOM_LEGIBILITY_CSS.strip(),
                 content,
-                flags=re.DOTALL
+                flags=re.DOTALL,
             )
         elif "</head>" in content:
-            updated = content.replace("</head>", f"{CUSTOM_LEGIBILITY_CSS}\n</head>")
+            updated = content.replace("</head>", f"{CUSTOM_LEGIBILITY_CSS}\n</head>", 1)
         else:
-            updated = f"{CUSTOM_LEGIBILITY_CSS}\n{content}"
-
-        target_path.write_text(updated, encoding="utf-8")
-        print(f"[+] Đã vá thành công CSS tăng kích thước chữ và tương phản cho: {target_path}")
+            print(f"[-] Không có </head> trong {target_path.name} — không vá để tránh cấu trúc HTML hỏng")
+            return False
+        tmp = target_path.with_suffix(target_path.suffix + ".tmp")
+        tmp.write_text(updated, encoding="utf-8", newline="\n")
+        tmp.replace(target_path)
+        print(f"[+] Đã vá CSS tăng kích thước chữ và tương phản: {target_path.name}")
         return True
-    except Exception as e:
-        print(f"[!] Lỗi khi xử lý {target_path}: {e}")
+    except (OSError, UnicodeError) as e:
+        print(f"[!] Lỗi khi xử lý {target_path.name}: {e}")
         return False
+
 
 def main():
     if len(sys.argv) < 2:
@@ -212,21 +228,19 @@ def main():
 
     input_path = Path(sys.argv[1])
     if input_path.is_file():
-        success = patch_file(input_path)
-        sys.exit(0 if success else 1)
-    elif input_path.is_dir():
-        html_files = list(input_path.glob("*.html"))
-        arch_files = [f for f in html_files if "architecture" in f.name or "sequence" in f.name]
-        targets = arch_files if arch_files else html_files
-        count = 0
-        for f in targets:
-            if patch_file(f):
-                count += 1
-        print(f"[i] Đã hoàn tất vá {count} file HTML trong thư mục {input_path}")
-        sys.exit(0)
-    else:
-        print(f"[-] Đường dẫn không hợp lệ: {input_path}")
-        sys.exit(1)
+        sys.exit(0 if patch_file(input_path) else 1)
+    if input_path.is_dir():
+        # Chỉ vá file có marker Archify. KHÔNG fallback sang "mọi .html" (dễ làm hỏng trang Compass).
+        targets = [f for f in sorted(input_path.glob("*.html")) if is_archify_file(f.read_text(encoding="utf-8", errors="replace"))]
+        if not targets:
+            print(f"[i] Không có file sơ đồ Archify trong {input_path} (không có gì để vá)")
+            sys.exit(0)
+        count = sum(1 for f in targets if patch_file(f))
+        print(f"[i] Đã vá {count}/{len(targets)} file Archify trong {input_path}")
+        sys.exit(0 if count == len(targets) else 1)
+    print(f"[-] Đường dẫn không hợp lệ: {input_path}")
+    sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

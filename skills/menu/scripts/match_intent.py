@@ -1,61 +1,47 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""match_intent.py — map mô tả task của người dùng → skill, TỪ manifest intents (v3.5.0).
-Decision tree của /menu sinh từ đây — thêm skill mới chỉ cần khai intents trong manifest.
+"""match_intent.py — map mô tả task của người dùng → skill, từ intents trong manifest (v3.17).
 
-Usage: python3 match_intent.py <skills_dir> "<mô tả task>"
-In top 3 skill khớp nhất (điểm, step, lý do). Không khớp gì → nói rõ, không đoán bừa."""
-import json, sys, unicodedata
+Nguồn: skills-manifest.json (intents[]) + menu/assets/intent_aliases.json (cụm từ bổ sung)
++ skill ngoài manifest (menu/assets/extras.json hoặc frontmatter). Thêm skill mới chỉ cần khai intents.
+Chấm điểm: cụm khớp nguyên văn > đủ token (mọi thứ tự) > token IDF (bỏ stopword) > bigram.
+
+Usage: python match_intent.py <skills_dir> "<mô tả task>" [--json]
+In top 3 skill khớp nhất. Không khớp gì → nói rõ, không đoán bừa.
+Exit 0 = có kết quả, 1 = không khớp, 2 = sai cú pháp."""
+import json
+import sys
 from pathlib import Path
 
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-if hasattr(sys.stderr, "reconfigure"):
-    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import menu_common as mc  # noqa: E402
 
-
-def strip_accents(s: str) -> str:
-    return "".join(c for c in unicodedata.normalize("NFD", s.lower()) if unicodedata.category(c) != "Mn")
-
-
-def score(query: str, entry: dict) -> tuple:
-    qn = strip_accents(query)
-    hits, best_phrase = 0.0, None
-    for ph in entry.get("intents", []):
-        if strip_accents(ph) in qn:
-            hits += 3
-            best_phrase = best_phrase or ph
-    q_tokens = set(qn.split())
-    for src, w in ((entry.get("intents", []), 1.0), ([entry.get("summary", "")], 0.5)):
-        toks = set()
-        for ph in src:
-            toks |= set(strip_accents(ph).split())
-        hits += w * len(q_tokens & toks)
-    return hits, best_phrase
+mc.setup_utf8()
 
 
 def main() -> int:
-    if len(sys.argv) < 3:
+    args = [a for a in sys.argv[1:] if a != "--json"]
+    as_json = "--json" in sys.argv
+    if len(args) < 2:
         print(__doc__)
         return 2
-    skills_dir, query = Path(sys.argv[1]), sys.argv[2]
-    mp = skills_dir / "a1-project-init/assets/skills-manifest.json"
-    if not mp.exists():
-        mp = skills_dir / "project-init/assets/skills-manifest.json"
-    mf = json.loads(mp.read_text(encoding="utf-8"))
-    ranked = []
-    for e in mf.get("skills", []):
-        sc, phrase = score(query, e)
-        if sc >= 2.0:  # ngưỡng tối thiểu — chặn khớp rác do trùng 1 token vô nghĩa
-            ranked.append((sc, e, phrase))
-    ranked.sort(key=lambda x: -x[0])
+    skills_dir, query = Path(args[0]), args[1]
+    entries, _ = mc.load_entries(skills_dir)
+    ranked = mc.rank(query, entries)
+    if as_json:
+        print(json.dumps([{"skill": e["name"], "step": e.get("step", "-"), "score": round(sc, 2), "intent": ph}
+                          for sc, e, ph in ranked], ensure_ascii=False))
+        return 0 if ranked else 1
     if not ranked:
         print(f"❓ Không skill nào khớp \"{query}\" — xem toàn bộ: /menu (không đoán bừa)")
         return 1
     print(f"🎯 Task: \"{query}\"")
-    for sc, e, phrase in ranked[:3]:
-        why = f"khớp intent \"{phrase}\"" if phrase else "khớp từ khóa mô tả"
-        print(f"  {sc:5.1f}  /{e['name']}  (bước {e.get('step','-')}) — {why}")
+    for sc, e, phrase in ranked:
+        why = f"khớp intent \"{phrase}\"" if phrase else "khớp từ khóa"
+        tag = "skill bổ trợ" if e.get("extra") else f"bước {e.get('step', '-')}"
+        print(f"  {sc:5.1f}  /{e['name']}  ({tag}) — {why}")
+    if len(ranked) > 1 and ranked[0][0] - ranked[1][0] < 2:
+        print("  ↳ top 1 và top 2 sát điểm — nêu cả hai kèm điểm khác biệt khi trả lời.")
     return 0
 
 

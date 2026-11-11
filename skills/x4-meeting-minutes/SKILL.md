@@ -1,6 +1,6 @@
 ---
 name: x4-meeting-minutes
-version: "3.8.0"
+version: "3.17.0"
 description: >-
   Chuyển notes/transcript cuộc họp thành biên bản chuẩn (Minutes.docx ký duyệt + Minutes.xlsx 4 sheet
   tác nghiệp + bản md gửi nhanh) với quyết định đánh số, action items có owner/deadline, câu hỏi mở — tự đổ
@@ -13,9 +13,9 @@ description: >-
 
 Họp xong 10 phút là có biên bản gửi được cho khách/team — và **không để thông tin họp chết trong file**: câu hỏi mở đi vào QA_Tracker, thay đổi scope kích hoạt /c7-change-request, quyết định ảnh hưởng thiết kế được cảnh báo skill nào cần cập nhật.
 
-Output gồm **3 file** (chuẩn Dual-Deliverables: Ký duyệt + Tác nghiệp):
+Output gồm **3 file** (chuẩn Dual-Deliverables: Ký duyệt + Tác nghiệp). Tên sheet cố định như mục "Cấu trúc Excel" bên dưới — KHÔNG đổi tên khi sinh lại:
 1. `[TênDựÁn]_Minutes_[date].docx` — biên bản đầy đủ có chữ ký 2 bên, lưu hồ sơ nghiệm thu
-2. `[TênDựÁn]_Minutes_[date].xlsx` — workbook 4 sheet tác nghiệp (Overview_Attendees, Agenda_Discussion, Decisions_Log, Action_Items tracker kèm filter và status)
+2. `[TênDựÁn]_Minutes_[date].xlsx` — workbook 4 sheet tác nghiệp: `Meeting_Profile`, `Discussion_Details`, `Decisions_Register`, `Action_Tracker` (kèm filter và status)
 3. `[TênDựÁn]_Minutes_[date].md` — bản tóm tắt gửi nhanh email/chat (≤ 30 dòng)
 
 ---
@@ -79,13 +79,20 @@ Nhận bất kỳ dạng nào: notes gõ tay, transcript (Zoom/Meet/Fireflies), 
 
 ---
 
+## Quy tắc cho biên bản gửi khách
+
+- Biên bản là tài liệu gửi khách: KHÔNG ghi mã bước nội bộ (A1…D3, Gate, tên lệnh `/a5-…`); dùng tên tài liệu chính thức (ví dụ "Đặc tả CSDL", "Đặc tả API").
+- Mọi số liệu (số người, số ngày, số quyết định) đếm từ notes/transcript; không có nguồn → bỏ hoặc `[CẦN ĐIỀN]`.
+- Tên người tham dự, email, SĐT lấy từ notes hoặc `team` trong context; không suy đoán.
+- Quy ước "im lặng = đồng ý" là TÙY CHỌN: chỉ ghi khi người dùng yêu cầu hoặc hợp đồng cho phép; mặc định ghi "Đề nghị phản hồi trước [ngày]".
+
 ## Đổ ngược vào pipeline (giá trị chính của skill)
 
 Sau khi tạo biên bản, tự động rà và thực hiện:
 
 | Phát hiện trong họp | Hành động |
 |---|---|
-| Câu hỏi mở về requirement | Append vào `*_QA_Tracker.xlsx` (nếu có) — đúng format: chủ đề, câu hỏi, Priority P1–P3 tự đánh giá theo tác động, trạng thái ⬜ Pending |
+| Câu hỏi mở về requirement | **Trước khi ghi**: liệt kê các dòng sẽ thêm (chủ đề, câu hỏi, P1–P3, trạng thái `Open`) và chờ người dùng xác nhận. Sau khi được duyệt: sao lưu file gốc (`*_QA_Tracker_bak-<date>.xlsx`) rồi append. Trạng thái câu hỏi chuẩn là `Open` / `Answered` (pipeline.md §1) |
 | Khách yêu cầu thêm/sửa/bớt tính năng | ⚠️ Cảnh báo rõ: "Đây là thay đổi scope → nên tạo /c7-change-request CR#[n]" — KHÔNG tự coi là đã chốt |
 | Quyết định ảnh hưởng thiết kế (đổi flow, đổi màn hình, đổi API) | Liệt kê skill cần cập nhật: /b2-basic-design, /a4-api-design, /a5-db-design, /b3-detail-design (theo hợp đồng I/O trong pipeline.md) |
 | Quyết định đổi lịch/nhân sự | Nhắc cập nhật /a9-project-timeline |
@@ -100,22 +107,13 @@ Sau khi tạo biên bản, tự động rà và thực hiện:
 - **Bước hiện tại:** X4 — Meeting Minutes (cross-cutting, sau mỗi cuộc họp bất kỳ giai đoạn nào)
 - **Input từ:** notes/transcript/ảnh + context (team, project)
 - **Output cho:** biên bản docx + xlsx + md · câu hỏi mở → QA_Tracker (/a2-requirement-analysis) · scope change → /c7-change-request · quyết định thiết kế → cảnh báo skill cần cập nhật
-- **Bước kế tiếp:** gửi biên bản cho các bên xác nhận trong 24h (im lặng = đồng ý — ghi rõ quy ước này cuối biên bản)
+- **Bước kế tiếp:** gửi biên bản cho các bên xác nhận (thời hạn do người dùng quyết định; xem quy ước phản hồi ở mục "Quy tắc cho biên bản gửi khách")
 
 **Hiển thị cuối response (tối đa 6 dòng):** `✅ Biên bản: n quyết định, n action, n câu hỏi mở → ▶ hành động đổ ngược`. Sau khi hoàn thành: append `{skill, date, outputs[]}` vào `activity_log[]` bằng `update_context.py`.
 
 ---
 
 ## Self-Improvement Loop
-
-Trước khi kết thúc tác vụ, hãy tự đánh giá lại quá trình thực hiện theo 3 câu hỏi:
-1. Có bước nào thất bại, gặp lỗi hoặc phải dùng cách xử lý tạm (workaround) không?
-2. Người dùng có phải đính chính, chỉnh sửa hoặc từ chối kết quả nào đáng chú ý không?
-3. Có phát hiện thêm ngữ cảnh hay quy tắc mới nào giúp các lần chạy sau làm tốt hơn không?
-
-Nếu có thay đổi thực sự giá trị, hãy đề xuất 1–2 điểm ngắn gọn để cập nhật vào skill này và chờ người dùng duyệt. Không tự ý sửa file nếu chưa có xác nhận.
-
-**Hai lưu ý quan trọng khi áp dụng:**
-- **Bắt buộc phải có bước xác nhận:** Luôn chặn quyền tự ý ghi đè file của AI. Bạn phải là người gật đầu duyệt đề xuất để tránh việc AI tự tiện làm loãng hoặc làm hỏng bộ quy tắc ban đầu.
-- **Chỉ cập nhật lỗi quy trình, bỏ qua lỗi tức thời:** Lọc kỹ xem phản hồi của bạn ở lần chạy đó là sở thích nhất thời cho một đầu việc cá biệt hay là tiêu chuẩn chung cần chuẩn hóa. Chỉ đưa vào skill những thứ mang tính hệ thống để tránh phình dung lượng prompt không cần thiết.
-
+Cuối tác vụ tự trả lời 3 câu: có lỗi/workaround không? người dùng có đính chính không? có quy tắc mới giúp lần sau không? Không có gì → im lặng.
+Có phát hiện HỆ THỐNG → in `💡 Đề xuất cải thiện` (≤ 3 dòng) rồi áp dụng theo quy trình duy nhất: `a1-project-init/references/self-improvement.md`.
+Áp dụng: 1 skill/tác vụ, ≤ 40 dòng thêm, không xóa quy tắc, chạy `scripts/skill_self_update.py`; báo skill · thay đổi · commit · `git revert <hash>`.

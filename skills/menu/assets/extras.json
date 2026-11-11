@@ -1,0 +1,12 @@
+{
+  "ui-ux-pro-max": {
+    "summary": "Kho tri thức UI/UX tra cứu bằng script (style, palette, font, UX guideline, stack) — thiết kế/duyệt giao diện",
+    "outputs": ["design-system/<project>/MASTER.md (khi dùng --persist)"],
+    "intents": ["trau chuốt UI", "chống AI slop", "bảng màu đẹp", "typography chuẩn", "làm UI có gu", "design system", "chọn font", "chọn palette", "ui ux", "làm giao diện đẹp hơn"]
+  },
+  "product-teardown": {
+    "summary": "Phản biện sản phẩm độc lập: quét codebase/ý tưởng, đối chiếu app đầu ngành, đề xuất tính năng 3 tầng",
+    "outputs": ["Product_Teardown_Report.md (tùy chọn)"],
+    "intents": ["đánh giá sản phẩm", "soi tính năng", "app này thiếu gì", "product teardown", "gợi ý tính năng mới từ code", "phản biện sản phẩm", "so sánh đối thủ"]
+  }
+}

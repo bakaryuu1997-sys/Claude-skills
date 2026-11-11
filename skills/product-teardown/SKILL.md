@@ -30,10 +30,11 @@ Kích hoạt khi người dùng nói bằng tiếng Việt tự nhiên:
 
 ### Chế độ 1: Quét Codebase Thực tế (`CODEBASE-AWARE TEARDOWN`)
 Dùng khi thư mục làm việc đã có mã nguồn (hoặc đang code dở dang):
-1. **Chạy script quét mã nguồn:**
+1. **Chạy script quét mã nguồn** (chỉ đọc, không ghi file; kết quả là HEURISTIC):
    ```bash
-   python <skill_dir>/scripts/codebase_feature_scanner.py <path_to_repo>
+   python <skills_dir>/product-teardown/scripts/codebase_feature_scanner.py "<path_to_repo>" [--json]
    ```
+   Script nhận diện stack (Node/Next/Express/Nest, Python/FastAPI/Django, Java/Spring, PHP/Laravel, Go), route trang Next.js (bỏ route group `(xxx)`), endpoint theo khai báo route (Express, FastAPI, Spring, Laravel), và tín hiệu UX theo từ khóa. **Mỗi tín hiệu phải đối chiếu lại với code trước khi đưa vào báo cáo**, đặc biệt "có dấu hiệu" chỉ là từ khóa.
 2. **Bóc tách hiện trạng:**
    - Đọc danh sách API routes, controllers, frontend pages, CSDL schema (Prisma, PostgreSQL entities).
    - Phát hiện các "tính năng nửa vời" (Half-baked features): thiếu Empty State, thiếu Bulk Action, thiếu Undo toast, thiếu bộ lọc đa chiều, thiếu phím tắt.
@@ -71,7 +72,7 @@ Xem chi tiết bộ chuẩn mực tại: [`references/benchmark-tier1-catalogs.m
 
 ## 📊 Cấu trúc Báo cáo Đầu ra (Deliverable)
 
-Khi hoàn tất, xuất báo cáo trực tiếp trong chat hoặc tạo file [`Product_Teardown_Report.md`](file:///Product_Teardown_Report.md) theo bố cục chuẩn 4 phần:
+Khi hoàn tất, xuất báo cáo trực tiếp trong chat, hoặc ghi file `<workspace_folder>/docs/product-teardown/Product_Teardown_Report.md` nếu người dùng yêu cầu, theo bố cục chuẩn 4 phần (không dùng đường dẫn tuyệt đối):
 
 1. **Executive Summary:** Điểm số trưởng thành sản phẩm (Thang 10), 3 tử huyệt lớn nhất và 3 cơ hội vàng bứt phá.
 2. **Current Codebase Inventory vs Tier-1 Gap:** Bảng đối chiếu hiện trạng tính năng thực tế với siêu ứng dụng đầu ngành.
