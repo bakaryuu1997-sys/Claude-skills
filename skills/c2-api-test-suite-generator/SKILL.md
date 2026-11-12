@@ -1,6 +1,6 @@
 ---
 name: c2-api-test-suite-generator
-version: "3.17.2"
+version: "3.17.5"
 description: >-
   Sinh test suite API thực thi được (chủ yếu Jest/Supertest; Pytest/httpx có hướng dẫn rút gọn): ma trận 8 mã HTTP
   (200/201, 400-422, 401, 403, 404, 409, 429, 500) áp theo từng loại endpoint, BVA, auth/IDOR, mock DB/service
@@ -28,6 +28,10 @@ Sinh file test integration API **chạy được** thay vì chỉ happy path: ki
 - `tests/api/<module>_api.test.ts` (hoặc `tests/integration/test_<module>_api.py`), `tests/fixtures/<module>_fixture.ts`.
 - Kết quả chạy máy đọc được: `tests/results/<module>_api.results.json` (Jest: `--json --outputFile=…`; Pytest: `--json-report --json-report-file=…`, cần plugin `pytest-json-report`) — c5 gộp vào `*_test_results.json`.
 - Báo cáo: `docs/C2_api-test-suite-generator/API_TEST_SUITE_<MODULE>_v1.md` (sinh lại → `_v2`).
+
+## Khoảng trống spec (Spec Gap) — khác Spec Mismatch
+
+Spec Mismatch = code lệch spec (test đỏ). **Spec Gap = test plan/thiết kế đòi hỏi một hành vi mà A4/B3 không định nghĩa** (vd Test Plan có ca gọi `POST /leave-requests/{id}/submit` nhưng API Design không có endpoint này; hoặc refresh "rotation" mà response không trả refresh token mới). Không bịa endpoint để test: ghi `it.todo('[<Test ID>] … Blocked: <lý do>')`, liệt kê ở mục "Khoảng trống spec" của báo cáo (Test ID, điều spec thiếu, chủ sở hữu a4/b3) và đề nghị cập nhật thiết kế. Test chạy thật mà code đúng 100% là kết quả hợp lệ — nhưng không được kết luận "không có lỗi": nếu mọi test xanh, chạy kiểm tra đột biến nhanh (sửa tạm 3–4 chỗ logic then chốt như ngưỡng biên, check quyền, check trùng; test phải đỏ; hoàn nguyên bằng `diff`) và ghi kết quả vào báo cáo.
 
 ## Liên kết Test ID (truy vết sang c5)
 

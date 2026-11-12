@@ -1,9 +1,9 @@
 'use client';
 
-// Mẫu ThemeProvider cục bộ (xem SKILL.md c0, trụ cột UI): sáng / tối / theo hệ thống.
-// - Không có thư viện ngoài. Đổi class `dark` trên <html>; Tailwind đọc qua `darkMode: 'class'`.
-// - Lưu lựa chọn trong localStorage bọc try/catch (chế độ riêng tư / bị chặn vẫn render đúng).
-// - Chống nháy sai theme: đặt script inline trong <head> (xem THEME_INIT_SCRIPT) trước khi React hydrate.
+// Local ThemeProvider: light / dark / follow system.
+// - No external library. Toggles the `dark` class on <html>; Tailwind reads it through the class-based dark variant.
+// - The choice is stored in localStorage inside try/catch (private mode or blocked storage still renders).
+// - Avoids a wrong-theme flash: put the inline script (THEME_INIT_SCRIPT) in <head> before React hydrates.
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 export type ThemeChoice = 'light' | 'dark' | 'system';
@@ -32,7 +32,7 @@ function writeStored(value: ThemeChoice): void {
   try {
     window.localStorage.setItem(STORAGE_KEY, value);
   } catch {
-    // Trình duyệt chặn lưu trữ: bỏ qua, theme vẫn đổi trong phiên hiện tại.
+    // Storage blocked: ignore; the theme still changes for the current session.
   }
 }
 
@@ -44,12 +44,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [choice, setChoiceState] = useState<ThemeChoice>('system');
   const [resolved, setResolved] = useState<ResolvedTheme>('light');
 
-  // Đọc lựa chọn đã lưu sau khi mount (tránh lệch SSR/hydration).
+  // Read the stored choice after mount (avoids SSR/hydration mismatch).
   useEffect(() => {
     setChoiceState(readStored());
   }, []);
 
-  // Áp dụng theme lên <html> và theo dõi thay đổi của hệ thống khi ở chế độ 'system'.
+  // Apply the theme to <html> and follow system changes while in 'system' mode.
   useEffect(() => {
     const apply = () => {
       const next: ResolvedTheme = choice === 'system' ? (systemPrefersDark() ? 'dark' : 'light') : choice;
@@ -75,10 +75,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 export function useTheme(): ThemeContextValue {
   const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error('useTheme phải nằm trong <ThemeProvider>');
+  if (!ctx) throw new Error('useTheme must be used inside <ThemeProvider>');
   return ctx;
 }
 
-// Script inline đặt trong <head> của layout (chạy trước khi render) để không nháy sai theme.
-// Dùng dangerouslySetInnerHTML với chuỗi hằng số này — KHÔNG ghép dữ liệu người dùng vào đây.
+// Inline script for the layout <head> (runs before render) so the wrong theme never flashes.
+// Use dangerouslySetInnerHTML with this constant only; never concatenate user data into it.
 export const THEME_INIT_SCRIPT = `(function(){try{var c=localStorage.getItem('${STORAGE_KEY}');var d=c==='dark'||((c===null||c==='system')&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);document.documentElement.style.colorScheme=d?'dark':'light';}catch(e){}})();`;

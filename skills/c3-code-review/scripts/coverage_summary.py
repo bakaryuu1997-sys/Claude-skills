@@ -75,11 +75,14 @@ def tests_part(path: Path, warnings: list):
             "total": data.get("numTotalTests"),
             "passed": data.get("numPassedTests"),
             "failed": data.get("numFailedTests"),
+            # it.todo / it.skip nằm trong numTotalTests nhưng không chạy → tách riêng, không để "pass/total" gây hiểu nhầm.
+            "skipped": (data.get("numPendingTests") or 0) + (data.get("numTodoTests") or 0),
             "suites": data.get("numTotalTestSuites"),
         }
     summ = data.get("summary")   # pytest-json-report
     if isinstance(summ, dict):
-        return {"total": summ.get("total"), "passed": summ.get("passed"), "failed": summ.get("failed"), "suites": None}
+        return {"total": summ.get("total"), "passed": summ.get("passed"), "failed": summ.get("failed"),
+                "skipped": summ.get("skipped", 0), "suites": None}
     warnings.append(f"{path}: định dạng không nhận diện (cần Jest --json hoặc pytest-json-report)")
     return None
 
@@ -143,7 +146,8 @@ def main(argv=None):
         for m, v in cov["total"].items():
             lines.append(f"| Coverage {m} | {v if v is not None else 'n/a'}% |")
     if tst:
-        lines.append(f"| Test | {tst['passed']}/{tst['total']} pass, {tst['failed']} fail |")
+        skipped = f", {tst['skipped']} skip/todo" if tst.get("skipped") else ""
+        lines.append(f"| Test | {tst['passed']}/{tst['total']} pass, {tst['failed']} fail{skipped} |")
     if dif:
         lines.append(f"| LOC | +{dif['total_added']} / -{dif['total_deleted']} trên {len(dif['files'])} file |")
     for w in warnings:

@@ -1,5 +1,5 @@
 {
-  "manifest_version": "3.17.4",
+  "manifest_version": "3.17.5",
   "updated_at": "2026-11-12",
   "pipeline_source": "a1-project-init/references/pipeline.md",
   "shared": {
@@ -240,7 +240,7 @@
     },
     {
       "name": "c3-code-review",
-      "version": "3.17.0",
+      "version": "3.17.5",
       "step": "C3",
       "phase": "run",
       "recurring": "per PR",
@@ -393,7 +393,7 @@
     },
     {
       "name": "c0-frontend-dev",
-      "version": "3.17.2",
+      "version": "3.17.5",
       "step": "C0",
       "phase": "run",
       "recurring": "per feature/sprint",
@@ -472,7 +472,7 @@
     },
     {
       "name": "c2-api-test-suite-generator",
-      "version": "3.17.2",
+      "version": "3.17.5",
       "step": "C2",
       "phase": "run",
       "recurring": "per task",
@@ -493,7 +493,7 @@
     },
     {
       "name": "c4-trailofbits-security-skills",
-      "version": "3.17.1",
+      "version": "3.17.5",
       "step": "C4",
       "phase": "run",
       "recurring": "per PR",

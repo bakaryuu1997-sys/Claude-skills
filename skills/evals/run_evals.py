@@ -499,9 +499,58 @@ def t17():
     assert "Sprint delay" not in _txt and "tối thiểu" not in _txt, "CR gửi khách còn tiếng Việt"
 
 
+@t("T18 verify_fe_scaffold: 'palt' trong chú thích CSS không bị cảnh báo; 'palt' thật vẫn bị bắt; mock/token/localStorage vẫn là ERROR")
+def t18():
+    tmp = Path(tempfile.mkdtemp(prefix="ev_t18_"))
+    (tmp / "package.json").write_text('{"dependencies":{"@tanstack/react-query":"5","zod":"3"}}', encoding="utf-8")
+    (tmp / "src/lib").mkdir(parents=True)
+    (tmp / "src/lib/api-client.ts").write_text("export {}", encoding="utf-8")
+    (tmp / "tests/e2e").mkdir(parents=True)
+    (tmp / "tests/e2e/a.spec.ts").write_text("", encoding="utf-8")
+    script = str(SKILLS / "c0-frontend-dev/scripts/verify_fe_scaffold.py")
+    (tmp / "src/a.css").write_text('/* never use font-feature-settings: "palt" on body */\nbody{line-height:1.6}', encoding="utf-8")
+    r = run([script, str(tmp)])
+    assert r.returncode == 0 and "palt" not in r.stdout, r.stdout[-300:]
+    (tmp / "src/a.css").write_text('body{font-feature-settings:"palt";}', encoding="utf-8")
+    assert "palt" in run([script, str(tmp)]).stdout
+    (tmp / "src/lib/mock-users.ts").write_text("export const mockUsers = [{id:1}];", encoding="utf-8")
+    (tmp / "src/lib/store.ts").write_text("localStorage.setItem('accessToken', t)", encoding="utf-8")
+    r = run([script, str(tmp)])
+    assert r.returncode == 1 and r.stdout.count("ERROR") >= 1 and "mock" in r.stdout and "localStorage" in r.stdout, r.stdout[-400:]
+
+
+@t("T19 coverage_summary + parse_npm_audit: test todo tách riêng; --fail-on moderate = medium")
+def t19():
+    tmp = Path(tempfile.mkdtemp(prefix="ev_t19_"))
+    (tmp / "jest.json").write_text(json.dumps({"numTotalTests": 10, "numPassedTests": 9, "numFailedTests": 0,
+                                               "numPendingTests": 0, "numTodoTests": 1, "numTotalTestSuites": 2}), encoding="utf-8")
+    r = run([str(SKILLS / "c3-code-review/scripts/coverage_summary.py"), "--repo", str(tmp), "--coverage", "none.json",
+             "--tests", str(tmp / "jest.json"), "--format", "md"])
+    assert "9/10 pass, 0 fail, 1 skip/todo" in r.stdout, r.stdout
+    audit = {"auditReportVersion": 2, "vulnerabilities": {"pkg": {"name": "pkg", "severity": "moderate", "isDirect": True, "via": [
+        {"source": 1, "name": "pkg", "title": "t", "url": "https://github.com/advisories/GHSA-aaaa-bbbb-cccc", "severity": "moderate", "range": "<2"}],
+        "range": "<2", "fixAvailable": True}}}
+    (tmp / "audit.json").write_text(json.dumps(audit), encoding="utf-8")
+    script = str(SKILLS / "c4-trailofbits-security-skills/scripts/parse_npm_audit.py")
+    assert run([script, str(tmp / "audit.json"), "--fail-on", "moderate"]).returncode == 1
+    assert run([script, str(tmp / "audit.json"), "--fail-on", "high"]).returncode == 0
+
+
+@t("T20 c0 assets: không còn chuỗi tiếng Việt trong asset sao chép vào dự án khách; props văn bản UI bắt buộc")
+def t20():
+    assets = SKILLS / "c0-frontend-dev/assets"
+    vi = re.compile(r"[ăâđêôơưáàảãạéèẻẽẹíìỉĩịóòỏõọúùủũụýỳỷỹỵ]", re.I)
+    for f in assets.glob("*"):
+        bad = [l for l in f.read_text(encoding="utf-8").splitlines() if vi.search(l)]
+        assert not bad, f"{f.name}: {bad[:2]}"
+    eb = (assets / "error-boundary.tsx").read_text(encoding="utf-8")
+    cp = (assets / "command-palette.tsx").read_text(encoding="utf-8")
+    assert "message: string; retryLabel: string" in eb
+    assert "placeholder: string;" in cp and "dialogLabel: string;" in cp and "placeholder =" not in cp
+
 
 if __name__ == "__main__":
-    for fn in [t1, t1b, t1c, t2a, t2b, t2c, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17]:
+    for fn in [t1, t1b, t1c, t2a, t2b, t2c, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20]:
         fn()
     n_fail = sum(1 for _, ok, _ in results if not ok)
     print(f"\n🧪 EVALS TẦNG 1 — {len(results)} test | {len(results) - n_fail} PASS | {n_fail} FAIL\n")

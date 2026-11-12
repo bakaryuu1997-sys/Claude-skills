@@ -1,6 +1,6 @@
 ---
 name: c3-code-review
-version: "3.17.0"
+version: "3.17.5"
 description: >-
   Review code/PR theo chuẩn DỰ ÁN: đối chiếu spec a4-api-design/a5-db-design/b3-detail-design, 25 tiêu chí R01–R25,
   severity Critical/High/Medium/Low, verdict, xuất Excel 5 sheet + Report.md. Dùng khi dự án CÓ spec/project-context;

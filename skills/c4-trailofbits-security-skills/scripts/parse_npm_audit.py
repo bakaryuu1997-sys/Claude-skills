@@ -83,7 +83,8 @@ def main(argv=None):
     ap.add_argument("audit_json")
     ap.add_argument("--package-json")
     ap.add_argument("--format", choices=("md", "json"), default="md")
-    ap.add_argument("--fail-on", choices=("critical", "high", "medium", "low"))
+    # "moderate" là nhãn của npm → đồng nghĩa với medium của thang chuẩn.
+    ap.add_argument("--fail-on", choices=("critical", "high", "medium", "moderate", "low"))
     a = ap.parse_args(argv)
 
     try:
@@ -123,7 +124,7 @@ def main(argv=None):
                   f"{r['patched_in']} | {r['type']} | {r['scope']} | {r['reachability']} |")
 
     if a.fail_on:
-        thr = SEV_RANK[a.fail_on.capitalize()]
+        thr = SEV_RANK[SEV_MAP[a.fail_on]]
         if any(SEV_RANK[r["severity"]] >= thr for r in rows):
             return 1
     return 0

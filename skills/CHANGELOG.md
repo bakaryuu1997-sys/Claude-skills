@@ -4,6 +4,21 @@
 > Nhãn phiên bản có hai loại: **phiên bản bộ** (manifest + plugin, chỉ có 3.8.0 và 3.16.0 là bản phát hành toàn bộ) và **phiên bản từng skill**
 > (3.9.0–3.14.0 chỉ xuất hiện ở một số skill trong `skills-manifest.json`). Mục nào "không có phát hành riêng" nghĩa là git log không có commit gắn nhãn đó.
 
+## 3.17.5 — 2026-11-12
+Chạy C0–C4 trên mã nguồn mẫu thật (NestJS + Next.js) và sửa các lỗi lộ ra.
+
+### Added
+- `evals/e2e/phase3_code.py`: sinh báo cáo C0–C4 từ kết quả thật (jest, coverage, npm audit, Playwright), ghi `known_issues`, kiểm cổng go-live.
+- c2: khái niệm Spec Gap (it.todo có Test ID) và kiểm tra đột biến bắt buộc khi mọi test xanh.
+- c0: hướng dẫn E2E bằng Edge có sẵn (`E2E_CHANNEL=msedge`) và quy tắc viết test ổn định.
+- c0 / c4: quy tắc rate limit theo IP phía sau BFF/proxy (PoC: 6 lần đăng nhập → 429 cho cả tổ chức); c4: fail-open khi `NODE_ENV` trống, tự duyệt qua ủy quyền.
+
+### Fixed
+- c0 `verify_fe_scaffold.py`: không còn cảnh báo `palt` khi chuỗi chỉ nằm trong chú thích CSS.
+- c0 assets: `error-boundary.tsx` và `command-palette.tsx` không còn chuỗi giao diện tiếng Việt cứng (props bắt buộc); chú thích asset bằng tiếng Anh.
+- c3 `coverage_summary.py`: test todo/skip tách riêng, không tính vào "pass/total".
+- c4 `parse_npm_audit.py`: `--fail-on moderate` được chấp nhận (đồng nghĩa medium).
+
 ## 3.17.4 — 2026-11-12
 Mở rộng chuỗi E2E sang B0, B1, D1–D3, X1–X7 và các khoảng trống còn lại.
 

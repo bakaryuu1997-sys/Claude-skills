@@ -97,6 +97,7 @@ Ghi chú:
 - Cookie phiên bắt buộc CSRF defense: `SameSite` + header tùy biến (`x-idempotency-key`/`x-requested-with`) trên mutating request, hoặc CSRF token; Backend kiểm `Origin`.
 - Bắt buộc CSP (không `unsafe-inline` script nếu khả thi), không `dangerouslySetInnerHTML` với dữ liệu người dùng chưa sanitize.
 - `tenant_id`/role hiển thị lấy từ `/auth/me` (server là nguồn sự thật); UI Guard chỉ là UX, quyền thật do Backend kiểm.
+- **BFF che mất IP người dùng:** Backend chỉ thấy IP của BFF. Rate limit theo IP ở Backend (vd login 5 lần/10 phút) khi đó bị **dùng chung cho mọi người dùng** → vài lần đăng nhập hợp lệ là cả tổ chức bị 429. Đã gặp thực tế khi tích hợp. Cách xử lý: BFF chuyển `X-Forwarded-For` và Backend bật `trust proxy` đúng với hạ tầng (chỉ tin proxy của mình), hoặc khóa giới hạn theo `employeeId + IP`; phải kiểm trong INTEGRATE bằng ≥ 6 lần đăng nhập từ các tài khoản khác nhau.
 - c3 (checklist Frontend) và c4 (Vector 2) kiểm các điểm này.
 
 ---

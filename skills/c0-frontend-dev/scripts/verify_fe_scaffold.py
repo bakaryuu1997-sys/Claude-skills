@@ -45,6 +45,7 @@ TODO_RE = re.compile(r"//\s*TODO:\s*(tự code|tự làm|implement later)", re.I
 TOKEN_STORE_RE = re.compile(
     r"""(?:localStorage|sessionStorage)\s*\.\s*setItem\(\s*['"][^'"]*(?:token|jwt|secret)[^'"]*['"]""", re.IGNORECASE)
 PALT_RE = re.compile(r"font-feature-settings\s*:\s*['\"]palt['\"]", re.IGNORECASE)
+CSS_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
 
 
 def walk(root: Path):
@@ -102,7 +103,8 @@ def check_frontend(frontend_dir: Path):
                 continue
 
             if f.endswith((".css", ".scss")):
-                if PALT_RE.search(text):
+                # Chú thích CSS có thể nhắc tới palt để cấm nó (như font-stack.css) — không phải vi phạm.
+                if PALT_RE.search(CSS_COMMENT_RE.sub("", text)):
                     warnings.append(f"{rel}: dùng font-feature-settings palt (nén chữ Đông Á) — xem SKILL mục Typography")
                 continue
 

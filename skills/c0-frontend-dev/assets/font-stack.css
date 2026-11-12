@@ -1,14 +1,14 @@
-/* Font stack Đông Á + Latin cho web doanh nghiệp (xem SKILL.md c0, trụ cột 7).
-   KHÔNG thêm font-feature-settings: "palt" lên body/* (làm dính kanji/kana/chữ số trên system font). */
+/* East Asian + Latin font stack for enterprise web apps.
+   Never add font-feature-settings: "palt" to body or * (it collapses kanji/kana/digit spacing on system fonts). */
 :root {
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans",
     "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", "Noto Sans JP", Meiryo, sans-serif;
-  /* Tiếng Việt: thêm font có dấu đầy đủ nếu dự án dùng (vd "Noto Sans", "Be Vietnam Pro") trước sans-serif */
+  /* Vietnamese: add a font with full diacritics if the project uses it (e.g. "Noto Sans", "Be Vietnam Pro") before sans-serif */
 }
 
 body {
   font-family: var(--font-sans);
-  line-height: 1.6; /* khoảng 1.5–1.6 cho tài liệu kế toán/hợp đồng */
+  line-height: 1.6; /* about 1.5-1.6 for accounting/contract documents */
   color: var(--color-fg, #0f172a);
   background: var(--color-bg, #f8fafc);
 }

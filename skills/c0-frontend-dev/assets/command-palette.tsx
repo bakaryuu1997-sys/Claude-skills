@@ -1,9 +1,9 @@
 'use client';
 
-// Mẫu CommandPalette cục bộ (Ctrl/⌘ + K): không phụ thuộc thư viện ngoài.
-// - Lọc theo chuỗi con không phân biệt hoa thường; mũi tên lên/xuống, Enter chọn, Esc đóng.
+// Local CommandPalette (Ctrl/Cmd + K): no external dependency.
+// - Case-insensitive substring filter; Up/Down to move, Enter to choose, Esc to close.
 // - Accessibility: role="dialog" + aria-modal, combobox/listbox, aria-activedescendant.
-// - Lệnh do ứng dụng cung cấp (`commands`) — mỗi lệnh có `run()`; không ghi dữ liệu người dùng vào DOM qua innerHTML.
+// - Commands are supplied by the app (`commands`), each with `run()`; user data is never written to the DOM via innerHTML.
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 
 export type PaletteCommand = {
@@ -18,8 +18,10 @@ type Props = {
   commands: PaletteCommand[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  placeholder?: string;
-  emptyText?: string;
+  // UI text is required (no default) so an internal language never leaks into the customer UI.
+  placeholder: string;
+  emptyText: string;
+  dialogLabel: string;
 };
 
 function matches(cmd: PaletteCommand, q: string): boolean {
@@ -32,7 +34,7 @@ function matches(cmd: PaletteCommand, q: string): boolean {
     .every((part) => hay.includes(part));
 }
 
-export function CommandPalette({ commands, open, onOpenChange, placeholder = 'Gõ lệnh…', emptyText = 'Không có lệnh phù hợp' }: Props) {
+export function CommandPalette({ commands, open, onOpenChange, placeholder, emptyText, dialogLabel }: Props) {
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -40,7 +42,7 @@ export function CommandPalette({ commands, open, onOpenChange, placeholder = 'G�
 
   const filtered = useMemo(() => commands.filter((c) => matches(c, query)), [commands, query]);
 
-  // Reset khi mở; focus ô nhập.
+  // Reset on open and focus the input.
   useEffect(() => {
     if (open) {
       setQuery('');
@@ -49,7 +51,7 @@ export function CommandPalette({ commands, open, onOpenChange, placeholder = 'G�
     }
   }, [open]);
 
-  // Phím tắt toàn cục Ctrl/⌘+K để mở/đóng.
+  // Global Ctrl/Cmd+K shortcut toggles the palette.
   useEffect(() => {
     const onKey = (e: globalThis.KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
@@ -91,7 +93,7 @@ export function CommandPalette({ commands, open, onOpenChange, placeholder = 'G�
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Bảng lệnh"
+        aria-label={dialogLabel}
         className="w-full max-w-lg overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900"
         onMouseDown={(e) => e.stopPropagation()}
       >
