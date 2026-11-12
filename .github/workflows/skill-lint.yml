@@ -17,8 +17,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Cài thư viện cho eval (openpyxl)
-        run: python -m pip install --disable-pip-version-check openpyxl
+      - name: Cài thư viện cho eval (openpyxl, python-docx, python-pptx)
+        run: python -m pip install --disable-pip-version-check openpyxl python-docx python-pptx
 
       - name: Skill Doctor (0 FAIL / 0 WARN)
         env:
