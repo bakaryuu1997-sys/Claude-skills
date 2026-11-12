@@ -15,10 +15,34 @@
 }
 ```
 
-**Không có `settings.languages`** → khi tạo deliverable client-facing ĐẦU TIÊN: hỏi 1 lần
-(AskUserQuestion: "Khách đọc tài liệu bằng tiếng gì? ja/vi/en") rồi ghi vào context bằng
-`update_context.py set settings.languages.client_facing <giá trị>` — các lần sau KHÔNG hỏi lại.
-Mặc định khi người dùng từ chối chọn: client_facing=vi, internal=vi, code=en.
+### Một lựa chọn ngôn ngữ duy nhất lúc khởi tạo (chế độ mặc định)
+
+Ở bước khởi tạo dự án hỏi **một câu**: "Ngôn ngữ tài liệu của dự án: ja / vi / en?". Đáp án được ghi vào CẢ HAI khóa
+`client_facing` và `internal` (code luôn `en`): **toàn bộ tiến trình sinh tài liệu theo đúng ngôn ngữ đó**, từ yêu cầu,
+thiết kế, test, review, báo cáo tới bàn giao. Chỉ tách `internal` khác `client_facing` khi người dùng nói rõ muốn tách
+(ví dụ khách đọc tiếng Nhật nhưng team nội bộ làm việc bằng tiếng Việt).
+
+```
+python <skills_dir>/a1-project-init/scripts/update_context.py <ws> set settings.languages.client_facing ja
+python <skills_dir>/a1-project-init/scripts/update_context.py <ws> set settings.languages.internal ja
+python <skills_dir>/a1-project-init/scripts/update_context.py <ws> set settings.languages.code en
+```
+
+**Thiếu `settings.languages`** → hỏi 1 lần như trên rồi ghi; các lần sau KHÔNG hỏi lại. Thiếu riêng `internal` → dùng
+giá trị của `client_facing`. Người dùng từ chối chọn: client_facing = internal = vi, code = en.
+
+### Cách script và tài liệu bám theo cấu hình
+- MỌI script có chữ chảy vào tài liệu giao đều theo ngôn ngữ đã chọn (`--context <project-context.json>` hoặc `--lang ja|vi|en`;
+  thiếu cả hai → `vi` như trước). Mã máy đọc (QUALIFIED, GO/NO-GO, PASS/FAIL, Critical/High…) không dịch. Gồm:
+  báo cáo số liệu (`test_metrics`, `sprint_metrics`, `cr_impact`, `smoke_test_runner`, `timeline_calc`, `check_gate`),
+  bằng chứng kiểm tra (`health_check`, `check_circular_fk`, `check_crud_coverage`, `verify_fe_scaffold`, `coverage_summary`, `parse_npm_audit`),
+  bộ dựng/sinh tài liệu (`xlsx_build` — nhãn tổng + thông báo validate theo `spec.language`; `build_deck` — nhãn Nguồn; `gen_openapi`, `gen_postman`; `gen_architecture_html`).
+- Placeholder chưa điền theo ngôn ngữ: vi `[CẦN ĐIỀN]` · ja `[要記入]` · en `[TO BE FILLED]` (`i18n.placeholder()`); `xlsx_verify` coi cả ba là chưa điền.
+- Công cụ chẩn đoán cho agent/dev (`update_context`, `validate_context`, `xlsx_verify`, `lang_check`, `load_context`, `menu`…) in thông báo kỹ thuật,
+  KHÔNG phải nội dung tài liệu: không bắt buộc theo ngôn ngữ dự án. Câu trả lời trong chat theo ngôn ngữ người dùng đang dùng.
+- Linter x6 rule D18: skill có `outputs[]` mà SKILL.md không dẫn chiếu file này → FAIL.
+- Trước khi giao tài liệu, quét rò rỉ ngôn ngữ: `python <skills_dir>/a1-project-init/scripts/lang_check.py --ws <ws>`
+  (bắt tiếng Việt lọt vào tài liệu `ja`/`en`, kana lọt vào tài liệu `vi`; exit 1 khi có rò rỉ).
 
 ## Bảng doc-type → ngôn ngữ
 

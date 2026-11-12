@@ -1,6 +1,6 @@
 ---
 name: c7-change-request
-version: "3.17.3"
+version: "3.17.6"
 description: >-
   Phân tích tác động (impact) và estimate lại khi khách đổi scope SAU khi đã chốt: tài liệu Change Request để khách
   ký duyệt (xlsx + tóm tắt md), effort NEW/REWORK/REGRESSION + buffer, timeline và chi phí, danh mục đồng bộ tài liệu
@@ -32,7 +32,8 @@ Khi khách đổi scope: **không trả lời "được" hay "không" ngay.** Ph
 ## Bước 2 — Tính tác động bằng script
 
 ```
-python <skills_dir>/c7-change-request/scripts/cr_impact.py cr_input.json --format md
+python <skills_dir>/c7-change-request/scripts/cr_impact.py cr_input.json --context <ws>/project-context.json --format md
+# CR là tài liệu khách ký → mặc định theo `settings.languages.client_facing` (ví dụ ja); `--lang` để ép
 ```
 
 Đầu vào và nguồn từng trường: `references/cr-input.md`. Script tính NEW/REWORK/REGRESSION, buffer (`settings.buffer_percent` × (NEW+REWORK)), tổng CR, Person-Month (`settings.md_per_person_month`), sprint delay tối thiểu (⌈total ÷ capacity⌉), timeline (tuần), % so với estimate gốc, chi phí (nếu có đơn giá). Thiếu `md_per_person_month` hoặc `buffer_percent` → script dừng (exit 2), không dùng số mặc định.

@@ -4,6 +4,25 @@
 > Nhãn phiên bản có hai loại: **phiên bản bộ** (manifest + plugin, chỉ có 3.8.0 và 3.16.0 là bản phát hành toàn bộ) và **phiên bản từng skill**
 > (3.9.0–3.14.0 chỉ xuất hiện ở một số skill trong `skills-manifest.json`). Mục nào "không có phát hành riêng" nghĩa là git log không có commit gắn nhãn đó.
 
+## 3.17.6 — 2026-11-12
+Một lựa chọn ngôn ngữ lúc khởi tạo điều khiển toàn bộ đầu ra; có công cụ quét rò rỉ ngôn ngữ.
+
+### Added
+- `a1-project-init/scripts/i18n.py`: chọn ngôn ngữ từ `settings.languages` (`--lang auto|vi|ja|en`, `--context`, `--audience`); thiếu `internal` thì theo `client_facing`.
+- `a1-project-init/scripts/lang_check.py`: quét rò rỉ ngôn ngữ trong xlsx/docx/pptx/md/html (`--ws` theo nhóm tài liệu hoặc `<path> --expect ja|vi|en`).
+- `validate_context.py`: chặn giá trị `settings.languages` sai.
+- MỌI script có chữ chảy vào tài liệu giao theo ngôn ngữ đã chọn: c5, c6, c7, c8, a9, x2, `check_gate.py`, a5 (`health_check`, `check_circular_fk`), b3 (`check_crud_coverage`), c0 (`verify_fe_scaffold`), c3 (`coverage_summary`), c4 (`parse_npm_audit`), `xlsx_build` (nhãn tổng, thông báo validate), `build_deck` (nhãn Nguồn), `gen_openapi`, `gen_postman`; placeholder theo ngôn ngữ (`[CẦN ĐIỀN]` / `[要記入]` / `[TO BE FILLED]`, `xlsx_verify` chấp nhận cả ba)
+- x6: rule D18 — skill có `outputs[]` phải dẫn chiếu `i18n-policy.md`; 9 skill còn thiếu (a5, a7, c3, x1, x2, x3, x4, x5, x7) đã thêm dòng ngôn ngữ; script báo cáo ở dòng dưới (mã máy đọc như QUALIFIED, GO/NO-GO, PASS/FAIL không dịch; thiếu cấu hình → vi như trước).
+- `evals/e2e/phase3_code.py`: sinh thêm X1 Architecture_Survey (tra file:dòng từ mã thật); báo cáo C3/C4 theo ngôn ngữ nội bộ (vi hoặc ja).
+- Evals T21 (ngôn ngữ đầu ra các script), T22 (lang_check), T23 (mọi công đoạn có chữ chảy vào tài liệu), T24 (kiểm đột biến D18); T17 chạy lang_check trên toàn workspace mẫu.
+
+### Changed
+- `i18n-policy.md` và a1: hỏi MỘT câu ngôn ngữ tài liệu, ghi cả `client_facing` và `internal` (code = en); chỉ tách khi người dùng yêu cầu.
+- Dự án mẫu 勤怠承認: `internal` = ja; D2 punch list và X5 tiêu chuẩn kỹ thuật dùng tiếng Nhật.
+
+### Known limits
+- Phần thân từng finding trong báo cáo C3/C4 mẫu giữ tiếng Anh kỹ thuật (ngôn ngữ của mã); khi chạy bằng skill (LLM) toàn bộ do ngôn ngữ đã chọn quyết định và `lang_check.py` kiểm.
+
 ## 3.17.5 — 2026-11-12
 Chạy C0–C4 trên mã nguồn mẫu thật (NestJS + Next.js) và sửa các lỗi lộ ra.
 

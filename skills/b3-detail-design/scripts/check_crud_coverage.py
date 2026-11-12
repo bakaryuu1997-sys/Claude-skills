@@ -18,6 +18,36 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "a1-project-init" / "scripts"))
+from i18n import add_lang_args, pick, resolve_lang  # noqa: E402
+
+MESSAGES = {
+    "vi": {"cant": "⛔ KHÔNG KIỂM ĐƯỢC: ", "nofile": "không thấy file {p}", "nocreate": "không tìm thấy CREATE TABLE nào trong {p}",
+           "unread": "không đọc được {p} ({e})",
+           "nohead": "sheet '{s}' không có ô tiêu đề nào trùng tên bảng trong SQL ({t}…). Tiêu đề cột phải là TÊN BẢNG đúng như migration.",
+           "summary": "Bảng trong SQL: {n} | nhận diện ma trận theo {o} (sheet '{s}')", "miss": "THIẾU",
+           "noc": "⚠️ {n} bảng không có thao tác C (nguồn dữ liệu ở đâu? seed/import/admin?): {l}",
+           "like": "⚠️ Cột trông như tên bảng nhưng KHÔNG có trong migration.sql (sai tên hoặc bảng cũ?): {l}",
+           "orphan": "⛔ BẢNG MỒ CÔI (không có cột/hàng trong CRUD_Matrix): {l}", "emptyc": "⛔ BẢNG CÓ CỘT NHƯNG KHÔNG Ô C/R/U/D NÀO: {l}",
+           "ok": "✅ CRUD_Matrix phủ 100% ({n}/{n} bảng)"},
+    "ja": {"cant": "⛔ 検査不能: ", "nofile": "ファイルが見つかりません {p}", "nocreate": "{p} に CREATE TABLE がありません",
+           "unread": "{p} を読み込めません（{e}）",
+           "nohead": "シート '{s}' に SQL のテーブル名と一致する見出しセルがありません（{t}…）。列見出しはマイグレーションと同じテーブル名にしてください。",
+           "summary": "SQL のテーブル数: {n} | マトリクスの向き: {o}（シート '{s}'）", "miss": "不足",
+           "noc": "⚠️ C 操作のないテーブルが {n} 件（データの出所は？ シード/取込/管理画面？）: {l}",
+           "like": "⚠️ テーブル名に見えるが migration.sql にない列（名前の誤りか旧テーブル？）: {l}",
+           "orphan": "⛔ 孤立テーブル（CRUD_Matrix に列/行がない）: {l}", "emptyc": "⛔ 列はあるが C/R/U/D のセルが 1 つもないテーブル: {l}",
+           "ok": "✅ CRUD_Matrix は 100% 網羅（{n}/{n} テーブル）"},
+    "en": {"cant": "⛔ CANNOT CHECK: ", "nofile": "file not found {p}", "nocreate": "no CREATE TABLE found in {p}",
+           "unread": "cannot read {p} ({e})",
+           "nohead": "sheet '{s}' has no header cell matching a table name in the SQL ({t}…). Column headers must be the table names exactly as in the migration.",
+           "summary": "Tables in SQL: {n} | matrix orientation: {o} (sheet '{s}')", "miss": "MISSING",
+           "noc": "⚠️ {n} table(s) without a C operation (where does the data come from? seed/import/admin?): {l}",
+           "like": "⚠️ Columns that look like table names but are not in migration.sql (wrong name or an old table?): {l}",
+           "orphan": "⛔ ORPHAN TABLES (no column/row in CRUD_Matrix): {l}", "emptyc": "⛔ TABLES WITH A COLUMN BUT NO C/R/U/D CELL: {l}",
+           "ok": "✅ CRUD_Matrix covers 100% ({n}/{n} tables)"},
+}
+
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
         _s.reconfigure(encoding="utf-8", errors="replace")
@@ -125,31 +155,32 @@ def main() -> int:
     ap.add_argument("matrix")
     ap.add_argument("--sheet", default="CRUD_Matrix")
     ap.add_argument("--ignore", default="")
+    add_lang_args(ap, audience="internal")
     a = ap.parse_args()
+    M = pick(MESSAGES, resolve_lang(a.lang, a.context, a.audience))
 
     sql_p, mx_p = Path(a.sql), Path(a.matrix)
     for p in (sql_p, mx_p):
         if not p.is_file():
-            print(f"⛔ KHÔNG KIỂM ĐƯỢC: không thấy file {p}")
+            print(M["cant"] + M["nofile"].format(p=p))
             return 3
     ignore = DEFAULT_IGNORE | {norm(x) for x in a.ignore.split(",") if x.strip()}
     tables = [t for t in parse_sql_tables(sql_p) if t not in ignore]
     if not tables:
-        print(f"⛔ KHÔNG KIỂM ĐƯỢC: không tìm thấy CREATE TABLE nào trong {sql_p.name}")
+        print(M["cant"] + M["nocreate"].format(p=sql_p.name))
         return 3
     try:
         grid, src = read_matrix(mx_p, a.sheet)
     except RuntimeError as e:
-        print(f"⛔ KHÔNG KIỂM ĐƯỢC: {e}")
+        print(M["cant"] + str(e))
         return 3
     except Exception as e:  # file hỏng / khóa
-        print(f"⛔ KHÔNG KIỂM ĐƯỢC: không đọc được {mx_p.name} ({e})")
+        print(M["cant"] + M["unread"].format(p=mx_p.name, e=e))
         return 3
 
     orient, start, ops = locate(grid, set(tables))
     if orient is None:
-        print(f"⛔ KHÔNG KIỂM ĐƯỢC: sheet '{src}' không có ô tiêu đề nào trùng tên bảng trong SQL "
-              f"({', '.join(tables[:5])}…). Tiêu đề cột phải là TÊN BẢNG đúng như migration.")
+        print(M["cant"] + M["nohead"].format(s=src, t=", ".join(tables[:5])))
         return 3
 
     missing = [t for t in tables if t not in ops]
@@ -160,21 +191,21 @@ def main() -> int:
         head = grid[start - 1]
         tbl_like = [h for h in head if re.fullmatch(r"[a-z][a-z0-9_]*", h or "") and norm(h) not in set(tables)]
 
-    print(f"Bảng trong SQL: {len(tables)} | nhận diện ma trận theo {orient.upper()} (sheet '{src}')")
+    print(M["summary"].format(n=len(tables), o=orient.upper(), s=src))
     for t in tables:
-        flag = "OK " if t in ops and valid_ops(ops[t]) else "THIẾU"
+        flag = "OK " if t in ops and valid_ops(ops[t]) else M["miss"]
         print(f"  [{flag}] {t:<32} {''.join(ch for ch in 'CRUD' if ch in valid_ops(ops.get(t, []))) or '-'}")
     if no_create:
-        print(f"⚠️ {len(no_create)} bảng không có thao tác C (nguồn dữ liệu ở đâu? seed/import/admin?): {', '.join(no_create)}")
+        print(M["noc"].format(n=len(no_create), l=", ".join(no_create)))
     if tbl_like:
-        print(f"⚠️ Cột trông như tên bảng nhưng KHÔNG có trong migration.sql (sai tên hoặc bảng cũ?): {', '.join(tbl_like)}")
+        print(M["like"].format(l=", ".join(tbl_like)))
     if missing or empty:
         if missing:
-            print(f"⛔ BẢNG MỒ CÔI (không có cột/hàng trong CRUD_Matrix): {', '.join(missing)}")
+            print(M["orphan"].format(l=", ".join(missing)))
         if empty:
-            print(f"⛔ BẢNG CÓ CỘT NHƯNG KHÔNG Ô C/R/U/D NÀO: {', '.join(empty)}")
+            print(M["emptyc"].format(l=", ".join(empty)))
         return 1
-    print(f"✅ CRUD_Matrix phủ 100% ({len(tables)}/{len(tables)} bảng)")
+    print(M["ok"].format(n=len(tables)))
     return 0
 
 

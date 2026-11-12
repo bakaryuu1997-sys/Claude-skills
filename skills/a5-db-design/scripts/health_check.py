@@ -43,6 +43,28 @@ if hasattr(sys.stdout, "reconfigure"):
 if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "a1-project-init" / "scripts"))
+from i18n import lang_from_argv, pick  # noqa: E402
+
+MESSAGES = {
+    "vi": {"cols": "%d cột (>20)", "fk_noidx": "FK chưa có index: ", "lack": "thiếu ", "nolen": "không giới hạn độ dài: ", "float": "FLOAT cho tiền: ",
+           "softdel": "bảng Core chưa có deleted_at và chưa ghi quyết định hard delete", "junction": "thiếu UNIQUE/PK tổng hợp trên các cột FK",
+           "nocheck": "chưa có CHECK/lookup: ", "noindex": "chưa có index: ", "partition": "~%s dòng, chưa có kế hoạch partition",
+           "bad": "LỖI: schema_model.json không hợp lệ (%s). Cần {\"tables\": [...]}", "tbl": "Bảng",
+           "score": "Schema Health Score: %s/100 | FAIL: %d | WARN: %d | sạch nhất: %s | cần chú ý nhất: %s"},
+    "ja": {"cols": "%d 列（20 超）", "fk_noidx": "FK にインデックスがありません: ", "lack": "不足: ", "nolen": "長さ制限なし: ", "float": "金額に FLOAT を使用: ",
+           "softdel": "Core テーブルに deleted_at がなく、物理削除の決定も記録されていません", "junction": "FK 列に複合 UNIQUE/PK がありません",
+           "nocheck": "CHECK/参照テーブルがありません: ", "noindex": "インデックスがありません: ", "partition": "約 %s 行、パーティション計画がありません",
+           "bad": "エラー: schema_model.json が不正です（%s）。{\"tables\": [...]} が必要です", "tbl": "テーブル",
+           "score": "スキーマヘルススコア: %s/100 | FAIL: %d | WARN: %d | 最良: %s | 要注意: %s"},
+    "en": {"cols": "%d columns (>20)", "fk_noidx": "FK without index: ", "lack": "missing ", "nolen": "no length limit: ", "float": "FLOAT used for money: ",
+           "softdel": "Core table has no deleted_at and no recorded hard-delete decision", "junction": "missing composite UNIQUE/PK on the FK columns",
+           "nocheck": "no CHECK/lookup: ", "noindex": "no index: ", "partition": "~%s rows, no partition plan",
+           "bad": "ERROR: invalid schema_model.json (%s). Expected {\"tables\": [...]}", "tbl": "Table",
+           "score": "Schema Health Score: %s/100 | FAIL: %d | WARN: %d | best: %s | needs attention: %s"},
+}
+HM = pick(MESSAGES, "vi")
+
 RULES = ["W01", "W02", "W03", "W04", "W05", "W06", "W07", "W08", "W09", "W10"]
 MONEY_RE = re.compile(r"(price|amount|total|fee|cost|balance|tax|money|salary|fare|charge)", re.I)
 SHORT_TEXT_RE = re.compile(r"(^|_)(name|title|email|code|slug|username|phone|sku|no)($|_)", re.I)
@@ -84,31 +106,31 @@ def evaluate(t):
     fkcols = [c for c in cols if c.get("fk")]
     res = {}
 
-    res["W01"] = ("WARN", "%d cột (>20)" % len(cols)) if len(cols) > 20 else ("PASS", "")
+    res["W01"] = ("WARN", HM["cols"] % len(cols)) if len(cols) > 20 else ("PASS", "")
 
     miss = [c["name"] for c in fkcols if not index_leads(t, c["name"])]
-    res["W02"] = ("FAIL", "FK chưa có index: " + ", ".join(miss)) if miss else \
+    res["W02"] = ("FAIL", HM["fk_noidx"] + ", ".join(miss)) if miss else \
         ("PASS", "") if fkcols else ("N/A", "")
 
     lack = [n for n in ("created_at", "updated_at") if n not in names]
-    res["W03"] = ("FAIL", "thiếu " + ", ".join(lack)) if lack else ("PASS", "")
+    res["W03"] = ("FAIL", HM["lack"] + ", ".join(lack)) if lack else ("PASS", "")
 
     bad = [c["name"] for c in cols
            if (base_type(c.get("type")) == "VARCHAR" and "(" not in str(c.get("type")))
            or (base_type(c.get("type")) == "TEXT" and SHORT_TEXT_RE.search(c.get("name", "")))]
-    res["W04"] = ("WARN", "không giới hạn độ dài: " + ", ".join(bad)) if bad else ("PASS", "")
+    res["W04"] = ("WARN", HM["nolen"] + ", ".join(bad)) if bad else ("PASS", "")
 
     fl = [c["name"] for c in cols
           if base_type(c.get("type")) in ("FLOAT", "REAL", "DOUBLE", "DOUBLE PRECISION")
           and MONEY_RE.search(c.get("name", ""))]
-    res["W05"] = ("FAIL", "FLOAT cho tiền: " + ", ".join(fl)) if fl else ("PASS", "")
+    res["W05"] = ("FAIL", HM["float"] + ", ".join(fl)) if fl else ("PASS", "")
 
     if cls != "Core":
         res["W06"] = ("N/A", "")
     elif "deleted_at" in names or t.get("soft_delete") is False:
         res["W06"] = ("PASS", "")
     else:
-        res["W06"] = ("WARN", "bảng Core chưa có deleted_at và chưa ghi quyết định hard delete")
+        res["W06"] = ("WARN", HM["softdel"])
 
     if cls != "Junction":
         res["W07"] = ("N/A", "")
@@ -117,21 +139,21 @@ def evaluate(t):
         pk = set(t.get("primary_key") or [])
         ok = (len(fk_names) >= 2 and fk_names <= pk) or any(set(u) >= fk_names and len(fk_names) >= 2
                                                             for u in t.get("unique") or [])
-        res["W07"] = ("PASS", "") if ok else ("FAIL", "thiếu UNIQUE/PK tổng hợp trên các cột FK")
+        res["W07"] = ("PASS", "") if ok else ("FAIL", HM["junction"])
 
     st = [c["name"] for c in cols if STATUS_RE.search(c.get("name", ""))
           and base_type(c.get("type")) in ("VARCHAR", "TEXT", "CHAR") and not c.get("check") and not c.get("fk")]
     # cột có fk trỏ tới bảng lookup (ví dụ leave_types.code) đã là ràng buộc miền → không cảnh báo W08
-    res["W08"] = ("WARN", "chưa có CHECK/lookup: " + ", ".join(st)) if st else ("PASS", "")
+    res["W08"] = ("WARN", HM["nocheck"] + ", ".join(st)) if st else ("PASS", "")
 
     sc = [n for n in SORT_COLS if n in names and not index_has(t, n)]
-    res["W09"] = ("WARN", "chưa có index: " + ", ".join(sc)) if sc else ("PASS", "")
+    res["W09"] = ("WARN", HM["noindex"] + ", ".join(sc)) if sc else ("PASS", "")
 
     est = t.get("est_rows")
     if est is None:
         res["W10"] = ("N/A", "")
     elif est > 10_000_000 and not t.get("partition_plan"):
-        res["W10"] = ("WARN", "~%s dòng, chưa có kế hoạch partition" % format(int(est), ","))
+        res["W10"] = ("WARN", HM["partition"] % format(int(est), ","))
     else:
         res["W10"] = ("PASS", "")
     return res
@@ -141,6 +163,10 @@ SCORE = {"PASS": 1.0, "WARN": 0.5, "FAIL": 0.0}
 
 
 def main(argv):
+    global HM
+    _lang, _rest = lang_from_argv(argv[1:], audience="internal")
+    argv = [argv[0]] + _rest
+    HM = pick(MESSAGES, _lang)
     args = [a for a in argv[1:] if not a.startswith("--")]
     if not args or "--help" in argv or "-h" in argv:
         print(__doc__)
@@ -155,7 +181,7 @@ def main(argv):
         tables = model["tables"]
         assert isinstance(tables, list) and tables
     except (OSError, ValueError, KeyError, AssertionError) as e:
-        print("LỖI: schema_model.json không hợp lệ (%s). Cần {\"tables\": [...]}" % e)
+        print(HM["bad"] % e)
         return 2
 
     rows, n_fail, n_warn, ratios = [], 0, 0, []
@@ -174,11 +200,10 @@ def main(argv):
     worst = min(rows, key=lambda r: r["score10"])["table"]
 
     sym = {"PASS": "OK ", "WARN": "WRN", "FAIL": "ERR", "N/A": " - "}
-    print("%-24s %s  Score" % ("Bảng", " ".join(RULES)))
+    print("%-24s %s  Score" % (HM["tbl"], " ".join(RULES)))
     for r in rows:
         print("%-24s %s  %s/10" % (r["table"], " ".join(sym[r["results"][k]["status"]] for k in RULES), r["score10"]))
-    print("\nSchema Health Score: %s/100 | FAIL: %d | WARN: %d | sạch nhất: %s | cần chú ý nhất: %s"
-          % (total, n_fail, n_warn, best, worst))
+    print("\n" + HM["score"] % (total, n_fail, n_warn, best, worst))
     actions = []
     for r in rows:
         for k in RULES:

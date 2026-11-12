@@ -54,6 +54,7 @@ python <skills_dir>/menu/scripts/test_intents.py <skills_dir>       # tỉ lệ 
 | D14 | Tham chiếu chết: đường dẫn file (`.py/.md/.json/…`) trong backtick của SKILL.md + `references/*.md` phải tồn tại sau khi thay `<skills_dir>`. Bỏ qua dòng ví dụ ("ví dụ", "e.g."), template (`<…>`, `[N]`, `*`), đường dẫn workspace (`docs/`, `src/`…). Tên `.py` trần không tìm thấy → WARN, có thư mục → FAIL | FAIL / WARN |
 | D15 | Script Windows-safe: `scripts/**/*.py` phải `compile()` được; script có `print` chuỗi non-ASCII phải `sys.stdout.reconfigure(encoding="utf-8")`; đường dẫn `/tmp` → WARN | FAIL / WARN |
 | D16 | Số liệu khớp nguồn: số "N rule" của x6 (manifest summary, README, AGENTS, SKILL này) = số rule trong script; "N skill" trong README/AGENTS/menu = số folder hoặc số skill manifest | FAIL (rule) / WARN (skill) |
+| D18 | Skill có `outputs[]` trong manifest phải dẫn chiếu `i18n-policy.md` trong SKILL.md (ngôn ngữ tài liệu theo `settings.languages`, không tự quyết) | FAIL |
 | D17 | Version đồng bộ: `manifest_version` = mọi `version` trong `plugin.json`, `marketplace.json`, `.claude-plugin/*.json` (ở thư mục cha của `<skills_dir>`) | FAIL |
 
 > D13 được dành riêng cho kiểm tra khối Self-Improvement (bổ sung ở giai đoạn riêng). Mỗi rule đã được thử bằng "đột biến" (sửa một bản sao để rule phải bắt được) — khi thêm rule mới hãy làm tương tự.

@@ -32,6 +32,9 @@ import uuid
 from fractions import Fraction
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "a1-project-init" / "scripts"))
+from i18n import pick, resolve_lang  # noqa: E402
+
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 if hasattr(sys.stderr, "reconfigure"):
@@ -46,6 +49,40 @@ MILESTONES = [  # (id, tên, tỷ lệ vị trí trong tổng sprint)
     ("M5", "UAT Start", Fraction(10, 11)),
     ("M6", "Go-Live", Fraction(1)),
 ]
+# Chỉ câu cảnh báo / dòng in ra theo ngôn ngữ; tên mốc (Kickoff, API Freeze…) là nhãn kỹ thuật giữ nguyên.
+MESSAGES = {
+    "vi": {
+        "alloc": "%s allocation=%s — capacity đã nhân hệ số (không cộng thêm buffer cho việc đó)",
+        "team": "team > 3 người: overhead giao tiếp 5–10% — kiểm xem đã nằm trong total_md của a6 chưa",
+        "same": "Các mốc %s cùng rơi vào cuối sprint %d (kế hoạch quá ngắn để tách) — gộp mốc hoặc tăng số sprint",
+        "late": "Ngày kết thúc tính được {end} trễ {weeks} tuần so với go_live_target {target} — giảm scope, tăng team (nút thắt role) hoặc đàm phán lại mốc",
+        "badtarget": "project.go_live_target không đúng YYYY-MM-DD — bỏ qua so sánh",
+        "ics_desc": "Mốc %s (sprint %d) — %s",
+        "cap": "Capacity/sprint: %.2f MD (%s)", "sprints": "Sprint: cơ sở %d + đệm %d = %d (sprint %d tuần) · kết thúc %s",
+        "after": "(sau sprint %d)", "warn": "CẢNH BÁO:", "ics_ok": "OK .ics (%d VEVENT, UID/DTSTAMP, CRLF, đã verify): %s",
+    },
+    "ja": {
+        "alloc": "%s allocation=%s — キャパシティは係数を掛けて算出済み（その分のバッファは加算しない）",
+        "team": "メンバーが 3 人超: コミュニケーションのオーバーヘッド 5〜10% — 見積りの総工数に含まれているか確認してください",
+        "same": "マイルストーン %s がスプリント %d の終わりに重なっています（計画が短すぎて分けられません）— 統合するかスプリント数を増やしてください",
+        "late": "算出した終了日 {end} は go_live_target {target} より {weeks} 週遅れています — スコープ削減、増員（ボトルネックのロール）、またはマイルストーンの再交渉が必要です",
+        "badtarget": "project.go_live_target が YYYY-MM-DD 形式ではありません — 比較を省略しました",
+        "ics_desc": "マイルストーン %s（スプリント %d）— %s",
+        "cap": "スプリント当たりキャパシティ: %.2f 人日（%s）", "sprints": "スプリント: 基本 %d + バッファ %d = %d（1 スプリント %d 週）· 終了日 %s",
+        "after": "（スプリント %d 終了時）", "warn": "警告:", "ics_ok": "OK .ics（%d VEVENT、UID/DTSTAMP、CRLF、検証済み）: %s",
+    },
+    "en": {
+        "alloc": "%s allocation=%s — capacity already scaled (no extra buffer added for this person)",
+        "team": "team > 3 people: 5–10% communication overhead — check it is already inside the estimate's total_md",
+        "same": "Milestones %s fall on the end of sprint %d (plan too short to separate them) — merge milestones or add sprints",
+        "late": "Computed end date {end} is {weeks} week(s) after go_live_target {target} — cut scope, add people (bottleneck role) or renegotiate the milestone",
+        "badtarget": "project.go_live_target is not YYYY-MM-DD — comparison skipped",
+        "ics_desc": "Milestone %s (sprint %d) — %s",
+        "cap": "Capacity/sprint: %.2f MD (%s)", "sprints": "Sprints: base %d + buffer %d = %d (%d weeks each) · ends %s",
+        "after": "(after sprint %d)", "warn": "WARNING:", "ics_ok": "OK .ics (%d VEVENT, UID/DTSTAMP, CRLF, verified): %s",
+    },
+}
+
 UID_NS = uuid.UUID("6f0c1d52-3a8e-4f4c-9b1e-2a7d5c1f0e11")
 
 
@@ -54,7 +91,8 @@ def fail(msg, code=2):
     sys.exit(code)
 
 
-def capacity(team, sprint_weeks):
+def capacity(team, sprint_weeks, M=None):
+    M = M or pick(MESSAGES, "vi")
     by_role, lines, warns = {}, [], []
     scale = sprint_weeks / 2.0
     for m in team:
@@ -72,7 +110,7 @@ def capacity(team, sprint_weeks):
         lines.append({"id": m.get("id"), "role": role, "allocation": alloc, "md_per_sprint": mps,
                       "cap_per_sprint": round(cap, 2)})
         if float(alloc) < 1:
-            warns.append("%s allocation=%s — capacity đã nhân hệ số (không cộng thêm buffer cho việc đó)" % (m.get("id"), alloc))
+            warns.append(M["alloc"] % (m.get("id"), alloc))
     return by_role, round(sum(by_role.values()), 2), lines, warns
 
 
@@ -134,6 +172,8 @@ def main(argv):
     ap.add_argument("--total-md", type=float)
     ap.add_argument("--ics")
     ap.add_argument("--json")
+    ap.add_argument("--lang", choices=("auto", "vi", "ja", "en"), default="auto",
+                    help="ngôn ngữ cảnh báo/in ra; auto = settings.languages.internal trong project-context.json (mặc định vi)")
     a = ap.parse_args(argv[1:])
 
     ctx_p = Path(a.workspace) / "project-context.json"
@@ -144,6 +184,7 @@ def main(argv):
     except ValueError as e:
         fail("project-context.json lỗi cú pháp: %s" % e)
 
+    M = pick(MESSAGES, resolve_lang(a.lang, ctx_p, "internal"))
     proj = ctx.get("project") or {}
     settings = ctx.get("settings") or {}
     sprint_weeks = settings.get("sprint_duration_weeks", 2)
@@ -163,14 +204,14 @@ def main(argv):
     except ValueError:
         fail("project.start_date phải dạng YYYY-MM-DD")
 
-    by_role, team_cap, lines, warns = capacity(team, sprint_weeks)
+    by_role, team_cap, lines, warns = capacity(team, sprint_weeks, M)
     if team_cap <= 0:
         fail("capacity team = 0")
     base = math.ceil(total_md / team_cap)
     buffer = 2 if base > 10 else 1 if base > 6 else 0
     n = base + buffer
     if len(team) > 3:
-        warns.append("team > 3 người: overhead giao tiếp 5–10% — kiểm xem đã nằm trong total_md của a6 chưa")
+        warns.append(M["team"])
 
     weeks = 7 * sprint_weeks
     ms = []
@@ -186,8 +227,7 @@ def main(argv):
         seen.setdefault(m["sprint_end"], []).append(m["id"])
     for k, ids in seen.items():
         if len(ids) > 1:
-            warns.append("Các mốc %s cùng rơi vào cuối sprint %d (kế hoạch quá ngắn để tách) — gộp mốc hoặc tăng số sprint"
-                         % (", ".join(ids), k))
+            warns.append(M["same"] % (", ".join(ids), k))
 
     go_live = proj.get("go_live_target")
     gap_weeks = None
@@ -196,10 +236,9 @@ def main(argv):
             target = dt.date.fromisoformat(str(go_live))
             if end > target:
                 gap_weeks = math.ceil((end - target).days / 7)
-                warns.append("Ngày kết thúc tính được %s trễ %d tuần so với go_live_target %s — giảm scope, tăng team (nút thắt role) hoặc đàm phán lại mốc"
-                             % (end.isoformat(), gap_weeks, go_live))
+                warns.append(M["late"].format(end=end.isoformat(), weeks=gap_weeks, target=go_live))
         except ValueError:
-            warns.append("project.go_live_target không đúng YYYY-MM-DD — bỏ qua so sánh")
+            warns.append(M["badtarget"])
 
     result = {"total_md": total_md, "capacity_by_role": {k: round(v, 2) for k, v in by_role.items()},
               "team_capacity_per_sprint": team_cap, "members": lines,
@@ -212,7 +251,7 @@ def main(argv):
         name = proj.get("name") or "Project"
         stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         events = [(m["id"], m["name"], dt.date.fromisoformat(m["date"]),
-                   "Mốc %s (sprint %d) — %s" % (m["id"], m["sprint_end"], m["name"])) for m in ms]
+                   M["ics_desc"] % (m["id"], m["sprint_end"], m["name"])) for m in ms]
         text = build_ics(name, events, stamp)
         err = verify_ics(text, len(events))
         if err:
@@ -226,14 +265,14 @@ def main(argv):
         Path(a.json).parent.mkdir(parents=True, exist_ok=True)
         Path(a.json).write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    print("Capacity/sprint: %.2f MD (%s)" % (team_cap, ", ".join("%s=%.2f" % kv for kv in by_role.items())))
-    print("Sprint: cơ sở %d + đệm %d = %d (sprint %d tuần) · kết thúc %s" % (base, buffer, n, sprint_weeks, end.isoformat()))
+    print(M["cap"] % (team_cap, ", ".join("%s=%.2f" % kv for kv in by_role.items())))
+    print(M["sprints"] % (base, buffer, n, sprint_weeks, end.isoformat()))
     for m in ms:
-        print("  %s %-18s %s (sau sprint %d)" % (m["id"], m["name"], m["date"], m["sprint_end"]))
+        print("  %s %-18s %s %s" % (m["id"], m["name"], m["date"], M["after"] % m["sprint_end"]))
     for w in warns:
-        print("CẢNH BÁO:", w)
+        print(M["warn"], w)
     if a.ics:
-        print("OK .ics (%d VEVENT, UID/DTSTAMP, CRLF, đã verify): %s" % (len(ms), a.ics))
+        print(M["ics_ok"] % (len(ms), a.ics))
     return 0
 
 

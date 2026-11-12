@@ -768,7 +768,7 @@ sprint_in = {
 sprint_path = DOCS / "C6_sprint-review" / f"{P}_sprint2_input.json"
 sprint_path.parent.mkdir(parents=True, exist_ok=True)
 sprint_path.write_text(json.dumps(sprint_in, ensure_ascii=False, indent=2), encoding="utf-8")
-_r = sh([str(REPO / "skills/c6-sprint-review/scripts/sprint_metrics.py"), str(sprint_path), "--format", "md"])
+_r = sh([str(REPO / "skills/c6-sprint-review/scripts/sprint_metrics.py"), str(sprint_path), "--context", ctx_path, "--format", "md"])
 (DOCS / "C6_sprint-review" / f"{P}_Sprint2_Review.md").write_text(_r.stdout, encoding='utf-8')
 
 cr = {
@@ -784,7 +784,7 @@ cr = {
 cr_path = DOCS / "C7_change-request" / f"{P}_CR-001_input.json"
 cr_path.parent.mkdir(parents=True, exist_ok=True)
 cr_path.write_text(json.dumps(cr, ensure_ascii=False, indent=2), encoding="utf-8")
-_r = sh([str(REPO / "skills/c7-change-request/scripts/cr_impact.py"), str(cr_path), "--format", "md"])
+_r = sh([str(REPO / "skills/c7-change-request/scripts/cr_impact.py"), str(cr_path), "--context", ctx_path, "--format", "md"])
 (DOCS / "C7_change-request" / f"{P}_CR-001_Impact_Summary.md").write_text(_r.stdout, encoding='utf-8')
 
 # C8: smoke test trên stub staging (đúng hợp đồng API A4: /health 200, /api/v1/leave-requests không token → 401)
@@ -810,7 +810,7 @@ smoke = {"base_url": f"http://127.0.0.1:{_srv.server_address[1]}", "checks": [
 smoke_path = DOCS / "C8_release-deployment" / f"{P}_smoke.json"
 smoke_path.parent.mkdir(parents=True, exist_ok=True)
 smoke_path.write_text(json.dumps(smoke, ensure_ascii=False, indent=2), encoding="utf-8")
-_r = sh([str(REPO / "skills/c8-release-deployment/scripts/smoke_test_runner.py"), str(smoke_path), "--format", "md"])
+_r = sh([str(REPO / "skills/c8-release-deployment/scripts/smoke_test_runner.py"), str(smoke_path), "--context", ctx_path, "--format", "md"])
 (DOCS / "C8_release-deployment" / f"{P}_Smoke_Test_Runbook.md").write_text(_r.stdout, encoding='utf-8')
 _srv.shutdown()
 

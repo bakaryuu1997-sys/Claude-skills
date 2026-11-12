@@ -14,6 +14,9 @@ Thang severity chuẩn: Critical / High / Medium / Low (xem pipeline.md → Quy 
 import json, sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from i18n import pick, resolve_lang  # noqa: E402
+
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 if hasattr(sys.stderr, "reconfigure"):
@@ -30,6 +33,52 @@ BUG_OPEN_STATES = ("open", "in progress", "retest", "fixed", "unverified", "reop
 BUG_BLOCKING = ("critical", "high")
 
 
+MESSAGES = {
+    "vi": {
+        "p1_unverifiable": "GATE P1: KHÔNG KIỂM ĐƯỢC — {err}",
+        "p1_block": "GATE P1: {n} câu P1 chưa Answered (>3) — DỪNG /a6-estimate & /b1-project-kickoff (estimate sẽ sai >40%)",
+        "p1_ok": "GATE P1: {n} câu P1 mở (≤ 3)",
+        "bug_block": "GATE BUG: {n} bug Critical/High còn mở hoặc chưa verify — KHÔNG go-live",
+        "bug_ok": "GATE BUG: 0 bug Critical/High mở",
+        "cr": "CR: {n} change request chờ khách quyết định",
+        "ctx_err": "project-context.json không đọc được ({e})",
+        "no_ctx": "chưa có project-context.json (chạy /a1-project-init)",
+        "e_nofile": "không có *_QA_Tracker.xlsx hoặc *_Requirement_Specification.xlsx trong workspace",
+        "e_openpyxl": "thiếu openpyxl (pip install openpyxl) — lưu ý: `python -I` không thấy openpyxl cài ở user-site, hãy chạy không có -I",
+        "e_read": "{f} không đọc được ({e})",
+        "e_header": "không tìm thấy dòng header có cột Priority + Trạng thái/Status trong {n} dòng đầu của {files}",
+    },
+    "ja": {
+        "p1_unverifiable": "GATE P1: 確認できません — {err}",
+        "p1_block": "GATE P1: 未回答の P1 質問が {n} 件（3 件超）— 見積り・キックオフを停止（見積り誤差が 40% 超になる恐れ）",
+        "p1_ok": "GATE P1: 未回答の P1 質問は {n} 件（3 件以内）",
+        "bug_block": "GATE BUG: 未解決または未検証の Critical/High バグが {n} 件 — 本番リリース不可",
+        "bug_ok": "GATE BUG: 未解決の Critical/High バグはありません",
+        "cr": "CR: 顧客判断待ちの変更要求が {n} 件",
+        "ctx_err": "project-context.json を読み込めません（{e}）",
+        "no_ctx": "project-context.json がありません（プロジェクト初期化を実行してください）",
+        "e_nofile": "ワークスペースに *_QA_Tracker.xlsx も *_Requirement_Specification.xlsx もありません",
+        "e_openpyxl": "openpyxl がありません（pip install openpyxl）。注意: `python -I` ではユーザー領域の openpyxl が見えないため -I なしで実行してください",
+        "e_read": "{f} を読み込めません（{e}）",
+        "e_header": "{files} の先頭 {n} 行に Priority（優先度）と Status（ステータス）の列を持つ見出し行が見つかりません",
+    },
+    "en": {
+        "p1_unverifiable": "GATE P1: CANNOT BE CHECKED — {err}",
+        "p1_block": "GATE P1: {n} P1 questions unanswered (>3) — STOP estimate and kickoff (estimate would be off by >40%)",
+        "p1_ok": "GATE P1: {n} P1 questions open (≤ 3)",
+        "bug_block": "GATE BUG: {n} Critical/High bug(s) open or unverified — NO go-live",
+        "bug_ok": "GATE BUG: no open Critical/High bugs",
+        "cr": "CR: {n} change request(s) waiting for the customer's decision",
+        "ctx_err": "project-context.json cannot be read ({e})",
+        "no_ctx": "project-context.json is missing (run project init)",
+        "e_nofile": "no *_QA_Tracker.xlsx or *_Requirement_Specification.xlsx in the workspace",
+        "e_openpyxl": "openpyxl is missing (pip install openpyxl); note: `python -I` cannot see user-site packages, run without -I",
+        "e_read": "{f} cannot be read ({e})",
+        "e_header": "no header row with Priority + Status columns in the first {n} rows of {files}",
+    },
+}
+
+
 def _find_header(sheet):
     """Quét HEADER_SCAN_ROWS dòng đầu, trả (chỉ_số_dòng_header, ip, ist) hoặc None."""
     for n, row in enumerate(sheet.iter_rows(min_row=1, max_row=HEADER_SCAN_ROWS, values_only=True), start=1):
@@ -41,7 +90,8 @@ def _find_header(sheet):
     return None
 
 
-def count_open_p1(ws: Path):
+def count_open_p1(ws: Path, M=None):
+    M = M or pick(MESSAGES, "vi")
     """Trả (số P1 mở | None, lỗi | None)."""
     files = sorted(set(list(ws.glob("*_QA_Tracker.xlsx")) + list(ws.glob("docs/**/*_QA_Tracker.xlsx"))))
     if not files:
@@ -49,17 +99,17 @@ def count_open_p1(ws: Path):
                            + list(ws.glob("*_Requirement_*.xlsx")) + list(ws.glob("docs/**/*_Requirement_*.xlsx"))))
     files = [f for f in files if not f.name.startswith("~$")]
     if not files:
-        return None, "không có *_QA_Tracker.xlsx hoặc *_Requirement_Specification.xlsx trong workspace"
+        return None, M["e_nofile"]
     try:
         import openpyxl
     except ImportError:
-        return None, "thiếu openpyxl (pip install openpyxl) — lưu ý: `python -I` không thấy openpyxl cài ở user-site, hãy chạy không có -I"
+        return None, M["e_openpyxl"]
     n, found_header = 0, False
     for fp in files:
         try:
             wb = openpyxl.load_workbook(fp, read_only=True, data_only=True)
         except Exception as e:
-            return None, f"{fp.name} không đọc được ({e})"
+            return None, M["e_read"].format(f=fp.name, e=e)
         for sheet in wb.worksheets:
             hdr = _find_header(sheet)
             if hdr is None:
@@ -73,7 +123,7 @@ def count_open_p1(ws: Path):
                     n += 1
         wb.close()
     if not found_header:
-        return None, f"không tìm thấy dòng header có cột Priority + Trạng thái/Status trong {HEADER_SCAN_ROWS} dòng đầu của {[f.name for f in files]}"
+        return None, M["e_header"].format(n=HEADER_SCAN_ROWS, files=[f.name for f in files])
     return n, None
 
 
@@ -81,15 +131,16 @@ def main() -> int:
     ws = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
     block, warn = [], []
     unverifiable = False
+    M = pick(MESSAGES, resolve_lang("auto", ws / "project-context.json", "internal"))
 
-    p1, err = count_open_p1(ws)
+    p1, err = count_open_p1(ws, M)
     if err:
-        warn.append(f"GATE P1: KHÔNG KIỂM ĐƯỢC — {err}")
+        warn.append(M["p1_unverifiable"].format(err=err))
         unverifiable = True
     elif p1 > 3:
-        block.append(f"GATE P1: {p1} câu P1 chưa Answered (>3) — DỪNG /a6-estimate & /b1-project-kickoff (estimate sẽ sai >40%)")
+        block.append(M["p1_block"].format(n=p1))
     else:
-        print(f"✅ GATE P1: {p1} câu P1 mở (≤ 3)")
+        print("✅ " + M["p1_ok"].format(n=p1))
 
     ctx_f = ws / "project-context.json"
     if ctx_f.exists():
@@ -99,17 +150,17 @@ def main() -> int:
                     and str(i.get("severity", "")).lower() in BUG_BLOCKING
                     and str(i.get("status", "open")).lower() in BUG_OPEN_STATES]
             if crit:
-                block.append(f"GATE BUG: {len(crit)} bug Critical/High còn mở hoặc chưa verify — KHÔNG go-live")
+                block.append(M["bug_block"].format(n=len(crit)))
             else:
-                print("✅ GATE BUG: 0 bug Critical/High mở")
+                print("✅ " + M["bug_ok"])
             pend = [c for c in ctx.get("change_requests", []) if isinstance(c, dict)
                     and str(c.get("status", "")).lower() in ("", "pending", "received", "in analysis", "negotiating")]
             if pend:
-                warn.append(f"CR: {len(pend)} change request chờ khách quyết định")
+                warn.append(M["cr"].format(n=len(pend)))
         except Exception as e:
-            warn.append(f"project-context.json không đọc được ({e})")
+            warn.append(M["ctx_err"].format(e=e))
     else:
-        warn.append("chưa có project-context.json (chạy /a1-project-init)")
+        warn.append(M["no_ctx"])
 
     for w in warn:
         print("⚠️", w)

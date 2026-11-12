@@ -32,7 +32,7 @@ ctx = {
         {"id": "qa1", "role": "QA", "name": "[担当者]", "allocation": 1, "md_per_sprint": 7},
     ],
     "settings": {"sprint_duration_weeks": 2, "working_days_per_week": 5, "md_per_person_month": 22, "buffer_percent": 15,
-                 "languages": {"client_facing": "ja", "internal": "vi", "code": "en"},
+                 "languages": {"client_facing": "ja", "internal": "ja", "code": "en"},
                  "quality_gates": {"ut_pass_rate": 95, "ut_coverage_line": 80, "ut_coverage_branch": 70,
                                    "it_pass_rate": 95, "st_pass_rate": 98, "open_critical_high_max": 0}},
     "estimates": {}, "links": {}, "change_requests": [], "known_issues": [], "activity_log": [],

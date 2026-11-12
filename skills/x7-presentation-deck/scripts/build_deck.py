@@ -69,10 +69,18 @@ def title_bar(slide, text):
 
 def footer(slide, source):
     if source:
-        add_text(slide, Inches(0.6), Inches(6.95), Inches(12.1), Inches(0.4), "Nguồn: " + source, 10, color=MUTED)
+        add_text(slide, Inches(0.6), Inches(6.95), Inches(12.1), Inches(0.4), CL["source"] + ": " + source, 10, color=MUTED)
+
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "a1-project-init" / "scripts"))
+from i18n import common, placeholder  # noqa: E402
+CL, PH = common("vi"), placeholder("vi")
 
 
 def build(spec: dict, out: Path):
+    global CL, PH
+    _lang = spec.get("language", "vi")
+    CL, PH = common(_lang), placeholder(_lang)
     prs = Presentation()
     prs.slide_width, prs.slide_height = Inches(13.333), Inches(7.5)
     blank = prs.slide_layouts[6]
@@ -110,13 +118,13 @@ def build(spec: dict, out: Path):
                 x = Inches(0.8 + k * col_w)
                 add_text(s, x, Inches(2.2), Inches(col_w - 0.2), Inches(1.2), str(m.get("value", "")), 44, bold=True, color=PRIMARY)
                 add_text(s, x, Inches(3.5), Inches(col_w - 0.2), Inches(1.0), str(m.get("label", "")), 16, color=TEXT)
-                add_text(s, x, Inches(4.5), Inches(col_w - 0.2), Inches(0.9), "Nguồn: " + str(m.get("source", "")), 11, color=MUTED)
+                add_text(s, x, Inches(4.5), Inches(col_w - 0.2), Inches(0.9), CL["source"] + ": " + str(m.get("source", "")), 11, color=MUTED)
         elif kind == "image":
             img = Path(sd.get("image", ""))
             if img.exists():
                 s.shapes.add_picture(str(img), Inches(0.8), Inches(1.6), width=Inches(8.4))
             else:
-                add_text(s, Inches(0.8), Inches(3.0), Inches(8.4), Inches(1.0), f"[CẦN ĐIỀN: ảnh {img.name}]", 16, color=MUTED)
+                add_text(s, Inches(0.8), Inches(3.0), Inches(8.4), Inches(1.0), f"{PH[:-1]}: {CL['image']} {img.name}]", 16, color=MUTED)
             if sd.get("caption"):
                 add_text(s, Inches(9.5), Inches(1.8), Inches(3.4), Inches(3.0), sd["caption"], 16, color=TEXT)
             footer(s, sd.get("source", ""))

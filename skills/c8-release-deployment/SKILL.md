@@ -1,6 +1,6 @@
 ---
 name: c8-release-deployment
-version: "3.17.3"
+version: "3.17.6"
 description: >-
   Kế hoạch phát hành & triển khai production: SemVer + CHANGELOG, Go/No-Go (điều kiện từ c4/c5 và check_gate),
   chiến lược rolling/blue-green/canary/feature flag, migration Expand→Migrate→Contract (Contract không hoàn tác),
@@ -69,7 +69,8 @@ Mẫu nội dung chi tiết: `references/release-practices.md`. Ngôn ngữ theo
 1. Sao `assets/smoke.example.json` → `smoke.json` của dự án; thay `base_url`, đường dẫn thật (lấy từ API Design A4). Token/mật khẩu test đặt trong biến môi trường (`${SMOKE_TOKEN}`), **không** ghi vào file.
 2. Chạy:
    ```
-   python <skills_dir>/c8-release-deployment/scripts/smoke_test_runner.py smoke.json --format md
+   python <skills_dir>/c8-release-deployment/scripts/smoke_test_runner.py smoke.json --context <ws>/project-context.json --format md
+   # bảng kết quả theo `settings.languages.client_facing`; PASS/FAIL và GO/NO-GO không dịch
    ```
    Exit `0` = GO, `1` = NO-GO, `2` = đầu vào sai. Latency ngưỡng lấy từ `max_latency_ms` theo NFR, không đặt cứng.
 3. Chạy lại toàn bộ sau mỗi lần sửa cấu hình; kết quả đưa vào sheet Smoke_Verification.

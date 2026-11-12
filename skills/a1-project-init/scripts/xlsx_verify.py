@@ -32,7 +32,7 @@ except ImportError:
 THIRD_PARTY = re.compile(r"FPT|Rikkei|リッケイ|\bCMC\b|F-Pay", re.IGNORECASE)
 STEP_CODE = re.compile(r"/[abcdx]\d-[a-z-]+|Bước\s+[ABCDX]\d\b|\bA\d設計書|\bD1\b.*運用")
 # {{biến}} kiểu template (Postman/Handlebars) — KHÔNG bắt JSON lồng nhau như {"error": {"code": ...}}
-PLACEHOLDER = re.compile(r"\[CẦN ĐIỀN\]|TODO|FIXME|\bxxx\b|\{\{\s*\w+\s*\}\}|lorem", re.IGNORECASE)
+PLACEHOLDER = re.compile(r"\[CẦN ĐIỀN\]|\[要記入\]|\[TO BE FILLED\]|TODO|FIXME|\bxxx\b|\{\{\s*\w+\s*\}\}|lorem", re.IGNORECASE)
 # chỉ bắt số có dấu phân cách hàng nghìn hoặc số thập phân dạng chuỗi (ví dụ "1,000", "12.5"); mã số nguyên như 100001/400 là văn bản có chủ đích
 NUM_AS_TEXT = re.compile(r"^\s*-?(\d{1,3}(,\d{3})+|\d+\.\d+)(\.\d+)?\s*$")
 FORMULA_ERR = ("#REF!", "#DIV/0!", "#NAME?", "#VALUE!", "#N/A", "#NUM!", "#NULL!")

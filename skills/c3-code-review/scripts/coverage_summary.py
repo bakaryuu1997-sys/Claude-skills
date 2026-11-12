@@ -21,6 +21,22 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "a1-project-init" / "scripts"))
+from i18n import add_lang_args, pick, resolve_lang  # noqa: E402
+
+MESSAGES = {
+    "vi": {"nofile": "không thấy file: {p}", "unread": "không đọc được {p}: {e}", "fmt": "{p}: định dạng không nhận diện (cần Jest --json hoặc pytest-json-report)",
+           "nogit": "không chạy được git: {e}", "giterr": "git diff lỗi: {e}", "h_metric": "Chỉ số", "h_value": "Giá trị", "cov": "Coverage",
+           "test": "Test", "pass": "pass", "fail": "fail", "skip": "skip/todo", "loc": "LOC", "lines": "dòng", "files": "file", "warn": "Cảnh báo"},
+    "ja": {"nofile": "ファイルが見つかりません: {p}", "unread": "{p} を読み込めません: {e}", "fmt": "{p}: 形式を認識できません（Jest --json または pytest-json-report が必要）",
+           "nogit": "git を実行できません: {e}", "giterr": "git diff に失敗: {e}", "h_metric": "指標", "h_value": "値", "cov": "カバレッジ",
+           "test": "テスト", "pass": "合格", "fail": "失敗", "skip": "スキップ/todo", "loc": "変更行数", "lines": "行", "files": "ファイル", "warn": "警告"},
+    "en": {"nofile": "file not found: {p}", "unread": "cannot read {p}: {e}", "fmt": "{p}: unrecognised format (need Jest --json or pytest-json-report)",
+           "nogit": "cannot run git: {e}", "giterr": "git diff failed: {e}", "h_metric": "Metric", "h_value": "Value", "cov": "Coverage",
+           "test": "Test", "pass": "pass", "fail": "fail", "skip": "skipped/todo", "loc": "LOC", "lines": "lines", "files": "files", "warn": "Warning"},
+}
+LANG_M = pick(MESSAGES, "vi")
+
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 if hasattr(sys.stderr, "reconfigure"):
@@ -31,9 +47,9 @@ def load_json(path: Path, warnings: list):
     try:
         return json.loads(path.read_text(encoding="utf-8-sig"))
     except FileNotFoundError:
-        warnings.append(f"không thấy file: {path}")
+        warnings.append(LANG_M["nofile"].format(p=path))
     except (OSError, json.JSONDecodeError) as e:
-        warnings.append(f"không đọc được {path}: {e}")
+        warnings.append(LANG_M["unread"].format(p=path, e=e))
     return None
 
 
@@ -83,7 +99,7 @@ def tests_part(path: Path, warnings: list):
     if isinstance(summ, dict):
         return {"total": summ.get("total"), "passed": summ.get("passed"), "failed": summ.get("failed"),
                 "skipped": summ.get("skipped", 0), "suites": None}
-    warnings.append(f"{path}: định dạng không nhận diện (cần Jest --json hoặc pytest-json-report)")
+    warnings.append(LANG_M["fmt"].format(p=path))
     return None
 
 
@@ -93,10 +109,10 @@ def diff_part(base: str, repo: Path, warnings: list):
             ["git", "-C", str(repo), "diff", "--numstat", f"{base}...HEAD"],
             capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60)
     except (OSError, subprocess.SubprocessError) as e:
-        warnings.append(f"không chạy được git: {e}")
+        warnings.append(LANG_M["nogit"].format(e=e))
         return None
     if out.returncode != 0:
-        warnings.append(f"git diff lỗi: {out.stderr.strip()[:200]}")
+        warnings.append(LANG_M["giterr"].format(e=out.stderr.strip()[:200]))
         return None
     files = []
     for line in out.stdout.splitlines():
@@ -123,7 +139,10 @@ def main(argv=None):
     ap.add_argument("--base", help="nhánh/commit gốc để diff, vd origin/main")
     ap.add_argument("--repo", default=".")
     ap.add_argument("--format", choices=("json", "md"), default="json")
+    add_lang_args(ap, audience="internal")  # bảng bằng chứng vào báo cáo code review (nội bộ)
     a = ap.parse_args(argv)
+    global LANG_M
+    LANG_M = pick(MESSAGES, resolve_lang(a.lang, a.context, a.audience))
 
     repo = Path(a.repo)
     warnings = []
@@ -141,17 +160,17 @@ def main(argv=None):
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
 
-    lines = ["| Chỉ số | Giá trị |", "|---|---|"]
+    lines = [f"| {LANG_M['h_metric']} | {LANG_M['h_value']} |", "|---|---|"]
     if cov:
         for m, v in cov["total"].items():
-            lines.append(f"| Coverage {m} | {v if v is not None else 'n/a'}% |")
+            lines.append(f"| {LANG_M['cov']} {m} | {v if v is not None else 'n/a'}% |")
     if tst:
-        skipped = f", {tst['skipped']} skip/todo" if tst.get("skipped") else ""
-        lines.append(f"| Test | {tst['passed']}/{tst['total']} pass, {tst['failed']} fail{skipped} |")
+        skipped = f", {tst['skipped']} {LANG_M['skip']}" if tst.get("skipped") else ""
+        lines.append(f"| {LANG_M['test']} | {tst['passed']}/{tst['total']} {LANG_M['pass']}, {tst['failed']} {LANG_M['fail']}{skipped} |")
     if dif:
-        lines.append(f"| LOC | +{dif['total_added']} / -{dif['total_deleted']} trên {len(dif['files'])} file |")
+        lines.append(f"| {LANG_M['loc']} | +{dif['total_added']} / -{dif['total_deleted']} ({len(dif['files'])} {LANG_M['files']}) |")
     for w in warnings:
-        lines.append(f"| Cảnh báo | {w} |")
+        lines.append(f"| {LANG_M['warn']} | {w} |")
     print("\n".join(lines))
     return 0
 

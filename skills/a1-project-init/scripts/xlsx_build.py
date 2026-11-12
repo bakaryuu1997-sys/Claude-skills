@@ -58,6 +58,9 @@ try:
 except ImportError:  # pragma: no cover
     sys.exit("❌ thiếu openpyxl: python -m pip install openpyxl (đừng chạy `python -I`)")
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from i18n import common  # noqa: E402
+
 NAVY, BLUE, ZEBRA, BORDER = "1F4E79", "2E75B6", "F2F2F2", "AAAAAA"
 INVALID_SHEET = re.compile(r"[\\/?*\[\]:]")
 
@@ -91,6 +94,7 @@ def _cell_value(raw):
 
 
 def _build_sheet(wb: Workbook, spec: dict, language: str, idx: int):
+    COMMON_L = common(language)
     name = str(spec["name"])
     if len(name) > 31 or INVALID_SHEET.search(name):
         raise ValueError(f"tên sheet không hợp lệ: {name!r} (≤31 ký tự, không chứa \\ / ? * [ ] :)")
@@ -177,7 +181,7 @@ def _build_sheet(wb: Workbook, spec: dict, language: str, idx: int):
     # Dòng tổng (tùy chọn)
     tot = spec.get("total_row")
     if tot:
-        label_cell = ws.cell(row=r, column=1, value=tot.get("label", "Tổng"))
+        label_cell = ws.cell(row=r, column=1, value=tot.get("label", COMMON_L["total"]))
         label_cell.font = _font(language, 9, True, NAVY)
         for col_key in tot.get("sum", []):
             ci = key_index.get(col_key)
@@ -205,8 +209,8 @@ def _build_sheet(wb: Workbook, spec: dict, language: str, idx: int):
         if c.get("validate"):
             choices = [str(x) for x in c["validate"]]
             dv = DataValidation(type="list", formula1='"' + ",".join(choices).replace('"', "'") + '"', allow_blank=True)
-            dv.error = "Chọn giá trị trong danh sách"
-            dv.errorTitle = "Giá trị không hợp lệ"
+            dv.error = COMMON_L["dv_msg"]
+            dv.errorTitle = COMMON_L["dv_title"]
             ws.add_data_validation(dv)
             L = get_column_letter(i)
             dv.add(f"{L}{hdr_row + 1}:{L}{max(hdr_row + 1, last_data_row)}")

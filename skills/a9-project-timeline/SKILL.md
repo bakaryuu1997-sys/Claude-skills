@@ -1,6 +1,6 @@
 ---
 name: a9-project-timeline
-version: "3.17.3"
+version: "3.17.6"
 description: >-
   Lập kế hoạch dự án từ estimate MD: sprint plan, Gantt, milestones, critical path, risk calendar
   (Excel) + file .ics import calendar. Hỗ trợ parallel team. Trigger: "timeline", "sprint plan",
@@ -343,7 +343,7 @@ Theo dõi thay đổi kế hoạch trong quá trình dự án:
 
 ## Tính timeline tự động + ICS Calendar
 
-**BẮT BUỘC chạy `scripts/timeline_calc.py`** để có capacity, số sprint, mốc M1–M6, cảnh báo go-live và file `.ics` (đã verify). **Đọc `references/calc-and-ics.md`** để hiểu công thức và kiểm kết quả — chứa: công thức capacity có `allocation`, số sprint + buffer, mốc theo tỷ lệ, kiểm go-live, quy tắc phase theo `project.type`, quy tắc split task song song, và các ràng buộc RFC 5545 script đảm bảo.
+**BẮT BUỘC chạy `scripts/timeline_calc.py`** (cảnh báo/dòng in theo `settings.languages.internal` của workspace, `--lang ja|vi|en` để ép) để có capacity, số sprint, mốc M1–M6, cảnh báo go-live và file `.ics` (đã verify). **Đọc `references/calc-and-ics.md`** để hiểu công thức và kiểm kết quả — chứa: công thức capacity có `allocation`, số sprint + buffer, mốc theo tỷ lệ, kiểm go-live, quy tắc phase theo `project.type`, quy tắc split task song song, và các ràng buộc RFC 5545 script đảm bảo.
 
 ```bash
 python <skills_dir>/a9-project-timeline/scripts/timeline_calc.py "<ws>" \

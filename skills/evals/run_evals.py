@@ -492,6 +492,9 @@ def t17():
         _row = [_raci.cell(row=_r, column=_c).value for _c in range(2, 9)]
         if any(_row):
             assert _row.count("A") == 1, f"RACI dòng {_r}: phải có đúng 1 chữ A, thấy {_row.count('A')}"
+    # Toàn bộ tài liệu của dự án mẫu (ngôn ngữ ja) phải không lẫn tiếng Việt: kiểm theo settings.languages
+    lc = run([str(SKILLS / "a1-project-init/scripts/lang_check.py"), "--ws", str(tmp / "ws")])
+    assert lc.returncode == 0, lc.stdout[-700:]
     # Báo cáo CR gửi khách phải là tiếng Nhật (không có nhãn tiếng Việt của script)
     _cr = next((docs / "C7_change-request").glob("*CR-001_Change_Request_JA.docx"))
     from docx import Document as _D
@@ -549,8 +552,160 @@ def t20():
     assert "placeholder: string;" in cp and "dialogLabel: string;" in cp and "placeholder =" not in cp
 
 
+_VI = re.compile(r"[ăâđêôơưạảãấầẩẫậắằẳẵặẹẻẽếềểễệịỉĩọỏõốồổỗộớờởỡợụủũứừửữựỵỷỹ]", re.I)
+
+
+@t("T21 ngôn ngữ đầu ra: c5/c6/c7/c8/check_gate/a9 theo settings.languages (ja không còn chữ Việt; vi giữ nguyên khi thiếu context)")
+def t21():
+    tmp = Path(tempfile.mkdtemp(prefix="ev_t21_"))
+    ctx = {"version": "x", "project": {"name": "P", "start_date": "2027-01-04", "go_live_target": "2027-02-01", "type": "web_app"},
+           "team": [{"id": "d1", "role": "Backend Dev", "allocation": 0.5, "md_per_sprint": 8}, {"id": "d2", "role": "QA"},
+                    {"id": "d3", "role": "PM"}, {"id": "d4", "role": "DevOps"}],
+           "settings": {"languages": {"client_facing": "ja", "internal": "ja", "code": "en"}},
+           "estimates": {"total_md": 200}, "known_issues": [{"id": "BUG-1", "severity": "High", "status": "open"}],
+           "change_requests": [{"id": "CR-1", "status": "pending"}], "activity_log": []}
+    (tmp / "project-context.json").write_text(json.dumps(ctx, ensure_ascii=False), encoding="utf-8")
+    cp = str(tmp / "project-context.json")
+    snap = {"phase": "UT", "tests": [{"id": "T-1", "result": "notrun"}, {"id": "T-2", "result": "blocked"}], "defects": [
+        {"id": "B1", "severity": "High", "status": "open"}], "coverage": {"line": 10, "branch": 5}}
+    sprint = {"sprint": 3, "capacity_md": 36, "tasks": [{"id": "T", "planned_md": 10, "actual_md": 5, "status": "done"}],
+              "bugs": {"found": 1}, "demo": "partial", "history": [{"sprint": 2, "planned_md": 10, "completed_md": 4, "completion_pct": 40}],
+              "unresolved_debt_md": 10, "remaining_md": 40}
+    cr = {"cr_id": "CR-1", "cr_type": "ADDITION", "title": "t", "items": [{"task": "A", "kind": "new", "dev": 10}],
+          "settings": {"md_per_person_month": 22, "buffer_percent": 15}, "capacity_md": 10, "original_total_md": 100}
+    smoke = {"checks": [{"id": "S-1", "name": "x", "url": "http://x/${NO_SUCH_ENV_VAR_T21}"}]}
+    for n, d in (("snap", snap), ("sprint", sprint), ("cr", cr), ("smoke", smoke)):
+        (tmp / f"{n}.json").write_text(json.dumps(d), encoding="utf-8")
+    S = SKILLS
+    cases = [
+        [str(S / "c5-test-execution/scripts/test_metrics.py"), str(tmp / "snap.json"), "--context", cp],
+        [str(S / "c6-sprint-review/scripts/sprint_metrics.py"), str(tmp / "sprint.json"), "--context", cp],
+        [str(S / "c7-change-request/scripts/cr_impact.py"), str(tmp / "cr.json"), "--context", cp],
+        [str(S / "c8-release-deployment/scripts/smoke_test_runner.py"), str(tmp / "smoke.json"), "--context", cp],
+        [str(S / "a1-project-init/scripts/check_gate.py"), str(tmp)],
+        [str(S / "a9-project-timeline/scripts/timeline_calc.py"), str(tmp)],
+    ]
+    for c in cases:
+        r = run(c)
+        assert r.stdout.strip(), (Path(c[0]).name, r.stderr[-200:])
+        assert not _VI.search(r.stdout), f"{Path(c[0]).name} (ja) còn chữ Việt: {r.stdout[:300]}"
+        assert re.search(r"[぀-ヿ一-鿿]", r.stdout), f"{Path(c[0]).name} (ja) không có chữ Nhật"
+    # --lang thắng context; en không có chữ Nhật/Việt
+    r = run([str(S / "c7-change-request/scripts/cr_impact.py"), str(tmp / "cr.json"), "--context", cp, "--lang", "en"])
+    assert "TOTAL CR" in r.stdout and not _VI.search(r.stdout) and not re.search(r"[぀-ヿ]", r.stdout), r.stdout
+    # không context, không --lang → giữ tiếng Việt như trước
+    r = run([str(S / "c7-change-request/scripts/cr_impact.py"), str(tmp / "cr.json")])
+    assert "TOTAL CR" in r.stdout and "Sprint delay (tối thiểu)" in r.stdout, r.stdout
+    # thiếu khóa internal → theo client_facing
+    ctx["settings"]["languages"] = {"client_facing": "ja", "code": "en"}
+    (tmp / "project-context.json").write_text(json.dumps(ctx, ensure_ascii=False), encoding="utf-8")
+    r = run([str(S / "c6-sprint-review/scripts/sprint_metrics.py"), str(tmp / "sprint.json"), "--context", cp])
+    assert "計画" in r.stdout, r.stdout
+    # validate_context chặn giá trị ngôn ngữ sai
+    ctx["settings"]["languages"] = {"client_facing": "jp"}
+    (tmp / "bad_ctx.json").write_text(json.dumps(dict(ctx, **{"created_at": "2026-01-01", "updated_at": "2026-01-01"})), encoding="utf-8")
+    r = run([str(S / "a1-project-init/scripts/validate_context.py"), str(tmp / "bad_ctx.json")])
+    assert r.returncode != 0 and "languages" in (r.stdout + r.stderr), (r.returncode, r.stdout[-300:])
+
+
+@t("T22 lang_check: bắt chữ Việt lọt vào tài liệu ja, kana lọt vào tài liệu vi; sạch thì exit 0; --ws theo nhóm tài liệu")
+def t22():
+    from openpyxl import Workbook
+    tmp = Path(tempfile.mkdtemp(prefix="ev_t22_"))
+    ws = tmp / "ws"
+    for d in ("B2_basic-design", "A4_api-design", "C1_dev-implement"):
+        (ws / "docs" / d).mkdir(parents=True)
+    (ws / "project-context.json").write_text(json.dumps({"settings": {"languages": {"client_facing": "ja", "code": "en"}}}), encoding="utf-8")
+    (ws / "docs/B2_basic-design/ok.md").write_text("# 基本設計書\n画面一覧とログインの説明。\n", encoding="utf-8")
+    wb = Workbook(); sh = wb.active; sh.title = "API"
+    sh["A1"] = "エンドポイント一覧"; sh["A2"] = "Mô tả chức năng đăng nhập hệ thống"   # internal → ja (theo client_facing) → phải bị bắt
+    wb.save(ws / "docs/A4_api-design/api.xlsx")
+    (ws / "docs/C1_dev-implement/PR.md").write_text("Implements the approval API.\n", encoding="utf-8")
+    script = str(SKILLS / "a1-project-init/scripts/lang_check.py")
+    r = run([script, "--ws", str(ws)])
+    assert r.returncode == 1 and "api.xlsx" in r.stdout and "tiếng Việt" in r.stdout and "ok.md" not in r.stdout, r.stdout[-400:]
+    r = run([script, str(ws / "docs/B2_basic-design"), "--expect", "ja"])
+    assert r.returncode == 0, r.stdout
+    r = run([script, str(ws / "docs/B2_basic-design"), "--expect", "vi"])
+    assert r.returncode == 1 and "tiếng Nhật" in r.stdout, r.stdout
+    r = run([script, str(ws / "docs/C1_dev-implement"), "--expect", "en"])
+    assert r.returncode == 0, r.stdout
+    # tên riêng có một chữ có dấu không bị coi là rò rỉ
+    (ws / "docs/B2_basic-design/name.md").write_text("担当: Nguyễn\n", encoding="utf-8")
+    assert run([script, str(ws / "docs/B2_basic-design/name.md"), "--expect", "ja"]).returncode == 0
+
+
+@t("T23 ngôn ngữ ở mọi công đoạn có chữ chảy vào tài liệu: xlsx_build, openapi, postman, a5, b3, c0, c3, c4 (ja không còn chữ Việt)")
+def t23():
+    from openpyxl import load_workbook
+    tmp = Path(tempfile.mkdtemp(prefix="ev_t23_"))
+    S = SKILLS
+    ja_ctx = tmp / "ctx.json"
+    ja_ctx.write_text(json.dumps({"settings": {"languages": {"client_facing": "ja", "internal": "ja", "code": "ja"}}}), encoding="utf-8")
+
+    def no_vi(r, what):
+        assert not _VI.search(r.stdout + r.stderr), f"{what} còn chữ Việt: {(r.stdout + r.stderr)[:300]}"
+
+    # xlsx_build: nhãn tổng và thông báo validate theo spec.language
+    spec = {"title": "t", "language": "ja", "sheets": [{"name": "S", "title": "T", "columns": [
+        {"key": "a", "header": "区分", "validate": ["Y", "N"]}, {"key": "n", "header": "数"}], "rows": [{"a": "Y", "n": 1}],
+        "total_row": {"sum": ["n"]}}]}
+    (tmp / "spec.json").write_text(json.dumps(spec, ensure_ascii=False), encoding="utf-8")
+    r = run([str(S / "a1-project-init/scripts/xlsx_build.py"), str(tmp / "spec.json"), str(tmp / "o.xlsx")])
+    assert r.returncode == 0, r.stdout[-300:]
+    ws = load_workbook(tmp / "o.xlsx")["S"]
+    assert ws.cell(row=ws.max_row, column=1).value == "合計", ws.cell(row=ws.max_row, column=1).value
+    dv = ws.data_validations.dataValidation[0]
+    assert dv.error == "リストから値を選択してください" and not _VI.search(dv.errorTitle or ""), (dv.error, dv.errorTitle)
+    # placeholder ja/en được xlsx_verify coi là chưa điền (chỉ chặn khi --client-facing)
+    wb = load_workbook(tmp / "o.xlsx"); wb["S"]["A4"] = "[要記入]"; wb.save(tmp / "ph.xlsx")
+    assert run([str(S / "a1-project-init/scripts/xlsx_verify.py"), str(tmp / "ph.xlsx"), "--client-facing"]).returncode != 0
+    # OpenAPI + Postman theo --lang
+    api = {"project": "P", "version": "1", "base_url": "http://x", "modules": [{"name": "M", "endpoints": [
+        {"method": "GET", "path": "/a/{id}", "summary": "s", "auth_required": False, "query": [], "success_status": 200, "errors": [{"status": 404}]}]}]}
+    (tmp / "api.json").write_text(json.dumps(api), encoding="utf-8")
+    r = run([str(S / "a4-api-design/scripts/gen_openapi.py"), str(tmp / "api.json"), str(tmp / "o.yaml"), "--lang", "ja"])
+    assert r.returncode == 0, r.stdout[-300:]
+    y = (tmp / "o.yaml").read_text(encoding="utf-8")
+    assert "成功" in y and "Thành công" not in y, y[:400]
+    r = run([str(S / "a4-api-design/scripts/gen_postman.py"), str(tmp / "api.json"), str(tmp / "p.json"), "--lang", "ja"])
+    assert r.returncode == 0 and "[要記入]" in (tmp / "p.json").read_text(encoding="utf-8")
+    # a5 health_check + circular FK, b3 CRUD coverage
+    model = {"tables": [{"name": "users", "classification": "Core", "columns": [{"name": "id", "type": "UUID"}, {"name": "price", "type": "FLOAT"}], "primary_key": ["id"]}]}
+    (tmp / "model.json").write_text(json.dumps(model), encoding="utf-8")
+    r = run([str(S / "a5-db-design/scripts/health_check.py"), str(tmp / "model.json"), "--context", str(ja_ctx)])
+    no_vi(r, "health_check"); assert "スキーマヘルススコア" in r.stdout, r.stdout[-300:]
+    (tmp / "g.json").write_text(json.dumps({"a": ["b"], "b": ["a"]}), encoding="utf-8")
+    r = run([str(S / "a5-db-design/scripts/check_circular_fk.py"), str(tmp / "g.json"), "--lang", "ja"])
+    no_vi(r, "check_circular_fk"); assert "循環" in r.stdout, r.stdout[-300:]
+    (tmp / "m.sql").write_text("CREATE TABLE users (id int);\nCREATE TABLE orders (id int);\n", encoding="utf-8")
+    (tmp / "m.csv").write_text("機能,users\nPOST /x,C\n", encoding="utf-8")
+    r = run([str(S / "b3-detail-design/scripts/check_crud_coverage.py"), str(tmp / "m.sql"), str(tmp / "m.csv"), "--lang", "ja"])
+    no_vi(r, "check_crud_coverage"); assert "孤立テーブル" in r.stdout, r.stdout[-300:]
+    # c0 verify_fe_scaffold, c3 coverage_summary, c4 parse_npm_audit
+    fe = tmp / "fe"; fe.mkdir()
+    r = run([str(S / "c0-frontend-dev/scripts/verify_fe_scaffold.py"), str(fe), "--lang", "ja"])
+    no_vi(r, "verify_fe_scaffold"); assert "package.json がありません" in r.stdout, r.stdout[-300:]
+    r = run([str(S / "c3-code-review/scripts/coverage_summary.py"), "--repo", str(tmp), "--coverage", "none.json", "--format", "md", "--lang", "ja"])
+    no_vi(r, "coverage_summary"); assert "指標" in r.stdout, r.stdout
+    audit = {"auditReportVersion": 2, "vulnerabilities": {"pkg": {"name": "pkg", "severity": "high", "isDirect": False, "via": ["other"], "range": "<2", "fixAvailable": False}}}
+    (tmp / "audit.json").write_text(json.dumps(audit), encoding="utf-8")
+    r = run([str(S / "c4-trailofbits-security-skills/scripts/parse_npm_audit.py"), str(tmp / "audit.json"), "--lang", "ja"])
+    no_vi(r, "parse_npm_audit"); assert "要トリアージ" in r.stdout and "修正版なし" in r.stdout, r.stdout
+
+
+@t("T24 D18: bỏ dòng dẫn chiếu i18n-policy khỏi một skill có outputs → linter phải FAIL (kiểm đột biến)")
+def t24():
+    tmp = Path(tempfile.mkdtemp(prefix="ev_t24_"))
+    shutil.copytree(SKILLS, tmp / "skills", ignore=shutil.ignore_patterns("evals", "node_modules", "sample_app", "__pycache__"))
+    p = tmp / "skills/x1-acquire-codebase-knowledge/SKILL.md"
+    p.write_text(p.read_text(encoding="utf-8").replace("i18n-policy", "i18n_POLICY"), encoding="utf-8")
+    r = run([str(tmp / "skills/x6-skill-doctor/scripts/skill_doctor.py"), str(tmp / "skills")])
+    assert "D18" in r.stdout and "x1-acquire-codebase-knowledge" in r.stdout, r.stdout[-400:]
+
+
 if __name__ == "__main__":
-    for fn in [t1, t1b, t1c, t2a, t2b, t2c, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20]:
+    for fn in [t1, t1b, t1c, t2a, t2b, t2c, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24]:
         fn()
     n_fail = sum(1 for _, ok, _ in results if not ok)
     print(f"\n🧪 EVALS TẦNG 1 — {len(results)} test | {len(results) - n_fail} PASS | {n_fail} FAIL\n")

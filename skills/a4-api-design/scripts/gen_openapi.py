@@ -64,13 +64,13 @@ def build(spec: dict) -> dict:
                 op["requestBody"] = {"required": True, "content": {"application/json": {
                     "schema": ep.get("body_schema") or infer_schema(ep["body_example"])}}}
             ok = str(ep.get("success_status", 200))
-            resp = {"description": "Thành công"}
+            resp = {"description": CL["ok_resp"]}
             if ep.get("response_example") is not None:
                 resp["content"] = {"application/json": {"schema": infer_schema(ep["response_example"])}}
             op["responses"][ok] = resp
             for e in ep.get("errors") or []:
                 op["responses"].setdefault(str(e.get("status", 400)), {
-                    "description": e.get("message", e.get("code", "Lỗi")),
+                    "description": e.get("message", e.get("code", CL["err_resp"])),
                     "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}})
             slot = doc["paths"].setdefault(path, {})
             if method in slot:
@@ -79,7 +79,17 @@ def build(spec: dict) -> dict:
     return doc
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "a1-project-init" / "scripts"))
+from i18n import common, lang_from_argv, placeholder  # noqa: E402
+
+CL, PH = common("vi"), placeholder("vi")
+
+
 def main() -> int:
+    global CL, PH
+    _lang, _args = lang_from_argv(sys.argv[1:])
+    sys.argv = [sys.argv[0]] + _args
+    CL, PH = common(_lang), placeholder(_lang)
     if len(sys.argv) < 3:
         print(__doc__)
         return 2

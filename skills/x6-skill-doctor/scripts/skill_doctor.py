@@ -4,7 +4,7 @@
 Exit 0 = sạch (có thể có WARN), 1 = có FAIL.
 
 PHẠM VI LINT:
-  - Skill TRONG skills-manifest.json: lint đầy đủ (D01–D17).
+  - Skill TRONG skills-manifest.json: lint đầy đủ (D01–D18).
   - Folder NGOÀI manifest: nếu SKILL.md trỏ pipeline.md của bộ → FAIL D08 (quên đăng ký);
     còn lại lint TỐI THIỂU: name khớp folder (D01), description ≤ 700 (D02), không block copy-paste (D04),
     tham chiếu chết (D14). Script của chúng vẫn qua D15.
@@ -34,6 +34,7 @@ RULES = {
     "D14": "Tham chiếu chết (đường dẫn file trong backtick phải tồn tại)",
     "D15": "Script Windows-safe (compile OK; in non-ASCII phải reconfigure UTF-8)",
     "D16": "Số liệu khớp nguồn (số rule x6, N skill)", "D17": "Version đồng bộ manifest = plugin.json = marketplace.json",
+    "D18": "Skill có tài liệu đầu ra phải theo chính sách ngôn ngữ i18n-policy.md",
 }
 
 
@@ -219,6 +220,12 @@ for name, p in skills.items():
             add("FAIL", name, "D13", f"mục Self-Improvement dài {len(body)} dòng (tối đa 8) — trỏ về references, không chép lại quy trình")
         if "self-improvement.md" not in "\n".join(body):
             add("FAIL", name, "D13", "mục Self-Improvement không trỏ tới a1-project-init/references/self-improvement.md")
+
+    # D18 — skill sinh tài liệu phải dẫn chiếu chính sách ngôn ngữ (một lựa chọn lúc khởi tạo điều khiển mọi đầu ra)
+    entry = manifest.get(name) or {}
+    if entry.get("outputs") and "i18n-policy" not in t:
+        add("FAIL", name, "D18", "skill có outputs[] nhưng SKILL.md không dẫn chiếu a1-project-init/references/i18n-policy.md "
+                                "(thêm dòng 'Ngôn ngữ deliverable: theo settings.languages')")
 
 # ======================================================================= D14 — tham chiếu chết
 EXTS = r"(?:py|md|json|yaml|yml|js|mjs|ts|sh|ps1|csv|html|xlsx|docx|pptx)"

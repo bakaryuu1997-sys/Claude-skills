@@ -1,6 +1,6 @@
 ---
 name: c5-test-execution
-version: "3.17.3"
+version: "3.17.6"
 description: >-
   Quản lý & báo cáo THỰC THI test UT/IT/ST/UAT: snapshot kết quả làm nguồn sự thật, tracker pass/fail/blocked,
   defect list (kèm bằng chứng hồi quy), metrics (execution/pass rate, defect density), Quality Gate (QUALIFIED /
@@ -36,6 +36,7 @@ Ranh giới: `/a8-test-plan` sinh **case** · `/c2-api-test-suite-generator` sin
 
 ```
 python <skills_dir>/c5-test-execution/scripts/test_metrics.py <snapshot.json> --context <ws>/project-context.json --format md
+# báo cáo theo ngôn ngữ nội bộ của dự án (`settings.languages.internal`); `--lang ja|vi|en` để ép; mã QUALIFIED/NOT QUALIFIED không dịch
 python <skills_dir>/c5-test-execution/scripts/test_metrics.py <snapshot.json> --context <ws>/project-context.json --format json --repo <git-repo>
 ```
 

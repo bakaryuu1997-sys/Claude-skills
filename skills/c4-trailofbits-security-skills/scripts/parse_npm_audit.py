@@ -20,6 +20,25 @@ import json
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "a1-project-init" / "scripts"))
+from i18n import add_lang_args, pick, resolve_lang  # noqa: E402
+
+MESSAGES = {
+    "vi": {"triage": "Cần triage", "via": "(qua gói khác)", "fix_yes": "có (npm audit fix)", "fix_no": "chưa có bản vá",
+           "dep_on": "phụ thuộc vào gói có lỗ hổng: ", "unknown": "không rõ", "total": "Tổng", "type": "Loại",
+           "direct": "direct", "transitive": "transitive", "e_read": "không đọc được {p}: {e}", "e_fmt": "định dạng không nhận diện (cần npm audit --json v6 hoặc v7+)",
+           "w_pkg": "không đọc được package.json: {e}"},
+    "ja": {"triage": "要トリアージ", "via": "（他パッケージ経由）", "fix_yes": "あり（npm audit fix）", "fix_no": "修正版なし",
+           "dep_on": "脆弱性のあるパッケージに依存: ", "unknown": "不明", "total": "合計", "type": "種別",
+           "direct": "direct", "transitive": "transitive", "e_read": "{p} を読み込めません: {e}", "e_fmt": "形式を認識できません（npm audit --json の v6 または v7 以降が必要）",
+           "w_pkg": "package.json を読み込めません: {e}"},
+    "en": {"triage": "Needs triage", "via": "(via another package)", "fix_yes": "yes (npm audit fix)", "fix_no": "no fix available",
+           "dep_on": "depends on a vulnerable package: ", "unknown": "unknown", "total": "Total", "type": "Type",
+           "direct": "direct", "transitive": "transitive", "e_read": "cannot read {p}: {e}", "e_fmt": "unrecognised format (need npm audit --json v6 or v7+)",
+           "w_pkg": "cannot read package.json: {e}"},
+}
+M = pick(MESSAGES, "vi")
+
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 if hasattr(sys.stderr, "reconfigure"):
@@ -44,14 +63,14 @@ def from_v7(data: dict, dev: set, prod: set):
         if isinstance(fix, dict):
             patched = f"{fix.get('name')}@{fix.get('version')}" + (" (breaking)" if fix.get("isSemVerMajor") else "")
         else:
-            patched = "có (npm audit fix)" if fix else "chưa có bản vá"
+            patched = M["fix_yes"] if fix else M["fix_no"]
         advisories = [x for x in (v.get("via") or []) if isinstance(x, dict)]
-        scope = ("prod" if name in prod else "dev" if name in dev else "không rõ") if direct else "transitive"
+        scope = ("prod" if name in prod else "dev" if name in dev else M["unknown"]) if direct else "transitive"
         if not advisories:   # chỉ là chuỗi phụ thuộc vào gói khác
-            rows.append({"advisory": "(qua gói khác)", "cve": "", "severity": SEV_MAP.get(v.get("severity", ""), "Low"),
+            rows.append({"advisory": M["via"], "cve": "", "severity": SEV_MAP.get(v.get("severity", ""), "Low"),
                          "package": name, "vulnerable": v.get("range", ""), "patched_in": patched,
-                         "type": "direct" if direct else "transitive", "scope": scope, "title": "phụ thuộc vào gói có lỗ hổng: " + ", ".join(str(x) for x in v.get("via", []))[:120],
-                         "reachability": "Cần triage"})
+                         "type": "direct" if direct else "transitive", "scope": scope, "title": M["dep_on"] + ", ".join(str(x) for x in v.get("via", []))[:120],
+                         "reachability": M["triage"]})
             continue
         for a in advisories:
             rows.append({"advisory": adv_id(a.get("url", "")) or str(a.get("source", "")),
@@ -59,7 +78,7 @@ def from_v7(data: dict, dev: set, prod: set):
                          "severity": SEV_MAP.get(a.get("severity", v.get("severity", "")), "Low"),
                          "package": a.get("name", name), "vulnerable": a.get("range", v.get("range", "")),
                          "patched_in": patched, "type": "direct" if direct else "transitive", "scope": scope,
-                         "title": a.get("title", ""), "reachability": "Cần triage"})
+                         "title": a.get("title", ""), "reachability": M["triage"]})
     return rows
 
 
@@ -73,8 +92,8 @@ def from_v6(data: dict, dev: set, prod: set):
                      "severity": SEV_MAP.get(a.get("severity", ""), "Low"), "package": name,
                      "vulnerable": a.get("vulnerable_versions", ""), "patched_in": a.get("patched_versions", ""),
                      "type": "direct" if direct else "transitive",
-                     "scope": ("prod" if name in prod else "dev" if name in dev else "không rõ") if direct else "transitive",
-                     "title": a.get("title", ""), "reachability": "Cần triage"})
+                     "scope": ("prod" if name in prod else "dev" if name in dev else M["unknown"]) if direct else "transitive",
+                     "title": a.get("title", ""), "reachability": M["triage"]})
     return rows
 
 
@@ -85,12 +104,15 @@ def main(argv=None):
     ap.add_argument("--format", choices=("md", "json"), default="md")
     # "moderate" là nhãn của npm → đồng nghĩa với medium của thang chuẩn.
     ap.add_argument("--fail-on", choices=("critical", "high", "medium", "moderate", "low"))
+    add_lang_args(ap, audience="internal")  # bảng triage vào báo cáo security audit (nội bộ)
     a = ap.parse_args(argv)
+    global M
+    M = pick(MESSAGES, resolve_lang(a.lang, a.context, a.audience))
 
     try:
         data = json.loads(Path(a.audit_json).read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError) as e:
-        print(f"ERROR không đọc được {a.audit_json}: {e}", file=sys.stderr)
+        print("ERROR " + M["e_read"].format(p=a.audit_json, e=e), file=sys.stderr)
         return 2
 
     dev, prod = set(), set()
@@ -100,14 +122,14 @@ def main(argv=None):
             prod = set((pkg.get("dependencies") or {}).keys())
             dev = set((pkg.get("devDependencies") or {}).keys())
         except (OSError, json.JSONDecodeError) as e:
-            print(f"WARN không đọc được package.json: {e}", file=sys.stderr)
+            print("WARN " + M["w_pkg"].format(e=e), file=sys.stderr)
 
     if "vulnerabilities" in data:
         rows = from_v7(data, dev, prod)
     elif "advisories" in data:
         rows = from_v6(data, dev, prod)
     else:
-        print("ERROR định dạng không nhận diện (cần npm audit --json v6 hoặc v7+)", file=sys.stderr)
+        print("ERROR " + M["e_fmt"], file=sys.stderr)
         return 2
 
     rows.sort(key=lambda r: (-SEV_RANK[r["severity"]], r["package"]))
@@ -116,8 +138,8 @@ def main(argv=None):
     if a.format == "json":
         print(json.dumps({"counts": counts, "rows": rows}, ensure_ascii=False, indent=2))
     else:
-        print(f"Tổng: {len(rows)} | Critical {counts['Critical']} · High {counts['High']} · Medium {counts['Medium']} · Low {counts['Low']}\n")
-        print("| Advisory | CWE/CVE | Severity | Package | Vulnerable | Patched in | Loại | Scope | Reachability |")
+        print(f"{M['total']}: {len(rows)} | Critical {counts['Critical']} · High {counts['High']} · Medium {counts['Medium']} · Low {counts['Low']}\n")
+        print(f"| Advisory | CWE/CVE | Severity | Package | Vulnerable | Patched in | {M['type']} | Scope | Reachability |")
         print("|---|---|---|---|---|---|---|---|---|")
         for r in rows:
             print(f"| {r['advisory']} | {r['cve']} | {r['severity']} | {r['package']} | {r['vulnerable']} | "

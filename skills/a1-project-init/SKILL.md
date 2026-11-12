@@ -1,6 +1,6 @@
 ---
 name: a1-project-init
-version: "3.17.4"
+version: "3.17.6"
 description: >-
   Khởi tạo project-context.json (MỘT LẦN mỗi dự án): project info, tech stack, team, settings,
   links — nguồn sự thật chung mọi skill tự đọc. Kèm schema + validator + load_context.py +
@@ -64,7 +64,7 @@ Mỗi thành viên:
 - Sprint duration (tuần, mặc định: 2)
 - Working days per week (mặc định: 5)
 - MD per Person-Month (mặc định: 22)
-- Ngôn ngữ (languages): khách đọc tài liệu bằng gì? (`client_facing`: ja/vi/en; `internal` mặc định vi; `code` mặc định en — quy tắc: `references/i18n-policy.md`)
+- Ngôn ngữ tài liệu của dự án (BẮT BUỘC hỏi, 1 câu): ja / vi / en? Ghi vào `settings.languages.client_facing` VÀ `settings.languages.internal` (cùng giá trị; `code` = en). Chỉ tách hai khóa khi người dùng nói rõ — quy tắc: `references/i18n-policy.md`. Mọi skill sau đó sinh tài liệu theo đúng ngôn ngữ này.
 - Capacity per role per sprint:
   - Backend Dev: 8 MD
   - Mobile Dev: 8 MD

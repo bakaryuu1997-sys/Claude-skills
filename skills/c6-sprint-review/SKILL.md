@@ -1,6 +1,6 @@
 ---
 name: c6-sprint-review
-version: "3.17.3"
+version: "3.17.6"
 description: >-
   Tổng kết sprint: planned vs actual, velocity (chỉ tính task Done), Health Score 100, drag do nợ kỹ thuật, retro 4L
   và action items, chuẩn bị sprint kế tiếp; cập nhật Sprint_Log tích lũy. Trigger: "sprint review", "retro",
@@ -26,7 +26,8 @@ Trung thực về sprint: sprint đã giao được gì so với kế hoạch, s
 ## Bước 1 — Tính số liệu bằng script
 
 ```
-python <skills_dir>/c6-sprint-review/scripts/sprint_metrics.py sprint_input.json --format md
+python <skills_dir>/c6-sprint-review/scripts/sprint_metrics.py sprint_input.json --context <ws>/project-context.json --format md
+# câu chữ theo settings.languages (`--lang ja|vi|en` để ép; thiếu cả hai → vi); `--audience client_facing` khi báo cáo gửi khách
 python <skills_dir>/c6-sprint-review/scripts/sprint_metrics.py sprint_input.json --format json
 ```
 

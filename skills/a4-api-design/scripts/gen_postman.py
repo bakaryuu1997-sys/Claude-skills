@@ -28,7 +28,7 @@ def _url(path, query=None):
     path_vars = re.findall(r"\{(\w+)\}", path)
     if path_vars:
         # giá trị thật do người dùng điền trong Postman; không bịa id mẫu
-        u["variable"] = [{"key": v, "value": "", "description": "[CẦN ĐIỀN]"} for v in path_vars]
+        u["variable"] = [{"key": v, "value": "", "description": PH} for v in path_vars]
     if query:
         u["query"] = [{"key": q["name"], "value": str(q.get("example", ""))} for q in query]
         u["raw"] += "?" + "&".join(f'{q["name"]}={q.get("example", "")}' for q in query)
@@ -88,7 +88,17 @@ def build(spec: dict) -> dict:
     return coll
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "a1-project-init" / "scripts"))
+from i18n import common, lang_from_argv, placeholder  # noqa: E402
+
+CL, PH = common("vi"), placeholder("vi")
+
+
 def main() -> int:
+    global CL, PH
+    _lang, _args = lang_from_argv(sys.argv[1:])
+    sys.argv = [sys.argv[0]] + _args
+    CL, PH = common(_lang), placeholder(_lang)
     if len(sys.argv) < 3:
         print(__doc__)
         return 2

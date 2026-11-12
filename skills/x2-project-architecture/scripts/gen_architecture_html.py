@@ -23,7 +23,55 @@ for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
         _s.reconfigure(encoding="utf-8", errors="replace")
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "a1-project-init" / "scripts"))
+from i18n import pick, resolve_lang  # noqa: E402
+
 esc = html.escape
+
+# Nhãn giao diện theo ngôn ngữ tài liệu của dự án (settings.languages.client_facing — file này gửi cho khách).
+LABELS = {
+    "vi": {
+        "nodata": "Chưa có dữ liệu{extra} — chạy /{skill} để bổ sung", "aria": "Sơ đồ hệ thống",
+        "why_stack": "chưa có tech_stack/integrations trong context", "why_screen": "chưa đọc được sheet Screen_List",
+        "why_status": "compute_status không trả dữ liệu",
+        "navs": ["Tổng quan", "System", "Module & Screen", "API Map", "DB Overview", "Tài liệu", "Tiến độ", "Team & Links"],
+        "chg_h": "Changelog so với bản trước", "chg_none": "Không có thay đổi số liệu.",
+        "client": "Khách hàng", "phase": "giai đoạn", "sprint": "sprint", "gen": "sinh",
+        "filter": "🔍 Lọc API / bảng DB theo từ khóa", "readonly": "View tổng hợp CHỈ ĐỌC — nguồn sự thật là các file gốc.",
+        "th_screen": ["Mã MH", "Tên màn hình", "Module"], "ep": "endpoint",
+        "th_api": ["Module", "Method", "URL", "Auth", "Mô tả"], "th_db": ["Bảng", "Tên logic", "Loại", "Mục đích"],
+        "ok": "có", "stale": "lỗi thời", "missing": "chưa có",
+        "th_doc": ["Bước", "Skill", "Trạng thái", "File"], "th_team": ["Vai trò", "Tên", "Bên"],
+    },
+    "ja": {
+        "nodata": "データがありません{extra} — /{skill} を実行して追加してください", "aria": "システム構成図",
+        "why_stack": "context に tech_stack/integrations がありません", "why_screen": "Screen_List シートを読み取れませんでした",
+        "why_status": "compute_status がデータを返しませんでした",
+        "navs": ["概要", "システム", "モジュールと画面", "API 一覧", "DB 概要", "ドキュメント", "進捗", "体制とリンク"],
+        "chg_h": "前版からの変更点", "chg_none": "数値の変更はありません。",
+        "client": "顧客", "phase": "フェーズ", "sprint": "スプリント", "gen": "生成",
+        "filter": "🔍 API / DB テーブルをキーワードで絞り込み", "readonly": "集約ビュー（閲覧専用）— 正本は元のファイルです。",
+        "th_screen": ["画面ID", "画面名", "モジュール"], "ep": "エンドポイント",
+        "th_api": ["モジュール", "メソッド", "URL", "認証", "説明"], "th_db": ["テーブル", "論理名", "区分", "目的"],
+        "ok": "あり", "stale": "古い", "missing": "未作成",
+        "th_doc": ["工程", "スキル", "状態", "ファイル"], "th_team": ["役割", "氏名", "所属"],
+    },
+    "en": {
+        "nodata": "No data{extra} — run /{skill} to add it", "aria": "System diagram",
+        "why_stack": "no tech_stack/integrations in the context", "why_screen": "the Screen_List sheet could not be read",
+        "why_status": "compute_status returned no data",
+        "navs": ["Overview", "System", "Modules & Screens", "API Map", "DB Overview", "Documents", "Progress", "Team & Links"],
+        "chg_h": "Changes since the previous version", "chg_none": "No figures changed.",
+        "client": "Client", "phase": "phase", "sprint": "sprint", "gen": "generated",
+        "filter": "🔍 Filter APIs / DB tables by keyword", "readonly": "Aggregated READ-ONLY view — the source files are the source of truth.",
+        "th_screen": ["Screen ID", "Screen name", "Module"], "ep": "endpoint(s)",
+        "th_api": ["Module", "Method", "URL", "Auth", "Description"], "th_db": ["Table", "Logical name", "Type", "Purpose"],
+        "ok": "present", "stale": "outdated", "missing": "missing",
+        "th_doc": ["Step", "Skill", "Status", "File"], "th_team": ["Role", "Name", "Side"],
+    },
+}
+L = pick(LABELS, "vi")
+LANG = "vi"
 
 CSS = """
 :root{--primary:#1F4E79;--secondary:#2E75B6;--accent:#ED7D31;--bg:#F5F7FA;--surface:#FFF;--text:#1F2937;--muted:#6B7280;
@@ -145,7 +193,7 @@ def parse_screens(xlsx: Path):
 # ---------------------------------------------------------------- render
 def placeholder(skill: str, why: str = "") -> str:
     extra = f" ({esc(why)})" if why else ""
-    return f'<div class="ph">⬜ Chưa có dữ liệu{extra} — chạy /{esc(skill)} để bổ sung</div>'
+    return '<div class="ph">⬜ ' + L["nodata"].format(extra=extra, skill=esc(skill)) + "</div>"
 
 
 def svg_system(stack: dict, integrations: list) -> str:
@@ -154,10 +202,10 @@ def svg_system(stack: dict, integrations: list) -> str:
     data = [(k, v) for k, v in stack.items() if k == "database" and v]
     ext = [(i.get("name", ""), i.get("status", ""), i.get("type", "")) for i in integrations if i.get("name")]
     if not (clients or backend or data or ext):
-        return placeholder("a1-project-init", "chưa có tech_stack/integrations trong context")
+        return placeholder("a1-project-init", L["why_stack"])
     rows = max(len(clients), len(backend), len(data) + len(ext), 1)
     h = 60 + rows * 58
-    out = [f'<svg viewBox="0 0 860 {h}" width="100%" role="img" aria-label="Sơ đồ hệ thống">']
+    out = [f'<svg viewBox="0 0 860 {h}" width="100%" role="img" aria-label="' + L["aria"] + '">']
     for x, title in ((10, "Clients"), (310, "Backend / API"), (610, "Data & External")):
         out.append(f'<text x="{x + 120}" y="22" text-anchor="middle" font-weight="700" fill="#1F4E79">{title}</text>')
 
@@ -220,31 +268,31 @@ def render(name, proj, ctx, api, db, screens, docs, present, status, version, pr
               "docs_present": len(present), "docs_total": len(docs)}
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
     P = []
-    P.append(f"<!doctype html><html lang=\"vi\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
+    P.append(f"<!doctype html><html lang=\"{LANG}\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
              f"<title>{esc(name)} — Architecture v{version}</title><style>{CSS}</style></head><body>")
-    navs = ["Tổng quan", "System", "Module & Screen", "API Map", "DB Overview", "Tài liệu", "Tiến độ", "Team & Links"]
+    navs = L["navs"]
     P.append("<nav><h1>" + esc(name) + "</h1>" + "".join(f'<a data-go="{i}">{i} {esc(t)}</a>' for i, t in enumerate(navs)) + "</nav><main>")
     # 0 header
     cards = "".join(f'<div class="card"><b>{v}</b>{esc(k)}</div>' for k, v in counts.items())
     chg = ""
     if prev:
         diff = [f"{k}: {prev.get(k, 0)} → {v}" for k, v in counts.items() if prev.get(k, 0) != v]
-        chg = "<h3>Changelog so với bản trước</h3>" + ("<ul>" + "".join(f"<li>{esc(d)}</li>" for d in diff) + "</ul>" if diff
-                                                         else '<p class="muted">Không có thay đổi số liệu.</p>')
-    P.append(f'<section id="sec-0"><h2>{esc(name)}</h2><p class="muted">Khách hàng: {esc(str(proj.get("client", "—")))} · '
-             f'giai đoạn: {esc(str(proj.get("current_phase", "—")))} · sprint: {esc(str(proj.get("current_sprint", "—")))} · '
-             f'v{version} · sinh {now}</p><div class="cards">{cards}</div>'
-             '<input id="q" placeholder="🔍 Lọc API / bảng DB theo từ khóa"><p class="muted">View tổng hợp CHỈ ĐỌC — nguồn sự thật là các file gốc.</p>'
+        chg = f"<h3>{esc(L['chg_h'])}</h3>" + ("<ul>" + "".join(f"<li>{esc(d)}</li>" for d in diff) + "</ul>" if diff
+                                                         else f'<p class="muted">{esc(L["chg_none"])}</p>')
+    P.append(f'<section id="sec-0"><h2>{esc(name)}</h2><p class="muted">{L["client"]}: {esc(str(proj.get("client", "—")))} · '
+             f'{L["phase"]}: {esc(str(proj.get("current_phase", "—")))} · {L["sprint"]}: {esc(str(proj.get("current_sprint", "—")))} · '
+             f'v{version} · {L["gen"]} {now}</p><div class="cards">{cards}</div>'
+             f'<input id="q" placeholder="{esc(L["filter"])}"><p class="muted">{esc(L["readonly"])}</p>'
              f"{chg}</section>")
     # 1 system
     P.append('<section id="sec-1"><h2>System Diagram</h2>' + svg_system(ctx.get("tech_stack") or {}, ctx.get("integrations") or []) + "</section>")
     # 2 modules & screens
     if screens:
         body = "".join(f"<tr><td>{esc(s['id'])}</td><td>{esc(s['name'])}</td><td>{esc(s['module'])}</td></tr>" for s in screens)
-        s2 = f"<table><tr><th>Mã MH</th><th>Tên màn hình</th><th>Module</th></tr>{body}</table>"
+        s2 = "<table><tr>" + "".join(f"<th>{esc(h)}</th>" for h in L["th_screen"]) + f"</tr>{body}</table>"
     else:
-        s2 = placeholder("b2-basic-design", "chưa đọc được sheet Screen_List")
-    mods = "".join(f"<li><b>{esc(m)}</b> — {len(v)} endpoint</li>" for m, v in (api or {}).items())
+        s2 = placeholder("b2-basic-design", L["why_screen"])
+    mods = "".join(f"<li><b>{esc(m)}</b> — {len(v)} {esc(L["ep"])}</li>" for m, v in (api or {}).items())
     P.append('<section id="sec-2"><h2>Module &amp; Screen</h2>' + (f"<ul>{mods}</ul>" if mods else "") + s2 + "</section>")
     # 3 API
     if api:
@@ -254,7 +302,7 @@ def render(name, proj, ctx, api, db, screens, docs, present, status, version, pr
                 s = f"{m} {e['method']} {e['url']} {e['desc']}".lower()
                 rows.append(f'<tr data-s="{esc(s)}"><td>{esc(m)}</td><td><span class="badge {method_cls(e["method"])}">{esc(e["method"])}</span></td>'
                             f'<td>{esc(e["url"])}</td><td>{esc(e["auth"])}</td><td>{esc(e["desc"])}</td></tr>')
-        s3 = "<table><tr><th>Module</th><th>Method</th><th>URL</th><th>Auth</th><th>Mô tả</th></tr>" + "".join(rows) + "</table>"
+        s3 = "<table><tr>" + "".join(f"<th>{esc(h)}</th>" for h in L["th_api"]) + "</tr>" + "".join(rows) + "</table>"
     else:
         s3 = placeholder("a4-api-design")
     P.append(f'<section id="sec-3"><h2>API Map ({n_ep})</h2>{s3}</section>')
@@ -262,17 +310,17 @@ def render(name, proj, ctx, api, db, screens, docs, present, status, version, pr
     if db:
         rows = "".join(f'<tr data-s="{esc((t["name"] + " " + t["logical"] + " " + t["purpose"]).lower())}"><td>{esc(t["name"])}</td>'
                        f'<td>{esc(t["logical"])}</td><td>{esc(t["type"])}</td><td>{esc(t["purpose"])}</td></tr>' for t in db)
-        s4 = "<table><tr><th>Bảng</th><th>Tên logic</th><th>Loại</th><th>Mục đích</th></tr>" + rows + "</table>"
+        s4 = "<table><tr>" + "".join(f"<th>{esc(h)}</th>" for h in L["th_db"]) + "</tr>" + rows + "</table>"
     else:
         s4 = placeholder("a5-db-design")
     P.append(f'<section id="sec-4"><h2>DB Overview ({len(db or [])})</h2>{s4}</section>')
     # 5 docs
-    icon = {"present": '<span class="ok">✅ có</span>', "stale": '<span class="stale">⚠️ lỗi thời</span>', "missing": '<span class="miss">⬜ chưa có</span>'}
+    icon = {"present": f'<span class="ok">✅ {esc(L["ok"])}</span>', "stale": f'<span class="stale">⚠️ {esc(L["stale"])}</span>', "missing": f'<span class="miss">⬜ {esc(L["missing"])}</span>'}
     rows = "".join(f"<tr><td>{esc(str(d.get('step', '')))}</td><td>{esc(d.get('skill', ''))}</td><td>{icon.get(d.get('status'), esc(str(d.get('status'))))}"
                    f"{' — ' + esc(', '.join(d.get('stale_because', []))) if d.get('stale_because') else ''}</td>"
                    f"<td>{esc(', '.join(f['file'] for f in d.get('files', [])[:3]))}</td></tr>" for d in docs)
-    P.append('<section id="sec-5"><h2>Document Status</h2>' + (f"<table><tr><th>Bước</th><th>Skill</th><th>Trạng thái</th><th>File</th></tr>{rows}</table>"
-                                                                if docs else placeholder("x3-project-status", "compute_status không trả dữ liệu")) + "</section>")
+    P.append('<section id="sec-5"><h2>Document Status</h2>' + ("<table><tr>" + "".join(f"<th>{esc(h)}</th>" for h in L["th_doc"]) + f"</tr>{rows}</table>"
+                                                                if docs else placeholder("x3-project-status", L["why_status"])) + "</section>")
     # 6 progress
     prog = status.get("progress") or {}
     gates = (status.get("gates") or {}).get("raw", "")
@@ -285,7 +333,7 @@ def render(name, proj, ctx, api, db, screens, docs, present, status, version, pr
     t_rows = "".join(f"<tr><td>{esc(str(m.get('role', '')))}</td><td>{esc(str(m.get('name', '')))}</td><td>{esc(str(m.get('side', '')))}</td></tr>"
                      for m in team if isinstance(m, dict))
     l_rows = "".join(f"<tr><td>{esc(k)}</td><td>{esc(str(v))}</td></tr>" for k, v in links.items())
-    P.append('<section id="sec-7"><h2>Team &amp; Links</h2>' + (f"<table><tr><th>Vai trò</th><th>Tên</th><th>Bên</th></tr>{t_rows}</table>" if t_rows else placeholder("a1-project-init"))
+    P.append('<section id="sec-7"><h2>Team &amp; Links</h2>' + ("<table><tr>" + "".join(f"<th>{esc(h)}</th>" for h in L["th_team"]) + f"</tr>{t_rows}</table>" if t_rows else placeholder("a1-project-init"))
              + (f"<h3>Links</h3><table>{l_rows}</table>" if l_rows else "") + "</section>")
     P.append(f'</main><script type="application/json" id="arch-data">{json.dumps(counts)}</script><script>{JS}</script></body></html>')
     out = "".join(P)
@@ -300,10 +348,13 @@ def main(argv):
         print(__doc__)
         return 2
     ws = Path(argv[0]).resolve()
-    opts = {"--skills-dir": None, "--out-dir": None, "--status": None}
+    opts = {"--skills-dir": None, "--out-dir": None, "--status": None, "--lang": "auto"}
     for i, a in enumerate(argv):
         if a in opts and i + 1 < len(argv):
             opts[a] = argv[i + 1]
+    global L, LANG
+    LANG = resolve_lang(opts["--lang"], ws / "project-context.json", "client_facing")  # X2 gửi cho khách xem
+    L = pick(LABELS, LANG)
     skills_dir = Path(opts["--skills-dir"]).resolve() if opts["--skills-dir"] else Path(__file__).resolve().parents[2]
     if opts["--status"]:
         status = load_json(Path(opts["--status"]))

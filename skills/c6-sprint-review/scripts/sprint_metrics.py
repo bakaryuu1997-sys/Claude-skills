@@ -3,7 +3,7 @@
 """sprint_metrics.py — tính velocity, completion, Health Score, drag và cảnh báo cho một sprint (c6).
 
 Usage:
-    python sprint_metrics.py sprint_input.json [--format md|json]
+    python sprint_metrics.py sprint_input.json [--format md|json] [--lang auto|vi|ja|en] [--context project-context.json] [--audience client_facing|internal]
     python sprint_metrics.py --help
 
 Input JSON (xem references/sprint-input.md):
@@ -49,10 +49,59 @@ import math
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "a1-project-init" / "scripts"))
+from i18n import add_lang_args, pick, resolve_lang  # noqa: E402
+
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
+
+MESSAGES = {
+    "vi": {
+        "over": "OVER-COMMIT: completion < 75%",
+        "under": "UNDER-COMMIT: completion > 95% (cân nhắc tăng scope)",
+        "escalate": "ESCALATE: completion < 70% 2 sprint liên tiếp → /a6-estimate hoặc review capacity /a9-project-timeline",
+        "drag": "DEBT DRAG: drag {d} < 0.85 — nợ kỹ thuật chiếm > 15% capacity",
+        "release": "scope cốt lõi đã xong — chuyển sang /c8-release-deployment và /d1-handover-doc",
+        "velocity0": "velocity trung bình = 0",
+        "h_metric": "Chỉ số", "h_value": "Giá trị", "planned": "Planned / Completed MD",
+        "partial": "Partial (không tính velocity)", "velocity": "Velocity TB 3 sprint",
+        "bugd": "Bug density", "bugd_v": "{v} bug/MD (tham khảo, chuẩn < 0.2)", "drag_l": "Drag coefficient",
+        "proj": "Dự phóng", "delay": "Delay dự phóng", "delay_v": "{v} ngày", "breakdown": "Health breakdown",
+        "warn_h": "Cảnh báo",
+        "Healthy": "Healthy", "At Risk": "At Risk", "Needs Attention": "Needs Attention",
+    },
+    "ja": {
+        "over": "計画過多（OVER-COMMIT）: 完了率が 75% 未満",
+        "under": "計画過少（UNDER-COMMIT）: 完了率が 95% 超（スコープの追加を検討）",
+        "escalate": "エスカレーション: 完了率が 70% 未満の状態が 2 スプリント連続 → 再見積りまたはキャパシティの見直し（プロジェクトタイムライン）",
+        "drag": "技術的負債の影響: drag {d} < 0.85 — 負債がキャパシティの 15% 超",
+        "release": "コアスコープが完了 — リリース準備と引継ぎに移行",
+        "velocity0": "平均ベロシティが 0",
+        "h_metric": "指標", "h_value": "値", "planned": "計画 / 完了（人日）",
+        "partial": "部分完了（ベロシティに含めない）", "velocity": "ベロシティ（直近 3 スプリント平均）",
+        "bugd": "バグ密度", "bugd_v": "{v} 件/人日（参考。目安は 0.2 未満）", "drag_l": "ドラッグ係数",
+        "proj": "見通し", "delay": "遅延見込み", "delay_v": "{v} 日", "breakdown": "ヘルス内訳",
+        "warn_h": "警告",
+        "Healthy": "良好", "At Risk": "注意", "Needs Attention": "要対応",
+    },
+    "en": {
+        "over": "OVER-COMMIT: completion < 75%",
+        "under": "UNDER-COMMIT: completion > 95% (consider adding scope)",
+        "escalate": "ESCALATE: completion < 70% for 2 consecutive sprints → re-estimate or review capacity (project timeline)",
+        "drag": "DEBT DRAG: drag {d} < 0.85 — technical debt takes more than 15% of capacity",
+        "release": "core scope is done — move to release and handover",
+        "velocity0": "average velocity is 0",
+        "h_metric": "Metric", "h_value": "Value", "planned": "Planned / Completed MD",
+        "partial": "Partial (not counted in velocity)", "velocity": "Velocity (3-sprint average)",
+        "bugd": "Bug density", "bugd_v": "{v} bugs/MD (reference, target < 0.2)", "drag_l": "Drag coefficient",
+        "proj": "Projection", "delay": "Projected delay", "delay_v": "{v} days", "breakdown": "Health breakdown",
+        "warn_h": "Warnings",
+        "Healthy": "Healthy", "At Risk": "At Risk", "Needs Attention": "Needs Attention",
+    },
+}
 
 
 def completion_points(pct: float) -> int:
@@ -65,7 +114,8 @@ def completion_points(pct: float) -> int:
     return 10
 
 
-def compute(inp: dict) -> dict:
+def compute(inp: dict, lang: str = "vi") -> dict:
+    M = pick(MESSAGES, lang)
     tasks = [t for t in inp.get("tasks", []) if str(t.get("status", "")).lower() != "moved"]
     if not tasks:
         raise ValueError("tasks rỗng (cần ít nhất 1 task không ở trạng thái moved)")
@@ -105,27 +155,27 @@ def compute(inp: dict) -> dict:
 
     warnings = []
     if completion < 75:
-        warnings.append("OVER-COMMIT: completion < 75%")
+        warnings.append(M["over"])
     if completion > 95:
-        warnings.append("UNDER-COMMIT: completion > 95% (cân nhắc tăng scope)")
+        warnings.append(M["under"])
     prev_c = [float(h.get("completion_pct", -1)) for h in history[-1:]] if history else []
     if completion < 70 and prev_c and prev_c[0] < 70:
-        warnings.append("ESCALATE: completion < 70% 2 sprint liên tiếp → /a6-estimate hoặc review capacity /a9-project-timeline")
+        warnings.append(M["escalate"])
     if drag is not None and drag < 0.85:
-        warnings.append(f"DEBT DRAG: drag {drag} < 0.85 — nợ kỹ thuật chiếm > 15% capacity")
+        warnings.append(M["drag"].format(d=drag))
 
     remaining = inp.get("remaining_md")
     projection = None
     if remaining is not None:
         remaining = float(remaining)
         if remaining <= 0:
-            projection = {"status": "RELEASE_TRANSITION", "note": "scope cốt lõi đã xong — chuyển sang /c8-release-deployment và /d1-handover-doc"}
+            projection = {"status": "RELEASE_TRANSITION", "note": M["release"]}
         elif avg3 > 0:
             n = math.ceil(remaining / avg3)
             projection = {"status": "PROJECTED", "sprints_needed": n,
                           "weeks_needed": n * int(inp.get("sprint_weeks", 2) or 2), "avg_completed_md_3": avg3}
         else:
-            projection = {"status": "UNKNOWN", "note": "velocity trung bình = 0"}
+            projection = {"status": "UNKNOWN", "note": M["velocity0"]}
 
     delay = None
     burn = inp.get("team_daily_burn_md")
@@ -136,7 +186,7 @@ def compute(inp: dict) -> dict:
         "sprint": inp.get("sprint"),
         "planned_md": round(planned, 2), "completed_md": round(completed, 2),
         "partial_md_not_counted": round(partial_md, 2), "completion_pct": completion,
-        "velocity_avg_3": avg3, "health_score": health, "health_label": label,
+        "velocity_avg_3": avg3, "health_score": health, "health_label": label, "lang": lang,
         "health_breakdown": {"completion": s_completion, "p1": s_p1, "demo": s_demo, "blockers": s_block, "actions": s_actions},
         "bug_density_bug_per_md": round(int(bugs.get("found", 0) or 0) / planned, 3),
         "drag_coefficient": drag, "warnings": warnings, "projection": projection,
@@ -146,22 +196,23 @@ def compute(inp: dict) -> dict:
     }
 
 
-def to_md(r: dict) -> str:
-    L = [f"## Sprint {r['sprint']} — Health {r['health_score']}/100 ({r['health_label']})", "",
-         "| Chỉ số | Giá trị |", "|---|---|",
-         f"| Planned / Completed MD | {r['planned_md']} / {r['completed_md']} ({r['completion_pct']}%) |",
-         f"| Partial (không tính velocity) | {r['partial_md_not_counted']} MD |",
-         f"| Velocity TB 3 sprint | {r['velocity_avg_3']} MD |",
-         f"| Bug density | {r['bug_density_bug_per_md']} bug/MD (tham khảo, chuẩn < 0.2) |",
-         f"| Drag coefficient | {r['drag_coefficient']} |"]
+def to_md(r: dict, lang: str = "vi") -> str:
+    M = pick(MESSAGES, lang)
+    L = [f"## Sprint {r['sprint']} — Health {r['health_score']}/100 ({M[r['health_label']]})", "",
+         f"| {M['h_metric']} | {M['h_value']} |", "|---|---|",
+         f"| {M['planned']} | {r['planned_md']} / {r['completed_md']} ({r['completion_pct']}%) |",
+         f"| {M['partial']} | {r['partial_md_not_counted']} MD |",
+         f"| {M['velocity']} | {r['velocity_avg_3']} MD |",
+         f"| {M['bugd']} | " + M["bugd_v"].format(v=r["bug_density_bug_per_md"]) + " |",
+         f"| {M['drag_l']} | {r['drag_coefficient']} |"]
     if r["projection"]:
-        L.append(f"| Dự phóng | {json.dumps(r['projection'], ensure_ascii=False)} |")
+        L.append(f"| {M['proj']} | {json.dumps(r['projection'], ensure_ascii=False)} |")
     if r["projected_delay_days"] is not None:
-        L.append(f"| Delay dự phóng | {r['projected_delay_days']} ngày |")
+        L.append(f"| {M['delay']} | " + M["delay_v"].format(v=r["projected_delay_days"]) + " |")
     b = r["health_breakdown"]
-    L += ["", "Health breakdown: " + ", ".join(f"{k} {v}" for k, v in b.items())]
+    L += ["", f"{M['breakdown']}: " + ", ".join(f"{k} {v}" for k, v in b.items())]
     if r["warnings"]:
-        L += ["", "### Cảnh báo"] + [f"- {w}" for w in r["warnings"]]
+        L += ["", f"### {M['warn_h']}"] + [f"- {w}" for w in r["warnings"]]
     return "\n".join(L)
 
 
@@ -169,18 +220,20 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description="Velocity, Health Score, drag và cảnh báo cho sprint (c6)")
     ap.add_argument("input")
     ap.add_argument("--format", choices=("md", "json"), default="md")
+    add_lang_args(ap, audience="internal")  # sprint review là tài liệu nội bộ (khách xem bản tổng hợp riêng)
     a = ap.parse_args(argv)
+    lang = resolve_lang(a.lang, a.context, a.audience)
     try:
         inp = json.loads(Path(a.input).read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError) as e:
         print(f"ERROR không đọc được input: {e}", file=sys.stderr)
         return 2
     try:
-        r = compute(inp)
+        r = compute(inp, lang)
     except (ValueError, TypeError) as e:
         print(f"ERROR {e}", file=sys.stderr)
         return 2
-    print(json.dumps(r, ensure_ascii=False, indent=2) if a.format == "json" else to_md(r))
+    print(json.dumps(r, ensure_ascii=False, indent=2) if a.format == "json" else to_md(r, lang))
     return 0
 
 

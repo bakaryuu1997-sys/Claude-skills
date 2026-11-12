@@ -39,6 +39,16 @@ def validate_context(ctx: dict) -> list[str]:
     wd = s.get("working_days_per_week")
     if wd is not None and not (1 <= wd <= 7):
         errs.append(f"settings.working_days_per_week={wd} ngoài [1,7]")
+    langs = s.get("languages")
+    if langs is not None:
+        if not isinstance(langs, dict):
+            errs.append("settings.languages phải là object {client_facing, internal, code}")
+        else:
+            for k, v in langs.items():
+                if k not in ("client_facing", "internal", "code"):
+                    errs.append(f"settings.languages.{k}: khóa lạ (cho phép client_facing, internal, code)")
+                elif v not in ("ja", "vi", "en"):
+                    errs.append(f"settings.languages.{k}='{v}' không hợp lệ (ja | vi | en)")
     # item của các mảng object (kiểm cả khi KHÔNG có jsonschema — tránh chuỗi rác lọt vào log)
     for arr, required in (("activity_log", ("skill", "date")), ("known_issues", ("id", "severity", "status")),
                           ("change_requests", ("id", "status"))):

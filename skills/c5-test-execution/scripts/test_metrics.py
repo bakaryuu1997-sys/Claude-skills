@@ -41,6 +41,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "a1-project-init" / "scripts"))
+from i18n import add_lang_args, pick, resolve_lang  # noqa: E402
+
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 if hasattr(sys.stderr, "reconfigure"):
@@ -54,6 +57,43 @@ PHASE_PASS_KEY = {"UT": "ut_pass_rate", "IT": "it_pass_rate", "ST": "st_pass_rat
 CLOSED_STATES = {"verified", "closed", "wontfix"}
 REGRESSION_FIELDS = ("regression_test_id", "regression_impact_scope", "required_regression_suites", "verified_commit")
 RESULTS = ("pass", "fail", "blocked", "na", "notrun")
+
+
+MESSAGES = {
+    "vi": {
+        "unassigned": "(chưa gán)",
+        "b_notrun": "{n} test chưa chạy (notrun)", "b_blocked": "{n} test bị blocked",
+        "b_open": "{n} bug Critical/High còn mở (ngưỡng {m})",
+        "b_unverified": "{n} bug Closed/Verified thiếu bằng chứng hồi quy (UNVERIFIED_FIX)",
+        "b_rate": "pass rate {r}% < {need}%", "b_nocov": "thiếu coverage {m}", "b_cov": "coverage {m} {v}% < {need}%",
+        "uat_ok": "UAT: số liệu đã tổng hợp — kết luận nghiệm thu do biên bản ký của khách quyết định",
+        "uat_no": "UAT: CHƯA ĐỦ điều kiện giao nghiệm thu — ",
+        "h_metric": "Chỉ số", "h_value": "Giá trị", "total": "Tổng test case", "open_ch": "Defect Critical/High còn mở",
+        "viewpoint": "Viewpoint", "why": "Lý do chặn", "missing": "thiếu", "slow": "WARN: SLOW SUITE (> 3 s)",
+    },
+    "ja": {
+        "unassigned": "（未設定）",
+        "b_notrun": "未実施のテストが {n} 件（notrun）", "b_blocked": "ブロック中のテストが {n} 件",
+        "b_open": "Critical/High の未解決バグが {n} 件（許容 {m} 件）",
+        "b_unverified": "Closed/Verified のバグ {n} 件に回帰確認の証跡がありません（UNVERIFIED_FIX）",
+        "b_rate": "合格率 {r}% < {need}%", "b_nocov": "{m} カバレッジが未計測", "b_cov": "{m} カバレッジ {v}% < {need}%",
+        "uat_ok": "UAT: 数値は集計済み — 検収の結論は顧客の署名済み検収書によって決まります",
+        "uat_no": "UAT: 検収に進む条件が未達 — ",
+        "h_metric": "指標", "h_value": "値", "total": "テストケース総数", "open_ch": "Critical/High の未解決欠陥",
+        "viewpoint": "観点", "why": "ブロック理由", "missing": "不足", "slow": "警告: 低速スイート（3 秒超）",
+    },
+    "en": {
+        "unassigned": "(unassigned)",
+        "b_notrun": "{n} test(s) not run (notrun)", "b_blocked": "{n} test(s) blocked",
+        "b_open": "{n} Critical/High bug(s) still open (limit {m})",
+        "b_unverified": "{n} Closed/Verified bug(s) lack regression evidence (UNVERIFIED_FIX)",
+        "b_rate": "pass rate {r}% < {need}%", "b_nocov": "{m} coverage missing", "b_cov": "{m} coverage {v}% < {need}%",
+        "uat_ok": "UAT: figures are compiled — acceptance is decided by the customer's signed record",
+        "uat_no": "UAT: NOT ready for acceptance — ",
+        "h_metric": "Metric", "h_value": "Value", "total": "Total test cases", "open_ch": "Open Critical/High defects",
+        "viewpoint": "Viewpoint", "why": "Blocking reasons", "missing": "missing", "slow": "WARN: SLOW SUITE (> 3 s)",
+    },
+}
 
 
 def pct(n, d):
@@ -76,7 +116,8 @@ def git_impact_scope(repo: Path, commit: str):
     return ", ".join(files) if files else None
 
 
-def compute(snap: dict, gates: dict, repo: Path | None):
+def compute(snap: dict, gates: dict, repo: Path | None, lang: str = "vi"):
+    M = pick(MESSAGES, lang)
     phase = str(snap.get("phase", "")).upper()
     tests = snap.get("tests") or []
     defects = snap.get("defects") or []
@@ -101,7 +142,7 @@ def compute(snap: dict, gates: dict, repo: Path | None):
     # Viewpoint breakdown
     vp = {}
     for t in tests:
-        v = t.get("viewpoint") or "(chưa gán)"
+        v = t.get("viewpoint") or M["unassigned"]
         d = vp.setdefault(v, {"total": 0, "pass": 0, "fail": 0})
         d["total"] += 1
         if str(t.get("result")).lower() == "pass":
@@ -132,32 +173,32 @@ def compute(snap: dict, gates: dict, repo: Path | None):
     # Gates
     blockers = []
     if counts["notrun"]:
-        blockers.append(f"{counts['notrun']} test chưa chạy (notrun)")
+        blockers.append(M["b_notrun"].format(n=counts["notrun"]))
     if counts["blocked"]:
-        blockers.append(f"{counts['blocked']} test bị blocked")
+        blockers.append(M["b_blocked"].format(n=counts["blocked"]))
     max_open = int(gates.get("open_critical_high_max", 0))
     if open_ch > max_open:
-        blockers.append(f"{open_ch} bug Critical/High còn mở (ngưỡng {max_open})")
+        blockers.append(M["b_open"].format(n=open_ch, m=max_open))
     if unverified:
-        blockers.append(f"{len(unverified)} bug Closed/Verified thiếu bằng chứng hồi quy (UNVERIFIED_FIX)")
+        blockers.append(M["b_unverified"].format(n=len(unverified)))
     cov = snap.get("coverage") or {}
     key = PHASE_PASS_KEY.get(phase)
     if key:
         need = float(gates.get(key, DEFAULT_GATES[key]))
         if pass_rate is None or pass_rate < need:
-            blockers.append(f"pass rate {pass_rate}% < {need}%")
+            blockers.append(M["b_rate"].format(r=pass_rate, need=need))
     if phase == "UT":
         for m, gk in (("line", "ut_coverage_line"), ("branch", "ut_coverage_branch")):
             if cov.get(m) is None:
-                blockers.append(f"thiếu coverage {m}")
+                blockers.append(M["b_nocov"].format(m=m))
             elif float(cov[m]) < float(gates.get(gk, DEFAULT_GATES[gk])):
-                blockers.append(f"coverage {m} {cov[m]}% < {gates.get(gk, DEFAULT_GATES[gk])}%")
+                blockers.append(M["b_cov"].format(m=m, v=cov[m], need=gates.get(gk, DEFAULT_GATES[gk])))
 
     if phase == "UAT":
-        verdict = "UAT: số liệu đã tổng hợp — kết luận nghiệm thu do biên bản ký của khách quyết định"
+        verdict = M["uat_ok"]
         code = 0 if not blockers else 1
         if blockers:
-            verdict = "UAT: CHƯA ĐỦ điều kiện giao nghiệm thu — " + "; ".join(blockers)
+            verdict = M["uat_no"] + "; ".join(blockers)
     else:
         code = 0 if not blockers else 1
         verdict = "QUALIFIED" if not blockers else "NOT QUALIFIED / RELEASE BLOCKED"
@@ -168,7 +209,7 @@ def compute(snap: dict, gates: dict, repo: Path | None):
         "viewpoints": vp, "defects_total": len(defects), "open_critical_high": open_ch,
         "open_defects": open_list, "unverified_fix": unverified,
         "coverage": {"line": cov.get("line"), "branch": cov.get("branch")},
-        "blockers": blockers, "verdict": verdict, "impact_scope_filled_from_git": filled,
+        "blockers": blockers, "verdict": verdict, "lang": lang, "impact_scope_filled_from_git": filled,
         "top_slowest": sorted(
             [(t.get("id"), t.get("duration_ms")) for t in tests if isinstance(t.get("duration_ms"), (int, float))],
             key=lambda x: -x[1])[:5],
@@ -177,24 +218,26 @@ def compute(snap: dict, gates: dict, repo: Path | None):
     }, code
 
 
-def to_md(r: dict) -> str:
+def to_md(r: dict, lang: str = "vi") -> str:
+    M = pick(MESSAGES, lang)
+    c = r["counts"]
     L = [f"## Phase {r['phase']} — {r['verdict']}", "",
-         "| Chỉ số | Giá trị |", "|---|---|",
-         f"| Tổng test case | {r['total']} |",
-         f"| Pass / Fail / Blocked / N/A / Notrun | {r['counts']['pass']} / {r['counts']['fail']} / {r['counts']['blocked']} / {r['counts']['na']} / {r['counts']['notrun']} |",
+         f"| {M['h_metric']} | {M['h_value']} |", "|---|---|",
+         f"| {M['total']} | {r['total']} |",
+         f"| Pass / Fail / Blocked / N/A / Notrun | {c['pass']} / {c['fail']} / {c['blocked']} / {c['na']} / {c['notrun']} |",
          f"| Execution rate | {r['execution_rate']}% |",
          f"| Pass rate | {r['pass_rate']}% |",
-         f"| Defect Critical/High còn mở | {r['open_critical_high']} |",
+         f"| {M['open_ch']} | {r['open_critical_high']} |",
          f"| Coverage line / branch | {r['coverage']['line']}% / {r['coverage']['branch']}% |", "",
-         "### Viewpoint", "| Viewpoint | Total | Pass | Fail |", "|---|---|---|---|"]
+         "### " + M["viewpoint"], f"| {M['viewpoint']} | Total | Pass | Fail |", "|---|---|---|---|"]
     for v, d in r["viewpoints"].items():
         L.append(f"| {v} | {d['total']} | {d['pass']} | {d['fail']} |")
     if r["blockers"]:
-        L += ["", "### Lý do chặn"] + [f"- {b}" for b in r["blockers"]]
+        L += ["", "### " + M["why"]] + [f"- {b}" for b in r["blockers"]]
     if r["unverified_fix"]:
-        L += ["", "### UNVERIFIED_FIX"] + [f"- {u['id']}: thiếu {', '.join(u['missing'])}" for u in r["unverified_fix"]]
+        L += ["", "### UNVERIFIED_FIX"] + [f"- {u['id']}: {M['missing']} {', '.join(u['missing'])}" for u in r["unverified_fix"]]
     if r["slow_suites_over_3s"]:
-        L += ["", "### WARN: SLOW SUITE (> 3 s)"] + [f"- {s}" for s in r["slow_suites_over_3s"]]
+        L += ["", "### " + M["slow"]] + [f"- {x}" for x in r["slow_suites_over_3s"]]
     return "\n".join(L)
 
 
@@ -204,7 +247,9 @@ def main(argv=None):
     ap.add_argument("--context", help="project-context.json để đọc settings.quality_gates")
     ap.add_argument("--format", choices=("md", "json"), default="md")
     ap.add_argument("--repo", help="git repo để điền Impact Scope từ verified_commit")
+    add_lang_args(ap, audience="internal")  # test execution là tài liệu nội bộ
     a = ap.parse_args(argv)
+    lang = resolve_lang(a.lang, a.context, a.audience)
 
     try:
         snap = load(Path(a.snapshot))
@@ -219,7 +264,7 @@ def main(argv=None):
         except (OSError, json.JSONDecodeError) as e:
             print(f"WARN không đọc được context, dùng ngưỡng mặc định: {e}", file=sys.stderr)
     try:
-        result, code = compute(snap, gates, Path(a.repo) if a.repo else None)
+        result, code = compute(snap, gates, Path(a.repo) if a.repo else None, lang)
     except ValueError as e:
         print(f"ERROR {e}", file=sys.stderr)
         return 2
@@ -227,7 +272,7 @@ def main(argv=None):
     if a.format == "json":
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
-        print(to_md(result))
+        print(to_md(result, lang))
     return code
 
 

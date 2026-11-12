@@ -24,6 +24,34 @@ import json
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "a1-project-init" / "scripts"))
+from i18n import lang_from_argv, pick  # noqa: E402
+
+MESSAGES = {
+    "vi": {"nofile": "LỖI: không thấy file %s", "badjson": "LỖI: schema.json không hợp lệ — %s",
+           "unknown": "CẢNH BÁO: tham chiếu tới bảng không có trong schema: %s",
+           "selfref": "GHI CHÚ: %s có FK tự tham chiếu (cây/phân cấp) — hợp lệ, cột FK nên nullable.",
+           "soft": "CẢNH BÁO: chu trình có FK nullable: %s → tạo bảng trước, thêm FK bằng ALTER TABLE hoặc DEFERRABLE INITIALLY DEFERRED; ghi vào Migration Notes.",
+           "order": "THỨ TỰ TẠO BẢNG gợi ý: %s", "rest": "  (còn lại do chu trình cứng: %s)",
+           "hard": "LỖI — CIRCULAR FK (mọi FK NOT NULL):", "fix": "→ Phá vòng: cho một FK nullable, hoặc tách bảng trung gian.",
+           "ok": "OK: không có circular FK cứng (%d bảng)."},
+    "ja": {"nofile": "エラー: ファイルが見つかりません %s", "badjson": "エラー: schema.json が不正です — %s",
+           "unknown": "警告: スキーマに存在しないテーブルを参照しています: %s",
+           "selfref": "注記: %s は自己参照 FK（ツリー/階層）を持ちます — 有効です。FK 列は nullable にしてください。",
+           "soft": "警告: nullable な FK を含む循環があります: %s → 先にテーブルを作成し、ALTER TABLE または DEFERRABLE INITIALLY DEFERRED で FK を追加し、マイグレーションノートに記載してください。",
+           "order": "推奨テーブル作成順: %s", "rest": "  （残りは強い循環のため: %s）",
+           "hard": "エラー — 循環 FK（すべて NOT NULL の FK）:", "fix": "→ 循環の解消: いずれかの FK を nullable にするか、中間テーブルに分割してください。",
+           "ok": "OK: 強い循環 FK はありません（%d テーブル）。"},
+    "en": {"nofile": "ERROR: file not found %s", "badjson": "ERROR: invalid schema.json — %s",
+           "unknown": "WARNING: references to tables that are not in the schema: %s",
+           "selfref": "NOTE: %s has a self-referencing FK (tree/hierarchy) — valid; the FK column should be nullable.",
+           "soft": "WARNING: cycle with nullable FKs: %s → create the tables first, add the FK with ALTER TABLE or DEFERRABLE INITIALLY DEFERRED; record it in the migration notes.",
+           "order": "Suggested table creation order: %s", "rest": "  (remaining because of a hard cycle: %s)",
+           "hard": "ERROR — CIRCULAR FK (all FKs NOT NULL):", "fix": "→ Break the cycle: make one FK nullable or split out a link table.",
+           "ok": "OK: no hard circular FK (%d tables)."},
+}
+CM = pick(MESSAGES, "vi")
+
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 if hasattr(sys.stderr, "reconfigure"):
@@ -146,39 +174,42 @@ def creation_order(graph, adj_hard):
 
 
 def main(argv):
+    global CM
+    _lang, _rest = lang_from_argv(argv[1:], audience="internal")
+    argv = [argv[0]] + _rest
+    CM = pick(MESSAGES, _lang)
     args = [a for a in argv[1:] if not a.startswith("--")]
     if not args or "--help" in argv or "-h" in argv:
         print(__doc__)
         return 2
     path = Path(args[0])
     if not path.exists():
-        print("LỖI: không thấy file %s" % path)
+        print(CM["nofile"] % path)
         return 2
     try:
         graph = normalize(json.loads(path.read_text(encoding="utf-8-sig")))
     except (ValueError, OSError) as e:
-        print("LỖI: schema.json không hợp lệ — %s" % e)
+        print(CM["badjson"] % e)
         return 2
     res = analyse(graph)
     if res["unknown"]:
-        print("CẢNH BÁO: tham chiếu tới bảng không có trong schema: %s" % ", ".join(res["unknown"]))
+        print(CM["unknown"] % ", ".join(res["unknown"]))
     for t in res["self_refs"]:
-        print("GHI CHÚ: %s có FK tự tham chiếu (cây/phân cấp) — hợp lệ, cột FK nên nullable." % t)
+        print(CM["selfref"] % t)
     for _, cyc in res["soft"]:
-        print("CẢNH BÁO: chu trình có FK nullable: %s → tạo bảng trước, thêm FK bằng ALTER TABLE "
-              "hoặc DEFERRABLE INITIALLY DEFERRED; ghi vào Migration Notes." % " → ".join(cyc))
+        print(CM["soft"] % " → ".join(cyc))
     if "--order" in argv:
         order, rest = creation_order(graph, res["adj_hard"])
-        print("THỨ TỰ TẠO BẢNG gợi ý: %s" % " → ".join(order))
+        print(CM["order"] % " → ".join(order))
         if rest:
-            print("  (còn lại do chu trình cứng: %s)" % ", ".join(rest))
+            print(CM["rest"] % ", ".join(rest))
     if res["hard"]:
-        print("LỖI — CIRCULAR FK (mọi FK NOT NULL):")
+        print(CM["hard"])
         for _, cyc in res["hard"]:
             print("   ", " → ".join(cyc))
-        print("→ Phá vòng: cho một FK nullable, hoặc tách bảng trung gian.")
+        print(CM["fix"])
         return 1
-    print("OK: không có circular FK cứng (%d bảng)." % len(graph))
+    print(CM["ok"] % len(graph))
     return 0
 
 

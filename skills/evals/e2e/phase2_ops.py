@@ -280,11 +280,11 @@ def run(S, DOCS, REPO, P, sh):
                      {"key": "dt", "header": "実施日", "width": 13, "align": "center"}],
          "rows": [{"id": u[0], "sc": u[1], "who": u[2], "res": u[3], "dt": u[4]} for u in uat_rows]},
         {"name": "Punch_List_Minor_Defects", "title": "保留事項（Punch List）", "subtitle": "Medium / Low のみ。Critical/High はこのシートに置けない（リリース前に修正）",
-         "columns": [{"key": "a", "header": "Mã", "width": 11, "align": "center"}, {"key": "b", "header": "Mô tả", "width": 42, "wrap": True},
+         "columns": [{"key": "a", "header": "番号", "width": 11, "align": "center"}, {"key": "b", "header": "内容", "width": 42, "wrap": True},
                      {"key": "c", "header": "Severity", "width": 11, "align": "center", "validate": ["Medium", "Low"]},
-                     {"key": "d", "header": "Ảnh hưởng", "width": 30, "wrap": True}, {"key": "e", "header": "Kế hoạch khắc phục", "width": 40, "wrap": True},
-                     {"key": "f", "header": "Fix owner", "width": 12, "align": "center"}, {"key": "g", "header": "Hạn (ngày)", "width": 13, "align": "center"},
-                     {"key": "h", "header": "BUG ref", "width": 12, "align": "center"}, {"key": "i", "header": "Trạng thái", "width": 12, "align": "center", "validate": ["open", "in progress", "done"]}],
+                     {"key": "d", "header": "影響", "width": 30, "wrap": True}, {"key": "e", "header": "是正計画", "width": 40, "wrap": True},
+                     {"key": "f", "header": "是正担当", "width": 12, "align": "center"}, {"key": "g", "header": "期限（日付）", "width": 13, "align": "center"},
+                     {"key": "h", "header": "BUG 参照", "width": 12, "align": "center"}, {"key": "i", "header": "状態", "width": 12, "align": "center", "validate": ["open", "in progress", "done"]}],
          "rows": [{"a": p_[0], "b": p_[1], "c": p_[2], "d": p_[3], "e": p_[4], "f": p_[5], "g": p_[6], "h": p_[7], "i": p_[8]} for p_ in punch]},
         {"name": "Warranty_Scope", "title": "保証の範囲", "subtitle": "SOW 第10条の要約（期間はサンプル値）",
          "columns": [{"key": "k", "header": "項目", "width": 22}, {"key": "v", "header": "内容", "width": 70, "wrap": True}],
@@ -386,7 +386,7 @@ def run(S, DOCS, REPO, P, sh):
     # ================================================================ X5 技術標準（ENGINEERING_STANDARDS）
     std = f"""# Engineering Standards — {name}
 
-> Phiên bản: `_v1` · Ngày: {today} · Người phê duyệt: [担当者]
+> 版: `_v1` · 日付: {today} · 承認者: [担当者]
 > 数値は project-context.json（settings.quality_gates）と tech_stack を参照。
 
 ## 1. 技術スタック
